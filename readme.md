@@ -1,6 +1,6 @@
 # 🌐 Tradux - Intelligent Translation Library
 
-**Tradux** is a powerful, developer-friendly translation library that automates the process of managing multilingual content in your projects. It seamlessly integrates with Cloudflare Workers to provide AI-powered translations using advanced language models.
+**Tradux** is a developer-friendly Translation library that automates the process of managing multilingual content in your projects. It seamlessly integrates with Cloudflare Workers to provide AI-powered translations using language model.
 
 ## 🎯 Purpose
 
