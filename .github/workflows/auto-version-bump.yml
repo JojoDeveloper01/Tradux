@@ -1,0 +1,50 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'library-tool/**'
+      - '!library-tool/package.json'
+      - '!library-tool/package-lock.json'
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Determine version bump type
+        id: bump-type
+        working-directory: ./library-tool
+        run: |
+          # Analyze commits to determine bump type
+          if git log --oneline -1 | grep -i "breaking\|major"; then
+            echo "bump_type=major" >> $GITHUB_OUTPUT
+          elif git log --oneline -1 | grep -i "feat\|feature\|minor"; then
+            echo "bump_type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "bump_type=patch" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Bump version
+        working-directory: ./library-tool
+        run: |
+          npm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to $(node -p 'require(\"./package.json\").version')"
+          git push

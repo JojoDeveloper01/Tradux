@@ -34,3 +34,5 @@ tradux.config.js
 tradux.config.ts
 i18n/
 test.js
+temp/
+temp-*/

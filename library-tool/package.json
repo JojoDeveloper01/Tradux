@@ -9,7 +9,13 @@
   "type": "module",
   "scripts": {
     "postinstall": "node ./postinstall.js || exit 0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/run-tests.js",
+    "test:fast": "node tests/run-tests.js --no-coverage",
+    "test:unit": "node --test tests/unit/client.test.js tests/unit/utils.test.js",
+    "test:integration": "node --test tests/integration/config.test.js tests/integration/core.test.js",
+    "test:cli": "node --test tests/cli/commands.test.js",
+    "test:performance": "node --test tests/performance/load-times.test.js",
+    "test:quick": "npm run test:unit && npm run test:integration"
   },
   "keywords": [
     "i18n",
@@ -31,7 +37,6 @@
     "@types/fs-extra": "11.0.4",
     "@types/node": "24.3.0",
     "@types/yargs": "17.0.33",
-    "ts-node": "10.9.2",
-    "typescript": "5.5.3"
+    "c8": "10.1.3"
   }
 }
