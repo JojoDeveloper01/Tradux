@@ -8,6 +8,7 @@ on:
       - 'library-tool/**'
       - '!library-tool/package.json'
       - '!library-tool/package-lock.json'
+      - '!library-tool/.github/**'
 
 jobs:
   version-bump:
