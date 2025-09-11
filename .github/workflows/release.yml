@@ -79,10 +79,20 @@ jobs:
         if: steps.check.outputs.exists == 'true'
         working-directory: ./library-tool
         run: |
+          # Fetch and sync with remote branch
+          git fetch origin main
+          git reset --hard origin/main
+
+          # Bump version
           NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
+
+          # Commit the version bump
           git add package.json package-lock.json
           git commit -m "chore: bump version to $NEW_VERSION"
-          git push
+
+          # Safe push
+          git push --force-with-lease origin main
+
 
       - name: Publish to NPM
         working-directory: ./library-tool
