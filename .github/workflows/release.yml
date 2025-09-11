@@ -96,6 +96,8 @@ jobs:
 
       - name: Publish to NPM
         working-directory: ./library-tool
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish
 
       - name: Create Git Tag
