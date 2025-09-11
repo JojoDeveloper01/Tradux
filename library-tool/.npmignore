@@ -18,6 +18,9 @@ coverage/
 
 # IDE specific files
 .vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
 
 # OS generated files
 .DS_Store
@@ -35,4 +38,4 @@ i18n/
 test.js
 temp/
 temp-*/
-test/
+tests/
