@@ -93,8 +93,6 @@ jobs:
         if: steps.version-check.outputs.version_exists == 'false'
         working-directory: ./library-tool
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create Git Tag
         if: steps.version-check.outputs.version_exists == 'false'
