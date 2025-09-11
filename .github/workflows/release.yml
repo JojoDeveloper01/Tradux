@@ -96,7 +96,7 @@ jobs:
 
       - name: Publish to NPM
         working-directory: ./library-tool
-        run: npm publish --provenance --access public
+        run: npm publish
 
       - name: Create Git Tag
         run: |
