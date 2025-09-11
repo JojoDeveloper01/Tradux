@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'library-tool/**'
+      - 'library-tool/package.json'
 
 permissions:
   contents: read
