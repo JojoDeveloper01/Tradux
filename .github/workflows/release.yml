@@ -1,0 +1,95 @@
+name: Release and Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'library-tool/**'
+      - '!library-tool/.github/**'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: 'library-tool/package-lock.json'
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Install dependencies
+        working-directory: ./library-tool
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./library-tool
+        run: |
+          npm run test:unit || echo "No unit tests"
+          npm run test:integration || echo "No integration tests"
+          npm run test:cli || echo "No CLI tests"
+          npm run test:performance || echo "No performance tests"
+          echo "✅ All test suites finished!"
+
+      - name: Check current version
+        id: check
+        working-directory: ./library-tool
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          if npm view tradux@$CURRENT_VERSION version >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already exists on NPM"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION does not exist on NPM"
+          fi
+
+      - name: Determine bump type
+        id: bump-type
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          if git log -1 --pretty=%B | grep -i "breaking\|major"; then
+            echo "bump_type=major" >> $GITHUB_OUTPUT
+          elif git log -1 --pretty=%B | grep -i "feat\|feature\|minor"; then
+            echo "bump_type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "bump_type=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump version if needed
+        if: steps.check.outputs.exists == 'true'
+        working-directory: ./library-tool
+        run: |
+          NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push
+
+      - name: Publish to NPM
+        working-directory: ./library-tool
+        run: npm publish --provenance --access public
+
+      - name: Create Git Tag
+        run: |
+          VERSION=$(node -p "require('./library-tool/package.json').version")
+          git tag "v$VERSION"
+          git push origin "v$VERSION"

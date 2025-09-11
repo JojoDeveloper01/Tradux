@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import { logger } from './src/utils/logger.js';
 
-// Constants - Move these inside runPostInstall to ensure they're initialized
 const CONFIG_FILENAME = 'tradux.config.js';
 const DEFAULT_LANG = 'en';
 
