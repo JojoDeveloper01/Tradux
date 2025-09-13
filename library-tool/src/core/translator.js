@@ -64,7 +64,7 @@ function parseLanguages(languages) {
 
 async function loadSourceFile(config) {
     const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
-    const sourcePath = path.join(i18nAbsolutePath, `${config.defaultLanguage}.js`);
+    const sourcePath = path.join(i18nAbsolutePath, `${config.defaultLanguage}.json`);
 
     if (!fileManager.exists(sourcePath)) {
         logger.error(`Source file not found: ${sourcePath}`);
@@ -88,7 +88,7 @@ async function loadSourceFile(config) {
 
 async function translateLanguage(lang, sourceData, config, credentials) {
     const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
-    const targetFile = path.join(i18nAbsolutePath, `${lang}.js`);
+    const targetFile = path.join(i18nAbsolutePath, `${lang}.json`);
 
     if (fileManager.exists(targetFile)) {
         logger.warn(`Skipping existing translation: ${lang}`);
@@ -116,9 +116,8 @@ async function translateLanguage(lang, sourceData, config, credentials) {
 
         const result = await response.json();
 
-        // Write as JavaScript module
-        const jsContent = `export const language = ${JSON.stringify(result.translatedData, null, 2)};`;
-        await fs.writeFile(targetFile, jsContent);
+        // Write as JSON file
+        await fs.writeFile(targetFile, JSON.stringify(result.translatedData, null, 2));
         logger.success(`Translation completed: ${lang}`);
     } catch (error) {
         logger.error(`Failed to translate ${lang}: ${error.message}`);
@@ -157,7 +156,7 @@ export async function updateLanguageFiles(languages, config) {
 
 async function updateLanguage(lang, sourceData, config, credentials) {
     const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
-    const targetFile = path.join(i18nAbsolutePath, `${lang}.js`);
+    const targetFile = path.join(i18nAbsolutePath, `${lang}.json`);
 
     if (!fileManager.exists(targetFile)) {
         logger.info(`Target file doesn't exist for ${lang}, creating new translation...`);
@@ -228,9 +227,8 @@ async function updateLanguage(lang, sourceData, config, credentials) {
             updatedData = deepMerge(updatedData, result.translatedData);
         }
 
-        // Write as JavaScript module
-        const jsContent = `export const language = ${JSON.stringify(updatedData, null, 2)};`;
-        await fs.writeFile(targetFile, jsContent);
+        // Write as JSON file
+        await fs.writeFile(targetFile, JSON.stringify(updatedData, null, 2));
 
         const changes = [];
         if (hasMissingContent) changes.push('added missing content');

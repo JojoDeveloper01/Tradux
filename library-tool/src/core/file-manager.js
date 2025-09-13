@@ -60,9 +60,19 @@ class FileManager {
      * Load language file with proper error handling
      */
     async loadLanguageFile(i18nPath, language) {
-        const languageFile = path.join(i18nPath, `${language}.js`);
-        const module = await this.loadModule(languageFile);
-        return module?.language || null;
+        const languageFile = path.join(i18nPath, `${language}.json`);
+
+        if (!this.exists(languageFile)) {
+            return null;
+        }
+
+        try {
+            const fileContent = await fs.readFile(languageFile, 'utf8');
+            return JSON.parse(fileContent);
+        } catch (error) {
+            console.error(`Failed to load language file: ${languageFile}`);
+            return null;
+        }
     }
 
     /**

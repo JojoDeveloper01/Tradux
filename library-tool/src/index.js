@@ -215,11 +215,11 @@ async function getExistingLanguages(config) {
             process.exit(1);
         }
 
-        // Read all .js files in the i18n directory
+        // Read all .json files in the i18n directory
         const files = fs.readdirSync(i18nAbsolutePath);
         const languageFiles = files
-            .filter(file => file.endsWith('.js'))
-            .map(file => file.replace('.js', ''));
+            .filter(file => file.endsWith('.json'))
+            .map(file => file.replace('.json', ''));
 
         return languageFiles;
     } catch (error) {

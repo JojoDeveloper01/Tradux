@@ -68,9 +68,56 @@ async function createSampleTranslation(i18nPath) {
         welcome: "Welcome to my website!"
     };
 
-    const filePath = path.join(i18nPath, 'en.js');
-    await fs.writeFile(filePath, `export const language = ${JSON.stringify(sampleContent, null, 2)};`);
-    logger.info('Created sample en.js translation file');
+    const filePath = path.join(i18nPath, 'en.json');
+    await fs.writeFile(filePath, JSON.stringify(sampleContent, null, 2));
+    logger.info('Created sample en.json translation file');
+}
+
+/**
+ * Validates and fixes i18n setup when config already exists
+ */
+async function validateI18nSetup(projectRoot, configPath) {
+    try {
+        // Load existing config to get i18n path
+        const configContent = await fs.readFile(configPath, 'utf8');
+
+        // Extract i18nPath from config (simple regex)
+        const i18nPathMatch = configContent.match(/i18nPath\s*=\s*['"`]([^'"`]+)['"`]/);
+
+        if (!i18nPathMatch) {
+            logger.warn('Could not determine i18n path from config');
+            return;
+        }
+
+        const configuredPath = i18nPathMatch[1];
+        const absoluteI18nPath = path.resolve(projectRoot, configuredPath);
+
+        // Check if i18n directory exists
+        if (!fs.existsSync(absoluteI18nPath)) {
+            logger.warn(`\ni18n directory not found: ${configuredPath}`);
+            logger.info(`Creating missing directory: ${configuredPath}`);
+            await fs.ensureDir(absoluteI18nPath);
+            await createSampleTranslation(absoluteI18nPath);
+            logger.success('Created missing i18n directory and sample files');
+            return;
+        }
+
+        // Check if default language file exists
+        const defaultLangFile = path.join(absoluteI18nPath, `${DEFAULT_LANG}.json`);
+        if (!fs.existsSync(defaultLangFile)) {
+            logger.warn(`Default language file not found: ${DEFAULT_LANG}.json`);
+            logger.info('Creating missing default language file...');
+            await createSampleTranslation(absoluteI18nPath);
+            logger.success('Created missing default language file');
+            return;
+        }
+
+        logger.success('i18n setup is complete and valid');
+
+    } catch (error) {
+        logger.error('Error validating i18n setup:');
+        logger.error(error.message);
+    }
 }
 
 /**
@@ -85,6 +132,9 @@ export async function runPostInstall() {
         // Check if config already exists
         if (fs.existsSync(configPath)) {
             logger.info(`Configuration file already exists at './${CONFIG_FILENAME}'`);
+
+            // Even if config exists, check if i18n directory and files exist
+            await validateI18nSetup(PROJECT_ROOT, configPath);
             return;
         }
 

@@ -46,35 +46,27 @@ function saveLanguage(lang) {
     }
 }
 
+
+
 async function loadLanguage(lang) {
     try {
-        let languagePath;
-
         if (typeof window !== 'undefined') {
-            // Browser/production environment
-            // Always use public path for production builds
-            languagePath = `/i18n/${lang}.js`;
-        } else {
-            // Node.js/development environment
-            const projectRoot = process.cwd ? process.cwd() : '';
-            const filePath = `${projectRoot}/${config.i18nPath}/${lang}.js`.replace(/\/+/g, '/');
-
-            // Check if file exists in development
-            try {
-                const fs = await import('fs');
-                if (!fs.existsSync(filePath)) {
-                    console.error(`Language '${lang}' not found. Run 'npx tradux -t ${lang}' to create it.`);
-                    return null;
-                }
-            } catch (error) {
-                // fs not available (browser), continue
-            }
-
-            languagePath = `file://${filePath.replace(/\\/g, '/')}`;
+            // Browser → usa fetch
+            const cleanPath = config.i18nPath.replace(/^\.\//, '');
+            const languagePath = `/${cleanPath}/${lang}.json`;
+            const res = await fetch(languagePath);
+            if (!res.ok) throw new Error(`Language ${lang} not found`);
+            return await res.json();
         }
 
-        const module = await import(/* @vite-ignore */languagePath);
-        return module.language;
+        const { readFile } = await import('fs/promises');
+        const { resolve } = await import('path');
+
+        const cleanPath = config.i18nPath.replace(/^(\.\/|public\/)/, '');
+        const filePath = resolve(process.cwd(), "public", cleanPath, `${lang}.json`);
+
+        const fileContent = await readFile(filePath, 'utf8');
+        return JSON.parse(fileContent);
     } catch (error) {
         console.error(`Error loading language '${lang}': ${error.message}`);
         return null;
