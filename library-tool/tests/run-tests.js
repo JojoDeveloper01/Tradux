@@ -102,7 +102,7 @@ const runTestSuite = async (suite) => {
 // Function to run coverage report
 const runCoverage = async () => {
     return new Promise(async (resolve, reject) => {
-        console.log(`\n${colors.magenta}📊 Generating coverage report...${colors.reset}\n`);
+        console.log(`\n${colors.magenta}Generating coverage report...${colors.reset}\n`);
 
         // Get all test files
         const allTestFiles = [];
@@ -218,7 +218,7 @@ async function runAllTests() {
         }
 
         console.log(`\n${colors.green}${colors.bright}All tests completed successfully!${colors.reset}`);
-        console.log(`${colors.bright}Your Tradux library is ready for production! 🚀${colors.reset}\n`);
+        console.log(`${colors.bright}Your Tradux library is ready for production! ${colors.reset}\n`);
 
         process.exit(0);
     } else {

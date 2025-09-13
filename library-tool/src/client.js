@@ -13,9 +13,9 @@ async function loadConfig() {
         if (typeof window !== 'undefined') {
             configModule = await import('/tradux.config.js');
         } else {
-            const path = await import('path');
-            const projectRoot = process.cwd();
-            const configPath = path.default.join(projectRoot, 'tradux.config.js');
+            // Browser-compatible path joining
+            const projectRoot = process.cwd ? process.cwd() : '';
+            const configPath = `${projectRoot}/tradux.config.js`.replace(/\/+/g, '/');
             const configUrl = `file://${configPath.replace(/\\/g, '/')}`;
             configModule = await import(configUrl);
         }
@@ -59,14 +59,20 @@ async function loadLanguage(lang) {
                 languagePath = `/${config.i18nPath}/${lang}.js`;
             }
         } else {
-            const path = await import('path');
-            const fs = await import('fs');
-            const projectRoot = process.cwd();
-            const filePath = path.default.join(projectRoot, config.i18nPath, `${lang}.js`);
+            // Browser-compatible path joining and file checking
+            const projectRoot = process.cwd ? process.cwd() : '';
+            const filePath = `${projectRoot}/${config.i18nPath}/${lang}.js`.replace(/\/+/g, '/');
 
-            if (!fs.default.existsSync(filePath)) {
-                console.error(`Language '${lang}' not found. Run 'npx tradux -t ${lang}' to create it.`);
-                return null;
+            // Browser-compatible file existence check
+            try {
+                const testResponse = await fetch(`file://${filePath.replace(/\\/g, '/')}`, { method: 'HEAD' });
+                if (!testResponse.ok) {
+                    console.error(`Language '${lang}' not found. Run 'npx tradux -t ${lang}' to create it.`);
+                    return null;
+                }
+            } catch (error) {
+                // If fetch fails, continue anyway as file might exist
+                console.warn(`Could not verify existence of language file: ${filePath}`);
             }
 
             languagePath = `file://${filePath.replace(/\\/g, '/')}`;
