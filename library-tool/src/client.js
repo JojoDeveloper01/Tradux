@@ -2,7 +2,7 @@ let currentLanguage = 'en';
 let translations = {};
 
 let config = {
-    i18nPath: './src/i18n',
+    i18nPath: './i18n',
     defaultLanguage: 'en'
 };
 
@@ -21,7 +21,7 @@ async function loadConfig() {
         }
 
         config = {
-            i18nPath: configModule.i18nPath || './src/i18n',
+            i18nPath: configModule.i18nPath || './i18n',
             defaultLanguage: configModule.defaultLanguage || 'en'
         };
 
@@ -51,28 +51,23 @@ async function loadLanguage(lang) {
         let languagePath;
 
         if (typeof window !== 'undefined') {
-            if (config.i18nPath.startsWith('./')) {
-                languagePath = `/${config.i18nPath.substring(2)}/${lang}.js`;
-            } else if (config.i18nPath.startsWith('src/')) {
-                languagePath = `/${config.i18nPath}/${lang}.js`;
-            } else {
-                languagePath = `/${config.i18nPath}/${lang}.js`;
-            }
+            // Browser/production environment
+            // Always use public path for production builds
+            languagePath = `/i18n/${lang}.js`;
         } else {
-            // Browser-compatible path joining and file checking
+            // Node.js/development environment
             const projectRoot = process.cwd ? process.cwd() : '';
             const filePath = `${projectRoot}/${config.i18nPath}/${lang}.js`.replace(/\/+/g, '/');
 
-            // Browser-compatible file existence check
+            // Check if file exists in development
             try {
-                const testResponse = await fetch(`file://${filePath.replace(/\\/g, '/')}`, { method: 'HEAD' });
-                if (!testResponse.ok) {
+                const fs = await import('fs');
+                if (!fs.existsSync(filePath)) {
                     console.error(`Language '${lang}' not found. Run 'npx tradux -t ${lang}' to create it.`);
                     return null;
                 }
             } catch (error) {
-                // If fetch fails, continue anyway as file might exist
-                console.warn(`Could not verify existence of language file: ${filePath}`);
+                // fs not available (browser), continue
             }
 
             languagePath = `file://${filePath.replace(/\\/g, '/')}`;

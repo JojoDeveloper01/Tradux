@@ -5,8 +5,9 @@ import { logger } from './src/utils/logger.js';
 const CONFIG_FILENAME = 'tradux.config.js';
 const DEFAULT_LANG = 'en';
 
-// I18n path search configuration
+// I18n path search configuration - prioritize public paths for production compatibility
 const COMMON_I18N_PATHS = [
+    'public/i18n',
     'i18n',
     'src/i18n',
     'app/i18n'
@@ -90,8 +91,8 @@ export async function runPostInstall() {
         // Find or create i18n directory using the local PROJECT_ROOT
         let i18nPath = findI18nPathSync(PROJECT_ROOT);
         if (!i18nPath) {
-            logger.info("\nNo 'i18n' folder found. Creating a new one at 'src/i18n'");
-            i18nPath = path.join(PROJECT_ROOT, 'src', 'i18n');
+            logger.info("\nNo 'i18n' folder found. Creating a new one at 'public/i18n' for production compatibility");
+            i18nPath = path.join(PROJECT_ROOT, 'public', 'i18n');
             await fs.ensureDir(i18nPath);
             await createSampleTranslation(i18nPath);
         }

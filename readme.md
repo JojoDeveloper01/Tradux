@@ -54,13 +54,15 @@ bun install tradux && bunx tradux init
 After installation, Tradux automatically creates a `tradux.config.js` file:
 
 ```javascript
-export const i18nPath = './src/i18n';
+export const i18nPath = './public/i18n';
 export const defaultLanguage = 'en';
 ```
 
 **Configuration Options:**
 - `defaultLanguage` - Your base language (default: 'en')
-- `i18nPath` - Path to translation files (default: './src/i18n')
+- `i18nPath` - Path to translation files (default: './public/i18n')
+
+> **🚨 IMPORTANT**: Use `./public/i18n` for production builds to ensure translations are accessible in browsers!
 
 ---
 
