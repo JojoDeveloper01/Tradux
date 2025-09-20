@@ -1,0 +1,42 @@
+---
+import Layout from "../layout.astro";
+import { test } from "../components/Node.js";
+
+const results = await test();
+---
+
+<Layout>
+    <h1>Node</h1>
+    <p>
+        Available Languages: <span style="font-weight: bold;"
+            >{results.availAbleLanguages.join(", ")}</span
+        >
+    </p>
+    <p>
+        Current Languages: <span style="font-weight: bold;"
+            >{results.currentLanguage}</span
+        >
+    </p>
+    <p>
+        NavigationPT:
+        <br />
+        <span style="font-weight: bold;">
+            {
+                Object.entries(results.navigationPT)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(", ")
+            }
+        </span>
+    </p>
+    <p>
+        NavigationJA:
+        <br />
+        <span style="font-weight: bold;">
+            {
+                Object.entries(results.navigationJA)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(", ")
+            }
+        </span>
+    </p>
+</Layout>

@@ -1,0 +1,38 @@
+<section>
+    <h1>HTML</h1>
+
+    <h2 data-key="welcome"></h2>
+
+    <p data-key="navigation.home"></p>
+    <p data-key="navigation.about"></p>
+    <p data-key="navigation.services"></p>
+
+    <select id="lang-select"></select>
+</section>
+
+<script type="module">
+    import { tStore, setLanguage, getAvailableLanguages, getCurrentLanguage } from "../../node_modules/tradux/src/client"
+
+    const select = document.getElementById('lang-select');
+    const languages = await getAvailableLanguages();
+
+    languages.forEach(lang => {
+        const option = document.createElement("option");
+        option.value = lang;
+        option.textContent = lang;
+        option.selected = lang === getCurrentLanguage();
+        select.appendChild(option);
+    });
+
+    select.onchange = e => setLanguage(e.target.value);
+
+    // Atualiza textos automaticamente
+    tStore.subscribe(t => {
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const keys = el.dataset.key.split('.');
+            let value = t;
+            keys.forEach(k => value = value?.[k]);
+            el.textContent = value || '';
+        });
+    });
+</script>
