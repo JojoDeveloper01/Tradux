@@ -34,6 +34,7 @@ Thumbs.db
 # Tradux specific
 tradux.config.js
 tradux.config.ts
+tradux.config.json
 i18n/
 test.js
 temp/
