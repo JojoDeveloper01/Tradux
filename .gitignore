@@ -133,6 +133,7 @@ coverage/
 
 # IDE specific files
 .vscode/
+.kiro/
 .idea/
 *.sublime-workspace
 *.sublime-project
