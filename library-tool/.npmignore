@@ -35,7 +35,7 @@ Thumbs.db
 tradux.config.js
 tradux.config.ts
 tradux.config.json
-i18n/
+/public/
 test.js
 temp/
 temp-*/
