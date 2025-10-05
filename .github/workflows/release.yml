@@ -8,7 +8,7 @@ on:
       - 'library-tool/src/**'
       - 'library-tool/postinstall.js'
       - 'library-tool/package.json'
-      - 'library-tool/package-lock.json'
+      - 'library-tool/pnpm-lock.yaml'
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-          cache-dependency-path: 'library-tool/package-lock.json'
+          cache-dependency-path: 'library-tool/pnpm-lock.yaml'
 
       - name: Configure Git
         run: |
@@ -89,7 +89,7 @@ jobs:
           NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
 
           # Commit the version bump
-          git add package.json package-lock.json
+          git add package.json pnpm-lock.yaml
           git commit -m "chore: bump version to $NEW_VERSION"
 
           # Safe push
