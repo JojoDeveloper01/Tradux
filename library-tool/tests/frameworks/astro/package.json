@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "start": "node dist/server/entry.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",
@@ -21,5 +22,8 @@
     "tradux": "^1.4.3",
     "typescript": "^5.9.3",
     "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@astrojs/node": "9.3.2"
   }
 }
