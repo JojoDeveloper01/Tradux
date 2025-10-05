@@ -12,19 +12,16 @@ describe('Core Functionality Tests', () => {
     before(async () => {
         await mkdir(join(testDir, 'src/i18n'), { recursive: true });
 
-        // Create test configuration
         await writeFile(join(testDir, 'tradux.config.js'), `
 export const i18nPath = './src/i18n';
 export const defaultLanguage = 'en';
     `);
 
-        // Create test environment file
         await writeFile(join(testDir, '.env'), `
 CLOUDFLARE_ACCOUNT_ID=test_account_id
 CLOUDFLARE_API_TOKEN=test_api_token
     `);
 
-        // Create source language file
         await writeFile(join(testDir, 'src/i18n/en.js'), `
 export const language = {
   "app": {
@@ -47,7 +44,6 @@ export const language = {
     });
 
     after(async () => {
-        // Cleanup with retry for Windows
         try {
             await rm(testDir, { recursive: true, force: true });
         } catch (error) {
@@ -67,7 +63,6 @@ export const language = {
             process.chdir(testDir);
 
             try {
-                // Test that required files exist
                 const { access } = await import('fs/promises');
 
                 await access(join(testDir, 'tradux.config.js'));
@@ -104,18 +99,15 @@ export const language = {
                 const langModule = await import(langPath);
                 const language = langModule.language;
 
-                // Validate structure
                 assert.strictEqual(typeof language, 'object', 'Language should be an object');
                 assert.ok(language.app, 'Should have app section');
                 assert.ok(language.navigation, 'Should have navigation section');
                 assert.ok(language.actions, 'Should have actions section');
 
-                // Validate content types
                 assert.strictEqual(typeof language.app.title, 'string', 'App title should be string');
                 assert.strictEqual(typeof language.navigation.home, 'string', 'Navigation items should be strings');
                 assert.strictEqual(typeof language.actions.save, 'string', 'Action labels should be strings');
 
-                // Validate content is not empty
                 assert.ok(language.app.title.length > 0, 'App title should not be empty');
                 assert.ok(language.navigation.home.length > 0, 'Navigation items should not be empty');
                 assert.ok(language.actions.save.length > 0, 'Action labels should not be empty');
@@ -134,7 +126,6 @@ export const language = {
                 const { readFile } = await import('fs/promises');
                 const envContent = await readFile(join(testDir, '.env'), 'utf8');
 
-                // Parse environment variables
                 const envVars = {};
                 envContent.split('\n').forEach(line => {
                     const trimmed = line.trim();
@@ -146,11 +137,9 @@ export const language = {
                     }
                 });
 
-                // Validate required environment variables
                 assert.ok(envVars.CLOUDFLARE_ACCOUNT_ID, 'Should have CLOUDFLARE_ACCOUNT_ID');
                 assert.ok(envVars.CLOUDFLARE_API_TOKEN, 'Should have CLOUDFLARE_API_TOKEN');
 
-                // Validate values are not empty
                 assert.ok(envVars.CLOUDFLARE_ACCOUNT_ID.length > 0, 'CLOUDFLARE_ACCOUNT_ID should not be empty');
                 assert.ok(envVars.CLOUDFLARE_API_TOKEN.length > 0, 'CLOUDFLARE_API_TOKEN should not be empty');
 
@@ -162,7 +151,6 @@ export const language = {
         it('should handle missing environment variables gracefully', async () => {
             process.chdir(testDir);
 
-            // Test with empty environment file
             const { writeFile: writeFileAsync } = await import('fs/promises');
             await writeFileAsync(join(testDir, '.env.test'), '# Empty environment file\n');
 
@@ -170,7 +158,6 @@ export const language = {
                 const { readFile } = await import('fs/promises');
                 const envContent = await readFile(join(testDir, '.env.test'), 'utf8');
 
-                // Should handle empty content gracefully
                 assert.strictEqual(typeof envContent, 'string', 'Should read env file as string');
                 assert.ok(envContent.includes('#'), 'Should contain comment');
 
@@ -189,7 +176,6 @@ export const language = {
                 const langModule = await import(langPath);
                 const language = langModule.language;
 
-                // Function to get all keys from nested object
                 function getAllKeys(obj, prefix = '') {
                     const keys = [];
                     for (const [key, value] of Object.entries(obj)) {
@@ -204,18 +190,14 @@ export const language = {
                 }
 
                 const allKeys = getAllKeys(language);
-
-                // Validate we have a reasonable number of keys
                 assert.ok(allKeys.length >= 8, `Should have at least 8 translation keys, found ${allKeys.length}`);
 
-                // Validate key naming convention
                 allKeys.forEach(key => {
                     assert.ok(!key.includes('..'), `Key should not have double dots: ${key}`);
                     assert.ok(!key.startsWith('.'), `Key should not start with dot: ${key}`);
                     assert.ok(!key.endsWith('.'), `Key should not end with dot: ${key}`);
                 });
 
-                // Check for expected keys
                 const expectedKeys = [
                     'app.title',
                     'app.subtitle',
@@ -228,7 +210,6 @@ export const language = {
                 expectedKeys.forEach(expectedKey => {
                     assert.ok(allKeys.includes(expectedKey), `Should contain key: ${expectedKey}`);
                 });
-
             } catch (error) {
                 assert.fail(`Should validate translation keys: ${error.message}`);
             }
@@ -242,7 +223,6 @@ export const language = {
                 const langModule = await import(langPath);
                 const language = langModule.language;
 
-                // Function to validate all values are strings
                 function validateValues(obj, path = '') {
                     for (const [key, value] of Object.entries(obj)) {
                         const currentPath = path ? `${path}.${key}` : key;
@@ -256,7 +236,6 @@ export const language = {
                         }
                     }
                 }
-
                 validateValues(language);
 
             } catch (error) {
@@ -269,7 +248,6 @@ export const language = {
         it('should handle corrupt language files', async () => {
             process.chdir(testDir);
 
-            // Create a corrupt language file with invalid syntax
             const { writeFile: writeFileAsync } = await import('fs/promises');
             await writeFileAsync(join(testDir, 'src/i18n/corrupt.js'), 'export const language = { invalid syntax without quotes }}}');
 
@@ -278,7 +256,6 @@ export const language = {
                 await import(corruptPath);
                 assert.fail('Should throw error for corrupt file');
             } catch (error) {
-                // Check for syntax error or any import error
                 const errorMessage = error.message.toLowerCase();
                 const hasError = errorMessage.includes('syntaxerror') ||
                     errorMessage.includes('syntax') ||

@@ -57,10 +57,32 @@ class FileManager {
     }
 
     /**
+     * Resolve i18n path by trying multiple locations
+     */
+    resolveI18nPath(configI18nPath) {
+        const possiblePaths = [
+            configI18nPath,
+            configI18nPath.replace('./i18n', './public/i18n'),
+            './public/i18n',
+            './i18n'
+        ];
+
+        for (const testPath of possiblePaths) {
+            const absolutePath = path.resolve(testPath);
+            if (this.exists(absolutePath)) {
+                return testPath;
+            }
+        }
+
+        return configI18nPath;
+    }
+
+    /**
      * Load language file with proper error handling
      */
     async loadLanguageFile(i18nPath, language) {
-        const languageFile = path.join(i18nPath, `${language}.json`);
+        const resolvedPath = this.resolveI18nPath(i18nPath);
+        const languageFile = path.join(resolvedPath, `${language}.json`);
 
         if (!this.exists(languageFile)) {
             return null;
@@ -83,23 +105,32 @@ class FileManager {
             return this.configCache;
         }
 
-        const configPath = path.join(process.cwd(), 'tradux.config.js');
-        const configModule = await this.loadModule(configPath);
+        const configPath = path.join(process.cwd(), 'tradux.config.json');
 
-        if (!configModule) {
+        if (!this.exists(configPath)) {
             return null;
         }
 
-        if (!configModule.i18nPath || !configModule.defaultLanguage) {
-            throw new Error('Invalid configuration: missing required values');
+        try {
+            const fileContent = await fs.readFile(configPath, 'utf8');
+            const config = JSON.parse(fileContent);
+
+            if (!config.i18nPath || !config.defaultLanguage) {
+                throw new Error('Invalid configuration: missing required values');
+            }
+
+            const resolvedI18nPath = this.resolveI18nPath(config.i18nPath);
+
+            this.configCache = {
+                i18nPath: resolvedI18nPath,
+                defaultLanguage: config.defaultLanguage
+            };
+
+            return this.configCache;
+        } catch (error) {
+            console.error(`Failed to load config file: ${configPath}`);
+            return null;
         }
-
-        this.configCache = {
-            i18nPath: configModule.i18nPath,
-            defaultLanguage: configModule.defaultLanguage
-        };
-
-        return this.configCache;
     }
 
     /**
@@ -118,5 +149,4 @@ class FileManager {
     }
 }
 
-// Export singleton instance
 export const fileManager = new FileManager();

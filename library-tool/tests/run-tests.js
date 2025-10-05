@@ -3,7 +3,6 @@ import { join } from 'path';
 import { performance } from 'perf_hooks';
 import { readdir } from 'fs/promises';
 
-// ANSI color codes for console output
 const colors = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -15,7 +14,6 @@ const colors = {
     cyan: '\x1b[36m'
 };
 
-// Function to get test files in a directory
 async function getTestFiles(directory) {
     try {
         const files = await readdir(directory);
@@ -28,7 +26,6 @@ async function getTestFiles(directory) {
     }
 }
 
-// Test suite configuration
 const testSuites = [
     {
         name: 'Unit Tests',
@@ -56,7 +53,6 @@ const testSuites = [
     }
 ];
 
-// Helper function to run a test suite
 const runTestSuite = async (suite) => {
     return new Promise(async (resolve, reject) => {
         console.log(`\n${colors.cyan}${suite.icon} Running ${suite.name}...${colors.reset}`);
@@ -64,7 +60,6 @@ const runTestSuite = async (suite) => {
 
         const startTime = performance.now();
 
-        // Get test files for this suite
         const testFiles = await getTestFiles(suite.directory);
 
         if (testFiles.length === 0) {
@@ -99,12 +94,10 @@ const runTestSuite = async (suite) => {
     });
 };
 
-// Function to run coverage report
 const runCoverage = async () => {
     return new Promise(async (resolve, reject) => {
         console.log(`\n${colors.magenta}Generating coverage report...${colors.reset}\n`);
 
-        // Get all test files
         const allTestFiles = [];
         for (const suite of testSuites) {
             const files = await getTestFiles(suite.directory);
@@ -117,7 +110,6 @@ const runCoverage = async () => {
             return;
         }
 
-        // Run coverage silently and only show the coverage table
         const child = spawn('npx', ['c8', '--reporter=text', '--reporter=html', 'node', '--test', ...allTestFiles], {
             stdio: ['inherit', 'pipe', 'pipe'],
             cwd: process.cwd(),
@@ -131,7 +123,6 @@ const runCoverage = async () => {
             const output = data.toString();
             coverageOutput += output;
 
-            // Only show the coverage table (starts with dashes)
             if (output.includes('--------------|')) {
                 showOutput = true;
             }
@@ -142,7 +133,6 @@ const runCoverage = async () => {
         });
 
         child.stderr.on('data', (data) => {
-            // Suppress test output, only show coverage errors
             const error = data.toString();
             if (error.includes('Error') || error.includes('Warning')) {
                 process.stderr.write(error);
@@ -155,18 +145,17 @@ const runCoverage = async () => {
                 resolve();
             } else {
                 console.log(`\n${colors.yellow}Coverage report completed with warnings${colors.reset}`);
-                resolve(); // Don't fail the entire test run for coverage issues
+                resolve();
             }
         });
 
         child.on('error', (error) => {
             console.error(`\n${colors.red}💥 Error generating coverage: ${error.message}${colors.reset}`);
-            resolve(); // Don't fail the entire test run for coverage issues
+            resolve();
         });
     });
 };
 
-// Main test runner function
 async function runAllTests() {
     console.log(`${colors.bright}${colors.blue}🚀 Starting Tradux Test Suite${colors.reset}\n`);
     console.log(`${colors.bright}Testing library functionality, CLI commands, and performance${colors.reset}\n`);
@@ -175,7 +164,6 @@ async function runAllTests() {
     const results = [];
     const overallStartTime = performance.now();
 
-    // Run each test suite
     for (const suite of testSuites) {
         try {
             const result = await runTestSuite(suite);
@@ -188,7 +176,6 @@ async function runAllTests() {
     const overallEndTime = performance.now();
     const totalDuration = ((overallEndTime - overallStartTime) / 1000).toFixed(2);
 
-    // Generate summary
     console.log('\n' + '='.repeat(60));
     console.log(`${colors.bright}${colors.blue}📋 Test Results Summary${colors.reset}\n`);
 
@@ -206,7 +193,6 @@ async function runAllTests() {
     console.log(`\n${colors.bright}Total: ${results.length} suites, ${passed.length} passed, ${failed.length} failed${colors.reset}`);
     console.log(`${colors.bright}Duration: ${totalDuration}s${colors.reset}\n`);
 
-    // Run coverage if all tests passed (skip if --no-coverage flag)
     if (failed.length === 0) {
         const skipCoverage = process.argv.includes('--no-coverage');
 
@@ -224,7 +210,6 @@ async function runAllTests() {
     } else {
         console.log(`\n${colors.red}${colors.bright}💥 Some tests failed. Please review the output above.${colors.reset}\n`);
 
-        // Show failed suites
         failed.forEach(failure => {
             console.log(`${colors.red}   • ${failure.suite}${colors.reset}`);
             if (failure.code) {
@@ -244,33 +229,26 @@ async function runAllTests() {
     }
 }
 
-// Handle process interruption
 process.on('SIGINT', () => {
     console.log(`\n\n${colors.yellow}⚠️  Test run interrupted by user${colors.reset}`);
     process.exit(130);
 });
-
 process.on('SIGTERM', () => {
     console.log(`\n\n${colors.yellow}⚠️  Test run terminated${colors.reset}`);
     process.exit(143);
 });
-
-// Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
     console.error(`\n${colors.red}💥 Uncaught exception: ${error.message}${colors.reset}`);
     console.error(error.stack);
     process.exit(1);
 });
-
 process.on('unhandledRejection', (reason, promise) => {
     console.error(`\n${colors.red}💥 Unhandled rejection at: ${promise}, reason: ${reason}${colors.reset}`);
     process.exit(1);
 });
 
-// Export for potential programmatic use
 export { runAllTests, runTestSuite, testSuites };
 
-// Run if this file is executed directly
 const scriptPath = process.argv[1].replace(/\\/g, '/');
 const expectedUrl = `file:///${scriptPath}`;
 

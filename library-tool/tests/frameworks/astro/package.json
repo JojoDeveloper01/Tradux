@@ -1,0 +1,25 @@
+{
+  "name": "aa",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.0",
+    "@astrojs/svelte": "^7.2.0",
+    "@astrojs/vue": "^5.1.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "astro": "^5.14.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "svelte": "^5.39.8",
+    "tradux": "^1.4.3",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.22"
+  }
+}

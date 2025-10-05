@@ -18,6 +18,7 @@ coverage/
 
 # IDE specific files
 .vscode/
+.kiro/
 .idea/
 *.sublime-workspace
 *.sublime-project
@@ -36,6 +37,7 @@ tradux.config.js
 tradux.config.ts
 tradux.config.json
 /public/
+/i18n/
 test.js
 temp/
 temp-*/

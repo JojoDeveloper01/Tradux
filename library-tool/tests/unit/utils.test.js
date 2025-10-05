@@ -18,7 +18,6 @@ describe('Utility Functions Tests', () => {
 
                 assert.ok(resolved.length > testPath.length, `Resolved path should be longer than relative path for ${testPath}`);
 
-                // Remove ./ and normalize path for comparison
                 const normalizedPath = testPath.replace('./', '').replace(/\\/g, '/');
                 const resolvedNormalized = resolved.replace(/\\/g, '/');
                 assert.ok(resolvedNormalized.includes(normalizedPath), `Resolved path should contain original path components for ${testPath}`);
@@ -122,7 +121,6 @@ describe('Utility Functions Tests', () => {
                 assert.ok(structure !== null, `Structure ${index} should not be null`);
                 assert.ok(!Array.isArray(structure), `Structure ${index} should not be array`);
 
-                // Check that all values are either strings or objects
                 function validateValues(obj, path = '') {
                     Object.entries(obj).forEach(([key, value]) => {
                         const currentPath = path ? `${path}.${key}` : key;
@@ -179,7 +177,6 @@ describe('Utility Functions Tests', () => {
                     return;
                 }
 
-                // Check for invalid nested values
                 let hasInvalidValues = false;
 
                 function checkValues(obj) {
@@ -213,13 +210,11 @@ describe('Utility Functions Tests', () => {
                 root_level: "Root value"
             };
 
-            // Test that structure maintains proper nesting
             assert.strictEqual(typeof testStructure.level1, 'object');
             assert.strictEqual(typeof testStructure.level1.level2, 'object');
             assert.strictEqual(typeof testStructure.level1.level2.level3, 'object');
             assert.strictEqual(typeof testStructure.level1.level2.level3.deep, 'string');
 
-            // Test that we can access all levels
             assert.strictEqual(testStructure.level1.level2.level3.deep, 'Deep value');
             assert.strictEqual(testStructure.level1.level2.level3_alt, 'Alternative value');
             assert.strictEqual(testStructure.level1.level2_alt, 'Alternative level 2');

@@ -6,7 +6,7 @@ export async function loadConfig() {
         const config = await fileManager.loadConfig();
 
         if (!config) {
-            return null; // Return null instead of exiting
+            return null;
         }
 
         return config;

@@ -2,12 +2,39 @@ import fs from 'fs-extra';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 import { fileManager } from './file-manager.js';
-import dotenv from 'dotenv';
 
 const WORKER_URL = 'https://worker-proxy.seth-eb4.workers.dev/api/translate-json';
 
+async function updateConfigAvailableLanguages() {
+    try {
+        const configPath = path.join(process.cwd(), 'tradux.config.json');
+
+        if (!fs.existsSync(configPath)) {
+            return;
+        }
+
+        const configContent = await fs.readFile(configPath, 'utf8');
+        const config = JSON.parse(configContent);
+
+        const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
+
+        if (fs.existsSync(i18nAbsolutePath)) {
+            const files = fs.readdirSync(i18nAbsolutePath);
+            const existingLanguages = files
+                .filter(file => file.endsWith('.json'))
+                .map(file => file.replace('.json', ''))
+                .sort();
+
+            config.availableLanguages = existingLanguages;
+
+            await fs.writeFile(configPath, JSON.stringify(config, null, 4));
+        }
+    } catch (error) {
+        logger.warn(`Failed to update config: ${error.message}`);
+    }
+}
+
 export async function translateFiles(languages, config) {
-    // Load and validate environment variables
     const credentials = await loadCredentials();
 
     try {
@@ -17,9 +44,15 @@ export async function translateFiles(languages, config) {
         logger.info(`\nStarting translation process for: ${uniqueLanguages.join(', ')}`);
 
         const sourceFile = await loadSourceFile(config);
+        let filesCreated = false;
 
         for (const lang of uniqueLanguages) {
-            await translateLanguage(lang, sourceFile, config, credentials);
+            const created = await translateLanguage(lang, sourceFile, config, credentials);
+            if (created) filesCreated = true;
+        }
+
+        if (filesCreated) {
+            await updateConfigAvailableLanguages();
         }
 
         logger.success('\n \u2606 Translation process completed \u2606');
@@ -30,13 +63,23 @@ export async function translateFiles(languages, config) {
 }
 
 async function loadCredentials() {
-    const envResult = dotenv.config();
-    if (envResult.error) {
-        logger.error('Missing Cloudflare credentials');
-        logger.error('Please create a .env file with:');
-        logger.error('CLOUDFLARE_API_TOKEN=your_token');
-        logger.error('CLOUDFLARE_ACCOUNT_ID=your_account_id\n');
-        process.exit(1);
+    try {
+        const envPath = path.join(process.cwd(), '.env');
+        if (fs.existsSync(envPath)) {
+            const envContent = fs.readFileSync(envPath, 'utf8');
+
+            envContent.split('\n').forEach(line => {
+                const [key, ...valueParts] = line.split('=');
+                if (key && valueParts.length > 0) {
+                    const value = valueParts.join('=').trim();
+                    if (!process.env[key.trim()]) {
+                        process.env[key.trim()] = value.replace(/^["']|["']$/g, '');
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        logger.debug(`Could not parse .env file: ${error.message}`);
     }
 
     const apiToken = process.env.CLOUDFLARE_API_TOKEN;
@@ -47,8 +90,12 @@ async function loadCredentials() {
         logger.error('Required environment variables:');
         logger.error('- CLOUDFLARE_API_TOKEN');
         logger.error('- CLOUDFLARE_ACCOUNT_ID');
-        logger.error('\nMake sure your .env file contains these variables and is located at:');
-        logger.error(path.join(process.cwd(), '.env'));
+        logger.error('\nYou can set them either:');
+        logger.error('1. In a .env file at project root:');
+        logger.error('   CLOUDFLARE_API_TOKEN=your_token');
+        logger.error('   CLOUDFLARE_ACCOUNT_ID=your_account_id');
+        logger.error('2. As environment variables in your shell');
+        logger.error(`\nChecked location: ${path.join(process.cwd(), '.env')}`);
         process.exit(1);
     }
 
@@ -92,7 +139,7 @@ async function translateLanguage(lang, sourceData, config, credentials) {
 
     if (fileManager.exists(targetFile)) {
         logger.warn(`Skipping existing translation: ${lang}`);
-        return;
+        return false;
     }
 
     try {
@@ -116,16 +163,16 @@ async function translateLanguage(lang, sourceData, config, credentials) {
 
         const result = await response.json();
 
-        // Write as JSON file
         await fs.writeFile(targetFile, JSON.stringify(result.translatedData, null, 2));
         logger.success(`Translation completed: ${lang}`);
+        return true;
     } catch (error) {
         logger.error(`Failed to translate ${lang}: ${error.message}`);
+        return false;
     }
 }
 
 export async function updateLanguageFiles(languages, config) {
-    // Load and validate environment variables
     const credentials = await loadCredentials();
 
     try {
@@ -136,15 +183,20 @@ export async function updateLanguageFiles(languages, config) {
         logger.info(`Base language: ${config.defaultLanguage}`);
 
         const sourceFile = await loadSourceFile(config);
+        let filesCreated = false;
 
         for (const lang of uniqueLanguages) {
-            // Skip if trying to update the default language itself
             if (lang === config.defaultLanguage) {
                 logger.warn(`Skipping ${lang} - cannot update the default language`);
                 continue;
             }
 
-            await updateLanguage(lang, sourceFile, config, credentials);
+            const created = await updateLanguage(lang, sourceFile, config, credentials);
+            if (created) filesCreated = true;
+        }
+
+        if (filesCreated) {
+            await updateConfigAvailableLanguages();
         }
 
         logger.success('\n \u2606 Language update process completed \u2606');
@@ -160,51 +212,42 @@ async function updateLanguage(lang, sourceData, config, credentials) {
 
     if (!fileManager.exists(targetFile)) {
         logger.info(`Target file doesn't exist for ${lang}, creating new translation...`);
-        await translateLanguage(lang, sourceData, config, credentials);
-        return;
+        return await translateLanguage(lang, sourceData, config, credentials);
     }
 
     try {
         logger.info(`\nChecking updates for ${lang}...`);
 
-        // Load existing target language data
         const existingData = await fileManager.loadLanguageFile(i18nAbsolutePath, lang);
 
         if (!existingData) {
             logger.warn(`Failed to load existing data for ${lang}, recreating file...`);
-            await translateLanguage(lang, sourceData, config, credentials);
-            return;
+            return await translateLanguage(lang, sourceData, config, credentials);
         }
 
-        // Find missing keys by comparing structures
         const missingContent = findMissingContent(sourceData, existingData);
 
-        // Find obsolete keys that exist in target but not in source
         const obsoleteKeys = findObsoleteContent(sourceData, existingData);
 
-        // Check if there are any changes needed
         const hasMissingContent = Object.keys(missingContent).length > 0;
         const hasObsoleteContent = obsoleteKeys.length > 0;
 
         if (!hasMissingContent && !hasObsoleteContent) {
             logger.success(`${lang} is already up to date`);
-            return;
+            return false;
         }
 
         let updatedData = { ...existingData };
 
-        // Remove obsolete keys first
         if (hasObsoleteContent) {
             logger.info(`Removing obsolete content from ${lang}...`);
             updatedData = removeObsoleteKeys(updatedData, obsoleteKeys);
             logger.info(`Removed obsolete keys: ${obsoleteKeys.join(', ')}`);
         }
 
-        // Add missing content if any
         if (hasMissingContent) {
             logger.info(`Found missing content in ${lang}, translating...`);
 
-            // Translate only the missing content
             const response = await fetch(WORKER_URL, {
                 method: 'POST',
                 headers: {
@@ -223,11 +266,9 @@ async function updateLanguage(lang, sourceData, config, credentials) {
 
             const result = await response.json();
 
-            // Merge the translated missing content with existing data
             updatedData = deepMerge(updatedData, result.translatedData);
         }
 
-        // Write as JSON file
         await fs.writeFile(targetFile, JSON.stringify(updatedData, null, 2));
 
         const changes = [];
@@ -235,8 +276,10 @@ async function updateLanguage(lang, sourceData, config, credentials) {
         if (hasObsoleteContent) changes.push('removed obsolete content');
 
         logger.success(`\nUpdated ${lang} (${changes.join(' and ')})`);
+        return false;
     } catch (error) {
         logger.error(`Failed to update ${lang}: ${error.message}`);
+        return false;
     }
 }
 
@@ -247,22 +290,17 @@ function findMissingContent(source, target, path = '') {
         const currentPath = path ? `${path}.${key}` : key;
 
         if (!(key in target)) {
-            // Key is completely missing
             missing[key] = source[key];
         } else if (typeof source[key] === 'object' && source[key] !== null) {
             if (typeof target[key] === 'object' && target[key] !== null) {
-                // Both are objects, recurse
                 const nestedMissing = findMissingContent(source[key], target[key], currentPath);
                 if (Object.keys(nestedMissing).length > 0) {
                     missing[key] = nestedMissing;
                 }
             } else {
-                // Source is object but target is not, replace entirely
                 missing[key] = source[key];
             }
         }
-        // If both are primitive values and key exists, don't add to missing
-        // This preserves existing translations
     }
 
     return missing;
@@ -293,15 +331,12 @@ function findObsoleteContent(source, target, path = '') {
         const currentPath = path ? `${path}.${key}` : key;
 
         if (!(key in source)) {
-            // Key exists in target but not in source - it's obsolete
             obsoleteKeys.push(currentPath);
         } else if (typeof target[key] === 'object' && target[key] !== null) {
             if (typeof source[key] === 'object' && source[key] !== null) {
-                // Both are objects, recurse
                 const nestedObsolete = findObsoleteContent(source[key], target[key], currentPath);
                 obsoleteKeys.push(...nestedObsolete);
             } else {
-                // Target is object but source is not, the whole object is obsolete
                 obsoleteKeys.push(currentPath);
             }
         }
@@ -311,23 +346,20 @@ function findObsoleteContent(source, target, path = '') {
 }
 
 function removeObsoleteKeys(data, obsoleteKeys) {
-    const result = JSON.parse(JSON.stringify(data)); // Deep clone
+    const result = JSON.parse(JSON.stringify(data));
 
     for (const keyPath of obsoleteKeys) {
         const keys = keyPath.split('.');
         let current = result;
 
-        // Navigate to the parent object
         for (let i = 0; i < keys.length - 1; i++) {
             if (current[keys[i]] && typeof current[keys[i]] === 'object') {
                 current = current[keys[i]];
             } else {
-                // Path doesn't exist, skip
                 break;
             }
         }
 
-        // Remove the final key
         const finalKey = keys[keys.length - 1];
         if (current && current.hasOwnProperty(finalKey)) {
             delete current[finalKey];

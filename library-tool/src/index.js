@@ -8,8 +8,14 @@ import { program } from 'commander';
 import prompts from 'prompts';
 import fs from 'fs';
 import path from 'path';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 
-// Cache config to avoid multiple loads
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+
 let cachedConfig = null;
 
 async function getConfig() {
@@ -19,12 +25,11 @@ async function getConfig() {
     return cachedConfig;
 }
 
-// Configure commander
 program
     .name('tradux')
     .description('A CLI tool for automated translation')
+    .version(packageJson.version, '-v, --version', 'output the version number')
 
-// Init command
 program
     .command('init')
     .description('Initialize tradux configuration')
@@ -39,13 +44,18 @@ program
         }
     });
 
-// Default command (translate)
 program
     .option('-t, --languages [languages]')
     .option('-u, --update [languages]')
+    .option('-r, --remove [languages]')
     .action(async (options) => {
         try {
-            if (options.update !== undefined) {
+            if (options.remove !== undefined) {
+                const languages = await getRemoveLanguages(options);
+                if (languages) {
+                    await removeLanguageFiles(languages);
+                }
+            } else if (options.update !== undefined) {
                 const languages = await getUpdateLanguages(options);
                 if (languages) {
                     const config = await getConfig();
@@ -64,7 +74,6 @@ program
         }
     });
 
-// Override help command to show custom help
 program
     .configureHelp({
         formatHelp: () => {
@@ -73,18 +82,15 @@ program
         }
     });
 
-// Parse arguments
 program.parse();
 
 async function getLanguages(options) {
     try {
-        // If no -t option provided at all, show help
         if (!options.languages && !process.argv.includes('-t') && !process.argv.includes('--languages')) {
             showHelp();
             return null;
         }
 
-        // Check if config exists before allowing translation operations
         const config = await getConfig();
         if (!config) {
             logger.error('\n Configuration file not found!');
@@ -94,37 +100,31 @@ async function getLanguages(options) {
             process.exit(1);
         }
 
-        // If -t provided without value (undefined), start interactive mode
         if (options.languages === undefined && (process.argv.includes('-t') || process.argv.includes('--languages'))) {
             return await promptLanguages();
         }
 
-        // If -t with empty string or true, start interactive mode
         if (options.languages === true || options.languages === '') {
             return await promptLanguages();
         }
 
-        // If languages specified, process them
         if (options.languages) {
-            // Capture all remaining arguments after -t to handle cases like "es, fr"
             const tIndex = process.argv.findIndex(arg => arg === '-t' || arg === '--languages');
             if (tIndex !== -1) {
                 const remainingArgs = process.argv.slice(tIndex + 1);
                 const languageArgs = [];
 
-                // Collect all arguments until we hit another flag or end
                 for (const arg of remainingArgs) {
                     if (arg.startsWith('-')) break;
                     languageArgs.push(arg);
                 }
 
                 if (languageArgs.length > 0) {
-                    // Join all arguments and clean up spaces around commas
                     const allLanguages = languageArgs.join(' ')
-                        .replace(/\s*,\s*/g, ',') // Remove spaces around commas
-                        .replace(/\s+/g, ',')     // Replace multiple spaces with commas
-                        .replace(/,+/g, ',')      // Remove duplicate commas
-                        .replace(/^,|,$/g, '');   // Remove leading/trailing commas
+                        .replace(/\s*,\s*/g, ',')
+                        .replace(/\s+/g, ',')
+                        .replace(/,+/g, ',')
+                        .replace(/^,|,$/g, '');
 
                     return allLanguages;
                 }
@@ -133,7 +133,6 @@ async function getLanguages(options) {
             return options.languages;
         }
 
-        // Default to interactive mode
         return await promptLanguages();
     } catch (error) {
         logger.error(`Error: ${error.message}`);
@@ -143,12 +142,10 @@ async function getLanguages(options) {
 
 async function getUpdateLanguages(options) {
     try {
-        // If no -u option provided at all, this shouldn't be called
         if (!options.update && !process.argv.includes('-u') && !process.argv.includes('--update')) {
             return null;
         }
 
-        // Check if config exists before allowing update operations
         const config = await getConfig();
         if (!config) {
             logger.error('\n Configuration file not found!');
@@ -158,37 +155,31 @@ async function getUpdateLanguages(options) {
             process.exit(1);
         }
 
-        // If -u provided without value (undefined), start interactive mode with confirmation
         if (options.update === undefined && (process.argv.includes('-u') || process.argv.includes('--update'))) {
             return await promptUpdateAllLanguages();
         }
 
-        // If -u with empty string or true, start interactive mode with confirmation
         if (options.update === true || options.update === '') {
             return await promptUpdateAllLanguages();
         }
 
-        // If languages specified, process them
         if (options.update) {
-            // Capture all remaining arguments after -u to handle cases like "es, fr"
             const uIndex = process.argv.findIndex(arg => arg === '-u' || arg === '--update');
             if (uIndex !== -1) {
                 const remainingArgs = process.argv.slice(uIndex + 1);
                 const languageArgs = [];
 
-                // Collect all arguments until we hit another flag or end
                 for (const arg of remainingArgs) {
                     if (arg.startsWith('-')) break;
                     languageArgs.push(arg);
                 }
 
                 if (languageArgs.length > 0) {
-                    // Join all arguments and clean up spaces around commas
                     const allLanguages = languageArgs.join(' ')
-                        .replace(/\s*,\s*/g, ',') // Remove spaces around commas
-                        .replace(/\s+/g, ',')     // Replace multiple spaces with commas
-                        .replace(/,+/g, ',')      // Remove duplicate commas
-                        .replace(/^,|,$/g, '');   // Remove leading/trailing commas
+                        .replace(/\s*,\s*/g, ',')
+                        .replace(/\s+/g, ',')
+                        .replace(/,+/g, ',')
+                        .replace(/^,|,$/g, '');
 
                     return allLanguages;
                 }
@@ -197,12 +188,25 @@ async function getUpdateLanguages(options) {
             return options.update;
         }
 
-        // Default to interactive mode with confirmation
         return await promptUpdateAllLanguages();
     } catch (error) {
         logger.error(`Error: ${error.message}`);
         process.exit(1);
     }
+}
+
+async function getRemoveLanguages(options) {
+    const config = await getConfig();
+    if (!config) {
+        logger.error('Configuration file not found! Run "npx tradux init" first.');
+        process.exit(1);
+    }
+
+    if (options.remove && typeof options.remove === 'string') {
+        return options.remove;
+    }
+
+    return await promptRemoveLanguages();
 }
 
 async function getExistingLanguages(config) {
@@ -215,7 +219,6 @@ async function getExistingLanguages(config) {
             process.exit(1);
         }
 
-        // Read all .json files in the i18n directory
         const files = fs.readdirSync(i18nAbsolutePath);
         const languageFiles = files
             .filter(file => file.endsWith('.json'))
@@ -225,6 +228,58 @@ async function getExistingLanguages(config) {
     } catch (error) {
         logger.error(`Error reading i18n directory: ${error.message}`);
         process.exit(1);
+    }
+}
+
+async function updateConfigAvailableLanguages() {
+    try {
+        const configPath = path.join(process.cwd(), 'tradux.config.json');
+
+        if (!fs.existsSync(configPath)) {
+            return;
+        }
+
+        const configContent = await fs.promises.readFile(configPath, 'utf8');
+        const config = JSON.parse(configContent);
+
+        const existingLanguages = await getExistingLanguages(config);
+
+        config.availableLanguages = existingLanguages.sort();
+
+        await fs.promises.writeFile(configPath, JSON.stringify(config, null, 4));
+
+        logger.info(`Updated availableLanguages: [${existingLanguages.join(', ')}]`);
+    } catch (error) {
+        logger.warn(`Failed to update config: ${error.message}`);
+    }
+}
+
+async function removeLanguageFiles(languages) {
+    const config = await getConfig();
+    const { fileManager } = await import('./core/file-manager.js');
+    const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
+
+    const languageList = languages.split(',').map(lang => lang.trim());
+    let filesRemoved = false;
+
+    for (const lang of languageList) {
+        if (lang === config.defaultLanguage) {
+            logger.warn(`Skipping default language: ${lang}`);
+            continue;
+        }
+
+        const filePath = path.join(i18nAbsolutePath, `${lang}.json`);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            logger.success(`Removed ${lang}.json`);
+            filesRemoved = true;
+        } else {
+            logger.warn(`File not found: ${lang}.json`);
+        }
+    }
+
+    if (filesRemoved) {
+        await updateConfigAvailableLanguages();
     }
 }
 
@@ -245,13 +300,10 @@ async function promptUpdateAllLanguages() {
             process.exit(0);
         }
 
-        // Get the config to know the i18n path and default language
         const config = await getConfig();
 
-        // Get existing language files from i18n directory
         const existingLanguages = await getExistingLanguages(config);
 
-        // Filter out the default language from the update list
         const languagesToUpdate = existingLanguages.filter(lang => lang !== config.defaultLanguage);
 
         if (languagesToUpdate.length === 0) {
@@ -259,7 +311,6 @@ async function promptUpdateAllLanguages() {
             process.exit(0);
         }
 
-        // Show which languages will be updated
         const selectedNames = languagesToUpdate
             .map(lang => {
                 const langInfo = availableLanguages.find(al => al.value === lang);
@@ -272,10 +323,56 @@ async function promptUpdateAllLanguages() {
 
         return languagesToUpdate.join(',');
     } catch (error) {
-        // Handle user cancellation (Ctrl+C)
         logger.info('\nOperation cancelled by user.');
         process.exit(0);
     }
+}
+
+async function promptRemoveLanguages() {
+    const config = await getConfig();
+    const existingLanguages = await getExistingLanguages(config);
+
+    const removableLanguages = existingLanguages.filter(lang => lang !== config.defaultLanguage);
+
+    if (removableLanguages.length === 0) {
+        logger.warn('No languages available to remove.');
+        process.exit(0);
+    }
+
+    const choices = removableLanguages.map(lang => {
+        const langInfo = availableLanguages.find(al => al.value === lang);
+        return {
+            title: langInfo ? langInfo.name : lang,
+            value: lang
+        };
+    });
+
+    const response = await prompts({
+        type: 'multiselect',
+        name: 'selectedLanguages',
+        message: 'Choose languages to remove:',
+        choices: choices,
+        min: 1
+    });
+
+    if (!response.selectedLanguages?.length) {
+        logger.info('No languages selected.');
+        process.exit(0);
+    }
+
+    const confirmResponse = await prompts({
+        type: 'confirm',
+        name: 'confirmRemove',
+        message: 'Are you sure? This will permanently delete these files.',
+        initial: false
+    });
+
+    if (!confirmResponse.confirmRemove) {
+        logger.info('Operation cancelled.');
+        process.exit(0);
+    }
+
+    return response.selectedLanguages.join(',');
 }
 
 function showHelp() {
@@ -289,10 +386,11 @@ Usage:
   npx tradux -t es,pt,lang...   Translate to other languages based on default language
   npx tradux -u                 Update all languages based on default language
   npx tradux -u es,pt,lang...   Update specific languages based on default language
+  npx tradux -r                 Interactive removal of language files
+  npx tradux -r es,pt,lang...   Remove specific language files
 `);
 
-    // Check if config exists and show warning if not
-    const configPath = path.join(process.cwd(), 'tradux.config.js');
+    const configPath = path.join(process.cwd(), 'tradux.config.json');
 
     if (!fs.existsSync(configPath)) {
         logger.warn('   Configuration file not found.');
@@ -324,7 +422,6 @@ async function promptLanguages() {
             process.exit(0);
         }
 
-        // Show confirmation
         const selectedNames = availableLanguages
             .filter(lang => response.selectedLanguages.includes(lang.value))
             .map(lang => lang.name)
@@ -334,7 +431,6 @@ async function promptLanguages() {
 
         return response.selectedLanguages.join(',');
     } catch (error) {
-        // Handle user cancellation (Ctrl+C)
         logger.info('\nOperation cancelled by user.');
         process.exit(0);
     }

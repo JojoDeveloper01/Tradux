@@ -1,0 +1,11 @@
+{
+    "i18nPath": "./i18n",
+    "defaultLanguage": "en",
+    "availableLanguages": [
+        "en",
+        "es",
+        "de",
+        "ja",
+        "pt"
+    ]
+}
