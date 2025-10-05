@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          cache: 'pnpm'
           cache-dependency-path: 'library-tool/pnpm-lock.yaml'
 
       - name: Configure Git
@@ -39,15 +39,15 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./library-tool
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         working-directory: ./library-tool
         run: |
-          npm run test:unit || echo "No unit tests"
-          npm run test:integration || echo "No integration tests"
-          npm run test:cli || echo "No CLI tests"
-          npm run test:performance || echo "No performance tests"
+          pnpm run test:unit || echo "No unit tests"
+          pnpm run test:integration || echo "No integration tests"
+          pnpm run test:cli || echo "No CLI tests"
+          pnpm run test:performance || echo "No performance tests"
           echo "✅ All test suites finished!"
 
       - name: Check current version
@@ -86,7 +86,7 @@ jobs:
           git reset --hard origin/main
 
           # Bump version
-          NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
+          NEW_VERSION=$(pnpm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
 
           # Commit the version bump
           git add package.json pnpm-lock.yaml
@@ -100,7 +100,7 @@ jobs:
         working-directory: ./library-tool
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish
+        run: pnpm publish
 
       - name: Create Git Tag
         run: |
