@@ -42,9 +42,29 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
+      - name: Verify lockfile exists
+        working-directory: ./library-tool
+        run: |
+          echo "Contents of library-tool directory:"
+          ls -la
+          echo "Checking for pnpm-lock.yaml:"
+          if [ -f "pnpm-lock.yaml" ]; then
+            echo "✅ pnpm-lock.yaml exists"
+            ls -la pnpm-lock.yaml
+          else
+            echo "❌ pnpm-lock.yaml not found"
+          fi
+
       - name: Install dependencies
         working-directory: ./library-tool
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            echo "Installing with frozen lockfile..."
+            pnpm install --frozen-lockfile
+          else
+            echo "No lockfile found, installing without frozen lockfile..."
+            pnpm install
+          fi
 
       - name: Run tests
         working-directory: ./library-tool
