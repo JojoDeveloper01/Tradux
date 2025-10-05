@@ -57,14 +57,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./library-tool
-        run: |
-          if [ -f "pnpm-lock.yaml" ]; then
-            echo "Installing with frozen lockfile..."
-            pnpm install --frozen-lockfile
-          else
-            echo "No lockfile found, installing without frozen lockfile..."
-            pnpm install
-          fi
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run tests
         working-directory: ./library-tool
