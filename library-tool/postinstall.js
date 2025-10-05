@@ -96,7 +96,6 @@ async function validateI18nSetup(projectRoot, configPath) {
             logger.success('Created missing i18n directory and sample files');
             return;
         }
-
         const defaultLangFile = path.join(absoluteI18nPath, `${DEFAULT_LANG}.json`);
         if (!fs.existsSync(defaultLangFile)) {
             logger.warn(`Default language file not found: ${DEFAULT_LANG}.json`);
