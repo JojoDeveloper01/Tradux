@@ -19,11 +19,16 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "svelte": "^5.39.8",
-    "tradux": "^1.4.3",
+    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux",
     "typescript": "^5.9.3",
     "vue": "^3.5.22"
   },
   "devDependencies": {
     "@astrojs/node": "9.3.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    }
   }
 }

@@ -39,6 +39,12 @@
     "commander": "12.1.0",
     "fs-extra": "11.3.1",
     "prompts": "2.4.2",
-    "recast": "0.23.11"
+    "recast": "0.23.11",
+    "tradux": "link:"
+  },
+  "pnpm": {
+    "overrides": {
+      "tradux": "link:..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    }
   }
 }

@@ -1,35 +1,9 @@
 <script>
-  import { onMount } from "svelte";
-  import {
-    tStore,
-    setLanguage,
-    getCurrentLanguage,
-    getAvailableLanguages,
-  } from "tradux";
-
-  let availableLanguages = [];
-  let currentLanguage = "";
-  let t = {};
-  let unsubscribe = null;
-
-  onMount(() => {
-    (async () => {
-      availableLanguages = await getAvailableLanguages();
-      currentLanguage = getCurrentLanguage();
-    })();
-
-    unsubscribe = tStore.subscribe((newTranslations) => {
-      t = { ...newTranslations };
-    });
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  });
+  import { t, setLanguage, currentLanguage, availableLanguages } from "tradux";
 
   function changeLanguage(event) {
     setLanguage(event.target.value);
-    currentLanguage = getCurrentLanguage();
+    location.reload();
   }
 </script>
 
@@ -41,10 +15,8 @@
   <p>{t.navigation?.services}</p>
 
   <select value={currentLanguage} on:change={changeLanguage}>
-    {#each availableLanguages as lang}
-      {#if lang && typeof lang === "string"}
-        <option value={lang}>{lang}</option>
-      {/if}
+    {#each availableLanguages as { name, value }}
+      <option {value}>{name}</option>
     {/each}
   </select>
 </div>

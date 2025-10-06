@@ -1,33 +1,16 @@
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { tStore, setLanguage, getCurrentLanguage, getAvailableLanguages } from "tradux"
+import { ref } from 'vue'
+import { t, setLanguage, currentLanguage, availableLanguages } from "tradux"
 
-const availableLanguages = ref([])
-const currentLanguage = ref('') 
-const isLoading = ref(false)
-const t = reactive({})
+const selectedLanguage = ref(currentLanguage)
 
-let unsubscribe
-
-onMounted(async () => {
-  availableLanguages.value = await getAvailableLanguages()
-  currentLanguage.value = getCurrentLanguage()
-  unsubscribe = tStore.subscribe(newTranslations => {
-    Object.keys(t).forEach(key => delete t[key])
-    Object.assign(t, newTranslations)
-  })
-})
-
-onUnmounted(() => unsubscribe?.())
-
-const changeLanguage = async () => {
-  isLoading.value = true
-  try {
-    await setLanguage(currentLanguage.value)
-    currentLanguage.value = getCurrentLanguage()
-  } finally {
-    isLoading.value = false
-  }
+const changeLanguage = async (e) => {
+    const newLang = e.target.value
+    const success = await setLanguage(newLang)
+    if (success) {
+        selectedLanguage.value = newLang
+        window.location.reload()
+    }
 }
 </script>
 
@@ -39,9 +22,9 @@ const changeLanguage = async () => {
     <p>{{ t.navigation?.about }}</p>
     <p>{{ t.navigation?.services }}</p>
 
-    <select v-model="currentLanguage" @change="changeLanguage" :disabled="isLoading">
-      <option v-for="lang in availableLanguages" :key="lang" :value="lang">
-        {{ lang }}
+    <select v-model="selectedLanguage" @change="changeLanguage">
+      <option v-for="lang in availableLanguages" :key="lang.value" :name="lang.name" :value="lang.value">
+        {{ lang.name }}
       </option>
     </select>
   </div>

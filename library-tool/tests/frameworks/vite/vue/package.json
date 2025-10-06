@@ -9,11 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "tradux": "^1.4.3",
+    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux",
     "vue": "^3.5.22"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "vite": "^7.1.7"
+  },
+  "pnpm": {
+    "overrides": {
+      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    }
   }
 }

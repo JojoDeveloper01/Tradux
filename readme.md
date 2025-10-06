@@ -120,18 +120,18 @@ npx tradux -r es,pt
 Import Tradux functions in your application:
 
 ```javascript
-import { t, setLanguage, getCurrentLanguage, getAvailableLanguages, config } from 'tradux';
+import { t, setLanguage, currentLanguage, availableLanguages, config } from 'tradux';
 ```
 
 ### Core Functions
 
-| Function                  | Purpose                 | Use Case                 |
-| ------------------------- | ----------------------- | ------------------------ |
-| `t`                       | Access translations     | `t.navigation.home`      |
-| `setLanguage(lang)`       | Switch active language  | User language selection  |
-| `getCurrentLanguage()`    | Get current language    | Display current language |
-| `getAvailableLanguages()` | Get available languages | Language selector lists  |
-| `config`                  | Access configuration    | View current settings    |
+| Function/Variable    | Purpose                 | Use Case                 |
+| -------------------- | ----------------------- | ------------------------ |
+| `t`                  | Access translations     | `t.navigation.home`      |
+| `setLanguage(lang)`  | Switch active language  | User language selection  |
+| `currentLanguage`    | Current language code   | Display current language |
+| `availableLanguages` | Available language list | Language selector lists  |
+| `config`             | Access configuration    | View current settings    |
 
 ### Function Details
 
@@ -141,11 +141,11 @@ import { t, setLanguage, getCurrentLanguage, getAvailableLanguages, config } fro
 - Saves preference to localStorage (browser)
 - Use for: Language switchers, user preferences
 
-**`getCurrentLanguage()`**
-- Returns the currently active language code
+**`currentLanguage`**
+- Returns the currently active language code as a string
 - Use for: Displaying current language, conditional logic
 
-**`getAvailableLanguages()`**
+**`availableLanguages`**
 - Returns array of available language codes from config
 - Use for: Building language selectors, validation
 
@@ -153,173 +153,7 @@ import { t, setLanguage, getCurrentLanguage, getAvailableLanguages, config } fro
 
 ## 📄 Examples
 
-### Vanilla JavaScript
-```javascript
-import { t, setLanguage } from 'tradux';
-
-// Display current translations
-console.log({
-  home: t.navigation.home,
-  about: t.navigation.about,
-  welcome: t.welcome
-});
-//Shows content in default language
-
-// Change language
-await setLanguage('es');
-console.log(t.welcome); // "¡Bienvenido!"
-```
-
-### React Application
-```jsx
-import { useState, useEffect } from "react";
-
-import { setLanguage, tStore, getAvailableLanguages, getCurrentLanguage } from "tradux"
-
-function App() {
-	const [t, setT] = useState({});
-	const [languages, setLanguages] = useState([]);
-	const [currentLanguage, setCurrentLanguage] = useState("");
-
-	useEffect(() => {
-		getAvailableLanguages().then(setLanguages);
-		setCurrentLanguage(getCurrentLanguage());
-
-		return tStore.subscribe(setT);
-	}, []);
-
-	const changeLanguage = async (e) => {
-		await setLanguage(e.target.value);
-		setCurrentLanguage(getCurrentLanguage());
-	};
-
-	return (
-		<div>
-			<h1>React</h1>
-			<h2>{t.welcome}</h2>
-			<p>{t.navigation?.home}</p>
-			<p>{t.navigation?.about}</p>
-			<p>{t.navigation?.services}</p>
-
-			<select value={currentLanguage} onChange={changeLanguage}>
-				{languages.map(lang => (
-					<option key={lang} value={lang}>
-						{lang}
-					</option>
-				))}
-			</select>
-		</div>
-	);
-}
-
-export default App;
-```
-
-### Vue Application
-```vue
-<script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { tStore, setLanguage, getCurrentLanguage, getAvailableLanguages } from "tradux"
-
-const availableLanguages = ref([])
-const currentLanguage = ref('') 
-const isLoading = ref(false)
-const t = reactive({})
-
-let unsubscribe
-
-onMounted(async () => {
-  availableLanguages.value = await getAvailableLanguages()
-  currentLanguage.value = getCurrentLanguage()
-  unsubscribe = tStore.subscribe(newTranslations => {
-    Object.keys(t).forEach(key => delete t[key])
-    Object.assign(t, newTranslations)
-  })
-})
-
-onUnmounted(() => unsubscribe?.())
-
-const changeLanguage = async () => {
-  isLoading.value = true
-  try {
-    await setLanguage(currentLanguage.value)
-    currentLanguage.value = getCurrentLanguage()
-  } finally {
-    isLoading.value = false
-  }
-}
-</script>
-
-<template>
-  <div>
-    <h1>Vue</h1>
-    <h2>{{ t.welcome }}</h2>
-    <p>{{ t.navigation?.home }}</p>
-    <p>{{ t.navigation?.about }}</p>
-    <p>{{ t.navigation?.services }}</p>
-
-    <select v-model="currentLanguage" @change="changeLanguage" :disabled="isLoading">
-      <option v-for="lang in availableLanguages" :key="lang" :value="lang">
-        {{ lang }}
-      </option>
-    </select>
-  </div>
-</template>
-```
-
-### Svelte Application
-```svelte
-<script>
-  import { onMount } from "svelte";
-  import {
-    tStore,
-    setLanguage,
-    getCurrentLanguage,
-    getAvailableLanguages,
-  } from "tradux";
-
-  let availableLanguages = [];
-  let currentLanguage = "";
-  let t = {};
-  let unsubscribe = null;
-
-  onMount(async () => {
-    availableLanguages = await getAvailableLanguages();
-    currentLanguage = getCurrentLanguage();
-
-    unsubscribe = tStore.subscribe((newTranslations) => {
-      t = { ...newTranslations };
-    });
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  });
-
-  function changeLanguage(event) {
-    setLanguage(event.target.value);
-    currentLanguage = getCurrentLanguage();
-  }
-</script>
-
-<div>
-  <h1>Svelte</h1>
-  <h2>{t.welcome}</h2>
-  <p>{t.navigation?.home}</p>
-  <p>{t.navigation?.about}</p>
-  <p>{t.navigation?.services}</p>
-
-  <select value={currentLanguage} on:change={changeLanguage}>
-    {#each availableLanguages as lang}
-      {#if lang && typeof lang === "string"}
-        <option value={lang}>{lang}</option>
-      {/if}
-    {/each}
-  </select>
-</div>
-```
-
-### Vanilla Application
+### AstroJS
 ```html
 <section>
     <h1>Astro</h1>
@@ -334,41 +168,132 @@ const changeLanguage = async () => {
 </section>
 
 <script>
-    import {
-        tStore,
-        setLanguage,
-        getAvailableLanguages,
-        getCurrentLanguage,
-    } from "tradux";
+import { t, setLanguage, availableLanguages, currentLanguage } from "tradux"
 
-    const select = document.getElementById("lang-select") as HTMLSelectElement;
-    const languages = await getAvailableLanguages();
+const select = document.getElementById("lang-select") as HTMLSelectElement;
 
-    languages.forEach((lang: string) => {
+    availableLanguages.forEach(({ name, value }) => {
         const option = document.createElement("option");
-        option.value = lang;
-        option.textContent = lang;
-        option.selected = lang === getCurrentLanguage();
+        option.value = value;
+        option.textContent = name;
+        option.selected = value === currentLanguage;
         select.appendChild(option);
     });
 
-    select.onchange = (e: Event) =>
-        setLanguage((e.target as HTMLSelectElement).value);
+    select.onchange = (e: Event) => {
+        const selectedLang = (e.target as HTMLSelectElement).value;
+        if (selectedLang !== currentLanguage) {
+            setLanguage(selectedLang);
+            location.reload();
+        }
+    };
 
-    tStore.subscribe((t: Record<string, any>) => {
-        document.querySelectorAll("[data-key]").forEach((el: Element) => {
-            const key = el instanceof HTMLElement ? el.dataset.key : undefined;
-            const keys = key?.split(".") ?? [];
-            let value = t;
-            keys.forEach((k) => (value = value?.[k]));
-            if (el instanceof HTMLElement) {
-                el.textContent = typeof value === "string" ? value : "";
-            }
-        });
+    document.querySelectorAll("[data-key]").forEach((el: Element) => {
+        const key = el instanceof HTMLElement ? el.dataset.key : undefined;
+        const keys = key?.split(".") ?? [];
+        let value: any = t;
+        keys.forEach((k: string) => (value = value?.[k]));
+        if (el instanceof HTMLElement) {
+            el.textContent = typeof value === "string" ? value : "";
+        }
     });
 </script>
 ```
 
+### React Application
+```jsx
+import { t, setLanguage, availableLanguages, currentLanguage } from "tradux"
+
+function App() {
+
+	const changeLanguage = async (e) => {
+		await setLanguage(e.target.value);
+		location.reload();
+	};
+
+	return (
+		<div>
+			<h1>React</h1>
+			<h2>{t.welcome}</h2>
+			<p>{t.navigation?.home}</p>
+			<p>{t.navigation?.about}</p>
+			<p>{t.navigation?.services}</p>
+
+			<select value={currentLanguage} onChange={changeLanguage}>
+				{availableLanguages.map(({ name, value }) => (
+					<option key={value} value={value}>
+						{name}
+					</option>
+				))}
+			</select>
+		</div>
+	);
+}
+
+export default App;
+```
+
+### Vue Application
+```jsx
+<script setup>
+import { ref } from 'vue'
+import { t, setLanguage, currentLanguage, availableLanguages } from "tradux"
+
+const selectedLanguage = ref(currentLanguage)
+
+const changeLanguage = async (e) => {
+    const newLang = e.target.value
+    const success = await setLanguage(newLang)
+    if (success) {
+        selectedLanguage.value = newLang
+        window.location.reload()
+    }
+}
+</script>
+
+<template>
+  <div>
+    <h1>Vue</h1>
+    <h2>{{ t.welcome }}</h2>
+    <p>{{ t.navigation?.home }}</p>
+    <p>{{ t.navigation?.about }}</p>
+    <p>{{ t.navigation?.services }}</p>
+
+    <select v-model="selectedLanguage" @change="changeLanguage">
+      <option v-for="lang in availableLanguages" :key="lang.value" :name="lang.name" :value="lang.value">
+        {{ lang.name }}
+      </option>
+    </select>
+  </div>
+</template>
+```
+
+### Svelte Application
+```jsx
+<script>
+  import { t, setLanguage, currentLanguage, availableLanguages } from "tradux";
+
+  function changeLanguage(event) {
+    setLanguage(event.target.value);
+    location.reload();
+  }
+</script>
+
+<div>
+  <h1>Svelte</h1>
+  <h2>{t.welcome}</h2>
+  <p>{t.navigation?.home}</p>
+  <p>{t.navigation?.about}</p>
+  <p>{t.navigation?.services}</p>
+
+  <select value={currentLanguage} on:change={changeLanguage}>
+    {#each availableLanguages as { name, value }}
+      <option {value}>{name}</option>
+    {/each}
+  </select>
+</div>
+
+```
 ---
 
 ## 📁 File Structure

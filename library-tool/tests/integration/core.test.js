@@ -12,10 +12,10 @@ describe('Core Functionality Tests', () => {
     before(async () => {
         await mkdir(join(testDir, 'src/i18n'), { recursive: true });
 
-        await writeFile(join(testDir, 'tradux.config.js'), `
-export const i18nPath = './src/i18n';
-export const defaultLanguage = 'en';
-    `);
+        await writeFile(join(testDir, 'tradux.config.json'), JSON.stringify({
+            "i18nPath": "./src/i18n",
+            "defaultLanguage": "en"
+        }, null, 2));
 
         await writeFile(join(testDir, '.env'), `
 CLOUDFLARE_ACCOUNT_ID=test_account_id
@@ -65,7 +65,7 @@ export const language = {
             try {
                 const { access } = await import('fs/promises');
 
-                await access(join(testDir, 'tradux.config.js'));
+                await access(join(testDir, 'tradux.config.json'));
                 await access(join(testDir, '.env'));
                 await access(join(testDir, 'src/i18n/en.js'));
 
@@ -80,8 +80,10 @@ export const language = {
             process.chdir(testDir);
 
             try {
-                const configPath = `file://${join(testDir, 'tradux.config.js').replace(/\\/g, '/')}`;
-                const config = await import(configPath);
+                const { readFile } = await import('fs/promises');
+                const configPath = join(testDir, 'tradux.config.json');
+                const configData = await readFile(configPath, 'utf8');
+                const config = JSON.parse(configData);
 
                 assert.strictEqual(config.i18nPath, './src/i18n', 'Should load correct i18n path');
                 assert.strictEqual(config.defaultLanguage, 'en', 'Should load correct default language');
@@ -273,11 +275,12 @@ export const language = {
             process.chdir(tempTestDir);
 
             try {
-                const nonExistentConfig = `file://${join(tempTestDir, 'tradux.config.js').replace(/\\/g, '/')}`;
-                await import(nonExistentConfig);
+                const { readFile } = await import('fs/promises');
+                const nonExistentConfig = join(tempTestDir, 'tradux.config.json');
+                await readFile(nonExistentConfig, 'utf8');
                 assert.fail('Should throw error for missing config');
             } catch (error) {
-                assert.ok(error.code === 'ERR_MODULE_NOT_FOUND' || error.message.includes('Cannot resolve'), 'Should detect missing config file');
+                assert.ok(error.code === 'ENOENT' || error.message.includes('no such file'), 'Should detect missing config file');
             }
         });
     });

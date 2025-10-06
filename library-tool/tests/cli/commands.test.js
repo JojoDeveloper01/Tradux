@@ -73,7 +73,7 @@ describe('Tradux CLI Commands', () => {
             try {
                 assert.notStrictEqual(result.code, null, 'Init command should execute');
 
-                await access(join(testDir, 'tradux.config.js'));
+                await access(join(testDir, 'tradux.config.json'));
                 console.log('✓ Config file found in test directory');
 
                 await access(join(testDir, 'src/i18n'));

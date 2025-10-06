@@ -1,27 +1,15 @@
-import { useState, useEffect } from "react";
-
 import {
+	t,
 	setLanguage,
-	tStore,
-	getAvailableLanguages,
-	getCurrentLanguage,
+	availableLanguages,
+	currentLanguage,
 } from "tradux"
 
 function App() {
-	const [t, setT] = useState({});
-	const [languages, setLanguages] = useState([]);
-	const [currentLanguage, setCurrentLanguage] = useState("");
-
-	useEffect(() => {
-		getAvailableLanguages().then(setLanguages);
-		setCurrentLanguage(getCurrentLanguage());
-
-		return tStore.subscribe(setT);
-	}, []);
 
 	const changeLanguage = async (e) => {
 		await setLanguage(e.target.value);
-		setCurrentLanguage(getCurrentLanguage());
+		location.reload();
 	};
 
 	return (
@@ -33,9 +21,9 @@ function App() {
 			<p>{t.navigation?.services}</p>
 
 			<select value={currentLanguage} onChange={changeLanguage}>
-				{languages.map(lang => (
-					<option key={lang} value={lang}>
-						{lang}
+				{availableLanguages.map(({ name, value }) => (
+					<option key={value} value={value}>
+						{name}
 					</option>
 				))}
 			</select>

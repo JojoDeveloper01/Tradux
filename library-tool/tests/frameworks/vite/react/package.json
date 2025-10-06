@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tradux": "^1.4.3"
+    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
@@ -24,5 +24,10 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "vite": "^7.1.7"
+  },
+  "pnpm": {
+    "overrides": {
+      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    }
   }
 }

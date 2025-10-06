@@ -14,6 +14,11 @@
     "vite": "^7.1.7"
   },
   "dependencies": {
-    "tradux": "^1.4.3"
+    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+  },
+  "pnpm": {
+    "overrides": {
+      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    }
   }
 }

@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  tradux: link:..\..\..\..\..\..\AppData\Local\pnpm\global\5\node_modules\tradux
+
 importers:
 
   .:
@@ -26,6 +29,9 @@ importers:
       recast:
         specifier: 0.23.11
         version: 0.23.11
+      tradux:
+        specifier: link:../../../../../../AppData/Local/pnpm/global/5/node_modules/tradux
+        version: link:../../../../../../AppData/Local/pnpm/global/5/node_modules/tradux
 
 packages:
 

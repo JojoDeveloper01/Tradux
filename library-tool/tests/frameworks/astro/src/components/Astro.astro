@@ -1,0 +1,48 @@
+<section>
+    <h1>Astro</h1>
+
+    <h2 data-key="welcome"></h2>
+
+    <p data-key="navigation.home"></p>
+    <p data-key="navigation.about"></p>
+    <p data-key="navigation.services"></p>
+
+    <select id="lang-select"></select>
+</section>
+
+<script>
+    import {
+        t,
+        setLanguage,
+        availableLanguages,
+        currentLanguage,
+    } from "tradux";
+
+    const select = document.getElementById("lang-select") as HTMLSelectElement;
+
+    availableLanguages.forEach(({ name, value }) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = name;
+        option.selected = value === currentLanguage;
+        select.appendChild(option);
+    });
+
+    select.onchange = (e: Event) => {
+        const selectedLang = (e.target as HTMLSelectElement).value;
+        if (selectedLang !== currentLanguage) {
+            setLanguage(selectedLang);
+            location.reload();
+        }
+    };
+
+    document.querySelectorAll("[data-key]").forEach((el: Element) => {
+        const key = el instanceof HTMLElement ? el.dataset.key : undefined;
+        const keys = key?.split(".") ?? [];
+        let value: any = t;
+        keys.forEach((k: string) => (value = value?.[k]));
+        if (el instanceof HTMLElement) {
+            el.textContent = typeof value === "string" ? value : "";
+        }
+    });
+</script>
