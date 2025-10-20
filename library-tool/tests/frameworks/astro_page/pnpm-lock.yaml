@@ -36,8 +36,8 @@ importers:
         specifier: ^5.39.8
         version: 5.39.8
       tradux:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.5.1
+        version: 1.5.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1893,8 +1893,8 @@ packages:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
 
-  tradux@1.5.0:
-    resolution: {integrity: sha512-6srgzFon/B85GDeFrPiBml+H3s8japoX6pvS2fV9NeZL6sX+iul6XQWTXWTmNsCdHrImI02/nA9PyBxO9MczaQ==}
+  tradux@1.5.1:
+    resolution: {integrity: sha512-xkol8lfIvXSUkDqG8RzphiUkKT9IpEfHm//CyMWaOO0e+XXqau+qP52EcQAWRzD9IvQsSEDlwOcMhnKOhPnx9w==}
     hasBin: true
 
   trim-lines@3.0.1:
@@ -4460,7 +4460,7 @@ snapshots:
 
   totalist@3.0.1: {}
 
-  tradux@1.5.0:
+  tradux@1.5.1:
     dependencies:
       '@babel/parser': 7.28.4
       chalk: 5.6.0
