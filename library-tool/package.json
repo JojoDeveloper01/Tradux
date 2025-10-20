@@ -6,11 +6,17 @@
   "exports": {
     ".": {
       "import": "./src/client.js",
+      "types": "./src/client.d.ts",
       "default": "./src/client.js"
+    },
+    "./languages": {
+      "import": "./src/utils/languages.js",
+      "default": "./src/utils/languages.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./src/client.js",
+  "types": "./index.d.ts",
   "bin": {
     "tradux": "src/index.js"
   },

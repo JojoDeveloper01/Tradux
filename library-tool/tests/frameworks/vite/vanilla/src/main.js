@@ -1,48 +1,41 @@
+
+import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux";
+
 document.querySelector('#app').innerHTML = `
   <section>
     <h1>Vanilla JS + Vite</h1>
-
     <h2 data-key="welcome"></h2>
-
     <p data-key="navigation.home"></p>
     <p data-key="navigation.about"></p>
     <p data-key="navigation.services"></p>
-
     <select id="lang-select"></select>
   </section>
-`
+`;
 
-import {
-  t,
-  setLanguage,
-  availableLanguages,
-  currentLanguage,
-} from "tradux";
+(async () => {
+  const select = document.getElementById("lang-select");
+  const currentLanguage = await getCurrentLanguage();
+  const availableLanguages = getAvailableLanguages();
 
-const select = document.getElementById("lang-select");
+  availableLanguages.forEach(({ name, value }) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = name;
+    if (value === currentLanguage) option.selected = true;
+    select.appendChild(option);
+  });
 
-availableLanguages.forEach(function ({ name, value }) {
-  const option = document.createElement("option");
-  option.value = value;
-  option.textContent = name;
-  option.selected = value === currentLanguage;
-  select.appendChild(option);
-});
+  select.onchange = async (e) => {
+    const selectedLang = e.target.value;
+    if (selectedLang !== currentLanguage) {
+      await setLanguage(selectedLang);
+      window.location.reload();
+    }
+  };
 
-select.onchange = function (e) {
-  const selectedLang = e.target.value;
-  if (selectedLang !== currentLanguage) {
-    setLanguage(selectedLang);
-    location.reload();
-  }
-};
-
-document.querySelectorAll("[data-key]").forEach(function (el) {
-  const key = el instanceof HTMLElement ? el.dataset.key : undefined;
-  const keys = key ? key.split(".") : [];
-  let value = t;
-  keys.forEach(function (k) { value = value && value[k]; });
-  if (el instanceof HTMLElement) {
+  document.querySelectorAll("[data-key]").forEach((el) => {
+    const key = el.dataset.key;
+    const value = key.split(".").reduce((acc, k) => acc && acc[k], t);
     el.textContent = typeof value === "string" ? value : "";
-  }
-});
+  });
+})();

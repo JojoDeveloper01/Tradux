@@ -1,9 +1,11 @@
 import {
   t,
   setLanguage,
-  availableLanguages,
-  currentLanguage,
+  getAvailableLanguages,
+  getCurrentLanguage,
 } from "tradux"
+
+const currentLanguage = await getCurrentLanguage();
 
 function App() {
   const changeLanguage = async (e) => {
@@ -15,12 +17,12 @@ function App() {
     <div>
       <h1>React</h1>
       <h2>{t.welcome}</h2>
-      <p>{t.navigation?.home}</p>
-      <p>{t.navigation?.about}</p>
-      <p>{t.navigation?.services}</p>
+      <p>{t.navigation.home}</p>
+      <p>{t.navigation.about}</p>
+      <p>{t.navigation.services}</p>
 
       <select value={currentLanguage} onChange={changeLanguage}>
-        {availableLanguages.map(({ name, value }) => (
+        {getAvailableLanguages().map(({ name, value }) => (
           <option key={value} value={value}>
             {name}
           </option>

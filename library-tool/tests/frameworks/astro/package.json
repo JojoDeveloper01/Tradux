@@ -15,16 +15,16 @@
     "@astrojs/vue": "^5.1.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "astro": "^5.14.1",
+    "astro": "^5.14.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "svelte": "^5.39.8",
-    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux",
+    "tradux": "^1.4.5",
     "typescript": "^5.9.3",
     "vue": "^3.5.22"
   },
   "devDependencies": {
-    "@astrojs/node": "9.3.2"
+    "@astrojs/node": "9.5.0"
   },
   "pnpm": {
     "overrides": {

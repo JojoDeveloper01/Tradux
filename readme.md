@@ -168,7 +168,7 @@ import { t, setLanguage, currentLanguage, availableLanguages, config } from 'tra
 </section>
 
 <script>
-import { t, setLanguage, availableLanguages, currentLanguage } from "tradux"
+import { t, setLanguage, availableLanguages, getCurrentLanguage } from "tradux"
 
 const select = document.getElementById("lang-select") as HTMLSelectElement;
 
@@ -202,7 +202,7 @@ const select = document.getElementById("lang-select") as HTMLSelectElement;
 
 ### React Application
 ```jsx
-import { t, setLanguage, availableLanguages, currentLanguage } from "tradux"
+import { t, setLanguage, availableLanguages, getCurrentLanguage } from "tradux"
 
 function App() {
 
@@ -215,9 +215,9 @@ function App() {
 		<div>
 			<h1>React</h1>
 			<h2>{t.welcome}</h2>
-			<p>{t.navigation?.home}</p>
-			<p>{t.navigation?.about}</p>
-			<p>{t.navigation?.services}</p>
+			<p>{t.navigation.home}</p>
+			<p>{t.navigation.about}</p>
+			<p>{t.navigation.services}</p>
 
 			<select value={currentLanguage} onChange={changeLanguage}>
 				{availableLanguages.map(({ name, value }) => (
@@ -255,9 +255,9 @@ const changeLanguage = async (e) => {
   <div>
     <h1>Vue</h1>
     <h2>{{ t.welcome }}</h2>
-    <p>{{ t.navigation?.home }}</p>
-    <p>{{ t.navigation?.about }}</p>
-    <p>{{ t.navigation?.services }}</p>
+    <p>{{ t.navigation.home }}</p>
+    <p>{{ t.navigation.about }}</p>
+    <p>{{ t.navigation.services }}</p>
 
     <select v-model="selectedLanguage" @change="changeLanguage">
       <option v-for="lang in availableLanguages" :key="lang.value" :name="lang.name" :value="lang.value">
@@ -282,9 +282,9 @@ const changeLanguage = async (e) => {
 <div>
   <h1>Svelte</h1>
   <h2>{t.welcome}</h2>
-  <p>{t.navigation?.home}</p>
-  <p>{t.navigation?.about}</p>
-  <p>{t.navigation?.services}</p>
+  <p>{t.navigation.home}</p>
+  <p>{t.navigation.about}</p>
+  <p>{t.navigation.services}</p>
 
   <select value={currentLanguage} on:change={changeLanguage}>
     {#each availableLanguages as { name, value }}
