@@ -2,6 +2,13 @@
 
 **Tradux** is a developer-friendly translation library that automates the process of managing multilingual content in your projects. It seamlessly integrates with Cloudflare Workers to provide AI-powered translations using language models.
 
+## 🌍 SEO & Internationalization: Dynamic Meta Tags
+
+Tradux makes it easy to dynamically update meta tags such as `<html lang="...">` and `<title>` based on the user's selected language.
+
+You can update meta tags dynamically in client-side apps (React, Vue, Svelte, Vanilla JS) using JavaScript, or on the server using SSR (Server-Side Rendering) with frameworks like Express or Vite SSR. See the examples below for implementation details.
+
+
 ## 🎯 Purpose
 
 Tradux solves the common problem of managing translations in modern applications by:
@@ -117,95 +124,52 @@ npx tradux -r es,pt
 
 ## 💻 JavaScript API
 
+
 Import Tradux functions in your application:
 
 ```javascript
-import { t, setLanguage, currentLanguage, availableLanguages, config } from 'tradux';
+import { t, setLanguage, getAvailableLanguages, getCurrentLanguage, config } from 'tradux';
 ```
 
 ### Core Functions
 
-| Function/Variable    | Purpose                 | Use Case                 |
-| -------------------- | ----------------------- | ------------------------ |
-| `t`                  | Access translations     | `t.navigation.home`      |
-| `setLanguage(lang)`  | Switch active language  | User language selection  |
-| `currentLanguage`    | Current language code   | Display current language |
-| `availableLanguages` | Available language list | Language selector lists  |
-| `config`             | Access configuration    | View current settings    |
+| Function/Variable                   | Purpose                                       | Use Case                |
+| ----------------------------------- | --------------------------------------------- | ----------------------- |
+| `t`                                 | Access translations                           | `t.navigation.home`     |
+| `setLanguage(lang)`                 | Switch active language                        | User language selection |
+| `getCurrentLanguage([cookieValue])` | Get current language (optionally from cookie) | SSR, browser, server    |
+| `getAvailableLanguages()`           | Available language list                       | Language selector lists |
+| `config`                            | Access configuration                          | View current settings   |
 
 ### Function Details
 
 **`setLanguage(lang)`**
 - Changes the active language system-wide
 - Updates the global `t` object
-- Saves preference to localStorage (browser)
+- Saves preference to cookie (browser) or sets cookie header (server)
 - Use for: Language switchers, user preferences
 
-**`currentLanguage`**
+**`getCurrentLanguage([cookieValue])`**
 - Returns the currently active language code as a string
-- Use for: Displaying current language, conditional logic
+- On the server, pass the value of the `tradux_lang` cookie (not the whole cookie string)
+- On the browser, call with no arguments for auto-detection
+- Use for: Displaying current language, SSR, conditional logic
 
-**`availableLanguages`**
-- Returns array of available language codes from config
+**`getAvailableLanguages()`**
+- Returns array of available language objects `{ name, value }` from config
 - Use for: Building language selectors, validation
 
 ---
 
 ## 📄 Examples
 
-### AstroJS
-```html
-<section>
-    <h1>Astro</h1>
-
-    <h2 data-key="welcome"></h2>
-
-    <p data-key="navigation.home"></p>
-    <p data-key="navigation.about"></p>
-    <p data-key="navigation.services"></p>
-
-    <select id="lang-select"></select>
-</section>
-
-<script>
-import { t, setLanguage, availableLanguages, getCurrentLanguage } from "tradux"
-
-const select = document.getElementById("lang-select") as HTMLSelectElement;
-
-    availableLanguages.forEach(({ name, value }) => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = name;
-        option.selected = value === currentLanguage;
-        select.appendChild(option);
-    });
-
-    select.onchange = (e: Event) => {
-        const selectedLang = (e.target as HTMLSelectElement).value;
-        if (selectedLang !== currentLanguage) {
-            setLanguage(selectedLang);
-            location.reload();
-        }
-    };
-
-    document.querySelectorAll("[data-key]").forEach((el: Element) => {
-        const key = el instanceof HTMLElement ? el.dataset.key : undefined;
-        const keys = key?.split(".") ?? [];
-        let value: any = t;
-        keys.forEach((k: string) => (value = value?.[k]));
-        if (el instanceof HTMLElement) {
-            el.textContent = typeof value === "string" ? value : "";
-        }
-    });
-</script>
-```
-
 ### React Application
 ```jsx
-import { t, setLanguage, availableLanguages, getCurrentLanguage } from "tradux"
+import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux"
+
+const currentLang = await getCurrentLanguage();
 
 function App() {
-
 	const changeLanguage = async (e) => {
 		await setLanguage(e.target.value);
 		location.reload();
@@ -219,8 +183,8 @@ function App() {
 			<p>{t.navigation.about}</p>
 			<p>{t.navigation.services}</p>
 
-			<select value={currentLanguage} onChange={changeLanguage}>
-				{availableLanguages.map(({ name, value }) => (
+			<select value={currentLang} onChange={changeLanguage}>
+				{getAvailableLanguages().map(({ name, value }) => (
 					<option key={value} value={value}>
 						{name}
 					</option>
@@ -229,53 +193,64 @@ function App() {
 		</div>
 	);
 }
-
 export default App;
 ```
+
 
 ### Vue Application
 ```jsx
 <script setup>
-import { ref } from 'vue'
-import { t, setLanguage, currentLanguage, availableLanguages } from "tradux"
+import { ref, onMounted } from 'vue'
+import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux"
 
-const selectedLanguage = ref(currentLanguage)
+const selectedLanguage = ref('')
+
+onMounted(async () => {
+  selectedLanguage.value = await getCurrentLanguage()
+})
 
 const changeLanguage = async (e) => {
-    const newLang = e.target.value
-    const success = await setLanguage(newLang)
-    if (success) {
-        selectedLanguage.value = newLang
-        window.location.reload()
-    }
+  const newLang = e.target.value
+  if (await setLanguage(newLang)) {
+    selectedLanguage.value = newLang
+    window.location.reload()
+  }
 }
 </script>
 
 <template>
-  <div>
-    <h1>Vue</h1>
-    <h2>{{ t.welcome }}</h2>
-    <p>{{ t.navigation.home }}</p>
-    <p>{{ t.navigation.about }}</p>
-    <p>{{ t.navigation.services }}</p>
-
-    <select v-model="selectedLanguage" @change="changeLanguage">
-      <option v-for="lang in availableLanguages" :key="lang.value" :name="lang.name" :value="lang.value">
-        {{ lang.name }}
-      </option>
-    </select>
-  </div>
+  <h1>Vue</h1>
+  <h2>{{ t.welcome }}</h2>
+  <p>{{ t.navigation.home }}</p>
+  <p>{{ t.navigation.about }}</p>
+  <p>{{ t.navigation.services }}</p>
+  <select v-model="selectedLanguage" @change="changeLanguage">
+    <option v-for="lang in getAvailableLanguages()" :key="lang.value" :value="lang.value">
+      {{ lang.name }}
+    </option>
+  </select>
 </template>
 ```
+
 
 ### Svelte Application
 ```jsx
 <script>
-  import { t, setLanguage, currentLanguage, availableLanguages } from "tradux";
+  import { t, setLanguage, getCurrentLanguage, getAvailableLanguages } from "tradux";
 
-  function changeLanguage(event) {
-    setLanguage(event.target.value);
-    location.reload();
+  let currentLanguage = "";
+
+  async function init() {
+    currentLanguage = await getCurrentLanguage();
+  }
+  init();
+
+  async function changeLanguage(event) {
+    const lang = event.target.value;
+    if (await setLanguage(lang)) {
+      currentLanguage = lang;
+      location.reload();
+    }
   }
 </script>
 
@@ -285,14 +260,84 @@ const changeLanguage = async (e) => {
   <p>{t.navigation.home}</p>
   <p>{t.navigation.about}</p>
   <p>{t.navigation.services}</p>
-
-  <select value={currentLanguage} on:change={changeLanguage}>
-    {#each availableLanguages as { name, value }}
+  <select bind:value={currentLanguage} on:change={changeLanguage}>
+    {#each getAvailableLanguages() as { name, value }}
       <option {value}>{name}</option>
     {/each}
   </select>
 </div>
+```
 
+### AstroJS
+```jsx
+---
+import { t, setLanguage getAvailableLanguages, getCurrentLanguage } from "tradux";
+
+const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
+const currentLang = await getCurrentLanguage(traduxCookie);
+---
+<section>
+  <h1>Astro</h1>
+  <h2>{t.welcome}</h2>
+  <p>{t.navigation.home}</p>
+  <p>{t.navigation.about}</p>
+  <p>{t.navigation.services}</p>
+  <select id="lang-select">
+    {getAvailableLanguages().map(lang => (
+      <option value={lang.value} selected={lang.value === currentLang}>{lang.name}</option>
+    ))}
+  </select>
+</section>
+
+<script>
+      import { setLanguage } from "tradux";
+      const langSelect = document.getElementById("lang-select");
+      langSelect.addEventListener("change", async (e) => {
+        await setLanguage(e.target.value);
+        location.reload();
+      });
+</script>
+```
+
+### Vanilla JS Example
+```js
+<section>
+  <h1>Vanilla JS</h1>
+  <h2 data-key="welcome"></h2>
+  <p data-key="navigation.home"></p>
+  <p data-key="navigation.about"></p>
+  <p data-key="navigation.services"></p>
+  <select id="lang-select"></select>
+</section>
+
+<script>
+    import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux";
+
+    (async () => {
+      const select = document.getElementById("lang-select");
+      const currentLanguage = await getCurrentLanguage();
+      const availableLanguages = getAvailableLanguages();
+      availableLanguages.forEach(({ name, value }) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = name;
+        if (value === currentLanguage) option.selected = true;
+        select.appendChild(option);
+      });
+      select.onchange = async (e) => {
+        const selectedLang = e.target.value;
+        if (selectedLang !== currentLanguage) {
+          await setLanguage(selectedLang);
+          window.location.reload();
+        }
+      };
+      document.querySelectorAll("[data-key]").forEach((el) => {
+        const key = el.dataset.key;
+        const value = key.split(".").reduce((acc, k) => acc && acc[k], t);
+        el.textContent = typeof value === "string" ? value : "";
+      });
+    })();
+</script>
 ```
 ---
 
@@ -312,59 +357,6 @@ your-project/
         └── fr.json        # Generated after translation
 ```
 
-### Translation File Format
-```json
-{
-  "navigation": {
-    "home": "Home",
-    "about": "About Us",
-    "services": "Our Services"
-  },
-  "welcome": "Welcome to our website!",
-  "title": "My Application"
-}
-```
-
----
-
-## 🔄 How Tradux Works - Technical Deep Dive
-
-### 1. **Initialization Process**
-When you install Tradux or run `tradux init`:
-
-1. **Configuration Creation**: Generates `tradux.config.json` with default settings
-2. **Directory Setup**: Creates the i18n directory structure (prioritizes public folder)
-3. **Sample File**: Creates a sample `en.json` file with basic structure
-4. **Environment Check**: Validates that required directories exist
-5. **Auto Path Resolution**: Automatically detects common i18n folder locations
-
-### 2. **Translation Workflow**
-When you run `npx tradux -t languages`:
-
-1. **Config Loading**: Reads `tradux.config.json` to get default language and i18n path
-2. **Path Resolution**: Automatically resolves i18n path (tries public/i18n, then fallbacks)
-3. **Credential Validation**: Checks `.env` file for Cloudflare API credentials
-4. **Source File Loading**: Loads the default language file (e.g., `en.json`)
-5. **API Communication**: Sends translation request to Cloudflare Workers endpoint
-6. **Response Processing**: Receives translated JSON object from the AI model
-7. **File Generation**: Creates new language files with translated content
-8. **Config Update**: Automatically updates `availableLanguages` array in config
-
-### 3. **Update System Intelligence**
-When you run `npx tradux -u`:
-
-1. **File Scanning**: Scans i18n directory to find existing language files
-2. **Structure Comparison**: Compares default language structure with target languages
-3. **Missing Content Detection**: Identifies new keys in default language not present in targets
-4. **Obsolete Content Detection**: Finds keys in target languages that no longer exist in default
-5. **Selective Translation**: Only translates missing content, preserving existing translations
-6. **Content Removal**: Removes obsolete keys from target languages
-7. **File Reconstruction**: Rebuilds language files with synchronized content
-8. **Config Sync**: Updates `availableLanguages` if new files were created
-
-### 4. **Removal System**
-When you run `npx tradux -r`:
-
 1. **Safety Checks**: Prevents deletion of default language files
 2. **Interactive Selection**: Shows available languages for removal
 3. **Confirmation Prompts**: Requires user confirmation before deletion
@@ -377,9 +369,9 @@ When your application imports Tradux:
 1. **Configuration Resolution**: Automatically loads `tradux.config.json`
 2. **Environment Detection**: Determines if running in browser or Node.js
 3. **Path Resolution**: Automatically resolves i18n paths for different environments
-4. **Language Detection**: 
-   - Browser: Checks localStorage for saved preference
-   - Server: Uses default language from config
+4. **Language Detection**:
+  - Browser: Tradux looks for the "tradux_lang" cookie to determine the user's preferred language.
+  - Serve: Tradux uses the value of the "tradux_lang" cookie provided by the user (from the request) to set the language.
 5. **File Loading Strategy**:
    - Browser: Dynamic imports with relative paths
    - Node.js: File system access with absolute paths
@@ -393,7 +385,7 @@ When `setLanguage()` is called:
 2. **Dynamic Loading**: Uses appropriate loading method for environment
 3. **Validation**: Ensures language file exists and is properly formatted
 4. **State Update**: Clears existing `t` object and repopulates with new translations
-5. **Persistence**: Saves language choice to localStorage (browser only)
+5. **Persistence**: Saves language choice to a cookie ("tradux_lang") in the browser, or sets the cookie header on the server
 6. **Error Handling**: Falls back to default language if target fails to load
 
 ### 7. **AI Translation Integration**

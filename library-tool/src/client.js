@@ -9,11 +9,12 @@ let translations = {};
 const isBrowser = typeof window !== 'undefined';
 
 let languageDefinitions = [];
-try {
-    const { availableLanguages: langDefs } = await import('./utils/languages.js');
-    languageDefinitions = langDefs;
-} catch {
-    languageDefinitions = [];
+
+async function loadLanguageDefinitions() {
+    try {
+        const { availableLanguages: langDefs } = await import('./utils/languages.js');
+        languageDefinitions = langDefs;
+    } catch { }
 }
 
 async function loadConfig() {
@@ -198,7 +199,13 @@ export {
     getAvailableLanguages
 };
 
-await loadConfig();
-const initialLanguage = getLanguageFromConfig();
-const initialTranslations = await loadLanguage(initialLanguage) || await loadLanguage('en') || {};
-Object.assign(translations, initialTranslations);
+async function initTradux() {
+    await loadConfig();
+    await loadLanguageDefinitions();
+    const initialLanguage = getLanguageFromConfig();
+    const initialTranslations = await loadLanguage(initialLanguage) || await loadLanguage('en') || {};
+    Object.assign(translations, initialTranslations);
+}
+
+// Export a promise if you want consumers to await initialization
+export const initialized = initTradux();
