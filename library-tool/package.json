@@ -66,6 +66,10 @@
   ],
   "author": "JojoDeveloper001 <jojo.programmer01@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JojoDeveloper01/Tradux"
+  },
   "dependencies": {
     "@babel/parser": "^7.28.4",
     "chalk": "5.6.0",
