@@ -114,9 +114,17 @@ jobs:
           # Safe push
           git push --force-with-lease origin main
 
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest && npm --version
+
+      - name: Clear .npmrc token
+        run: |
+          NPMRC="${RUNNER_TEMP}/.npmrc"
+          echo "//registry.npmjs.org/" > "$NPMRC"
+
       - name: Publish to NPM
         working-directory: ./library-tool
-        run: npm publish --access public
+        run: npm publish --access public --provenance
 
       - name: Create Git Tag
         run: |
