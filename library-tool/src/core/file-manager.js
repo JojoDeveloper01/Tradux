@@ -2,7 +2,13 @@ import path from "path";
 import fs from "fs-extra";
 
 /**
- * Centralized file and module management
+ * file-manager.js — Centralized File I/O
+ *
+ * Singleton that handles all filesystem access for the CLI.
+ * Caches config and dynamic imports to avoid redundant reads.
+ * Also resolves i18n paths across multiple common project layouts
+ * (public/i18n, src/i18n, ./i18n, etc.) so the library works
+ * regardless of how the user's project is structured.
  */
 class FileManager {
   constructor() {
@@ -10,23 +16,20 @@ class FileManager {
     this.configCache = null;
   }
 
-  /**
-   * Convert file path to proper URL for dynamic imports
-   */
+  /** Converts a filesystem path to a file:// URL for dynamic import(). */
   pathToUrl(filePath) {
     const absolutePath = path.resolve(filePath);
     return `file:///${absolutePath.replace(/\\/g, "/")}`;
   }
 
-  /**
-   * Check if file exists
-   */
   exists(filePath) {
     return fs.existsSync(filePath);
   }
 
   /**
-   * Load module with caching and timestamp to avoid cache issues
+   * Dynamically imports a module from the filesystem.
+   * When useCache is true, subsequent calls return the cached module
+   * instead of re-importing (avoids Node's duplicate module instances).
    */
   async loadModule(filePath, useCache = false) {
     const absolutePath = path.resolve(filePath);
@@ -38,7 +41,6 @@ class FileManager {
     }
 
     try {
-      // REMOVED the ?t=${Date.now()} to prevent memory leaks!
       const moduleUrl = this.pathToUrl(absolutePath);
       const module = await import(moduleUrl);
 
@@ -51,7 +53,9 @@ class FileManager {
   }
 
   /**
-   * Resolve i18n path by trying multiple locations
+   * Tries several common directory structures to find where the i18n
+   * JSON files live. Returns the first path that exists on disk,
+   * or falls back to the config value as-is.
    */
   resolveI18nPath(configI18nPath) {
     const possiblePaths = [
@@ -71,9 +75,7 @@ class FileManager {
     return configI18nPath;
   }
 
-  /**
-   * Load language file with proper error handling
-   */
+  /** Reads and parses a single language JSON file (e.g. "es.json"). */
   async loadLanguageFile(i18nPath, language) {
     const resolvedPath = this.resolveI18nPath(i18nPath);
     const languageFile = path.join(resolvedPath, `${language}.json`);
@@ -92,7 +94,8 @@ class FileManager {
   }
 
   /**
-   * Load and cache config
+   * Reads tradux.config.json, validates required fields, resolves the
+   * i18n path, and caches the result for the rest of the session.
    */
   async loadConfig() {
     if (this.configCache) {
@@ -128,21 +131,16 @@ class FileManager {
     }
   }
 
-  /**
-   * Get absolute i18n path safely
-   */
   getAbsoluteI18nPath(relativePath) {
     const resolvedPath = this.resolveI18nPath(relativePath);
     return path.resolve(resolvedPath);
   }
 
-  /**
-   * Clear cache
-   */
   clearCache() {
     this.moduleCache.clear();
     this.configCache = null;
   }
 }
 
+/** Exported as a singleton — all CLI code shares one instance. */
 export const fileManager = new FileManager();

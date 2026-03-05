@@ -6,10 +6,29 @@ import { availableLanguages as allLanguagesList } from "../utils/languages.js";
 import { validateAndFixConfig } from "../utils/config.js";
 import { fileManager } from "./file-manager.js";
 
+/**
+ * translator.js — AI Translation Engine
+ *
+ * Sends JSON content to a Cloudflare Workers AI proxy for translation.
+ * Supports two workflows:
+ *   1. translateFiles  — Full translation: creates new language files from scratch.
+ *   2. updateLanguageFiles — Differential update: only re-translates keys that
+ *      changed since the last run (tracked via .tradux-state.json).
+ *
+ * The differential system works by:
+ *   - Saving a snapshot of the source file after each operation (.tradux-state.json)
+ *   - On update, comparing the current source against that snapshot
+ *   - Only sending changed/new keys to the API, then merging the result
+ *   - Also removing keys from target files that no longer exist in the source
+ */
+
 const WORKER_URL =
   "https://worker-proxy.seth-eb4.workers.dev/api/translate-json";
 
-// --- STATE MANAGEMENT ---
+// --- State Persistence ---
+// .tradux-state.json stores a copy of the source file from the last translation.
+// This lets the update command detect what changed since then.
+
 async function loadState(i18nAbsolutePath) {
   const statePath = path.join(i18nAbsolutePath, ".tradux-state.json");
   if (fs.existsSync(statePath)) {
@@ -28,6 +47,11 @@ async function saveState(i18nAbsolutePath, sourceData) {
   );
 }
 
+/**
+ * Reads .env file and loads CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
+ * into process.env. Falls back to "mock" values which the worker proxy
+ * accepts for the free tier.
+ */
 async function loadCredentials() {
   const envPath = path.join(process.cwd(), ".env");
   if (fs.existsSync(envPath)) {
@@ -51,6 +75,7 @@ async function loadCredentials() {
   return { apiToken, accountId };
 }
 
+/** Splits a comma-separated language string into a clean array. */
 function parseLanguages(languages) {
   return languages
     .split(",")
@@ -58,6 +83,7 @@ function parseLanguages(languages) {
     .filter(Boolean);
 }
 
+/** Loads the default language JSON file (the "source of truth" for translations). */
 async function loadSourceFile(config) {
   const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
   const sourcePath = path.join(
@@ -74,6 +100,13 @@ async function loadSourceFile(config) {
   );
 }
 
+// --- Full Translation Flow ---
+
+/**
+ * Translates the source file into each requested language.
+ * Skips languages that already have a file (use -u to update those).
+ * After completion, saves state and re-syncs the config.
+ */
 export async function translateFiles(languages, config) {
   const credentials = await loadCredentials();
   try {
@@ -85,7 +118,6 @@ export async function translateFiles(languages, config) {
     let filesCreated = false;
 
     for (const lang of uniqueLanguages) {
-      // 1. FAKE LANGUAGE BLOCKER!
       const isValid = allLanguagesList.some((l) => l.value === lang);
       if (!isValid) {
         logger.error(
@@ -114,6 +146,7 @@ export async function translateFiles(languages, config) {
   }
 }
 
+/** Sends the full source JSON to the worker proxy and writes the translated result. */
 async function translateLanguage(lang, sourceData, config, credentials) {
   const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
   const targetFile = path.join(i18nAbsolutePath, `${lang}.json`);
@@ -128,7 +161,6 @@ async function translateLanguage(lang, sourceData, config, credentials) {
     const response = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // REVERTED: Now uses the exact payload from the working version
       body: JSON.stringify({
         data: sourceData,
         targetLanguage: lang,
@@ -152,6 +184,13 @@ async function translateLanguage(lang, sourceData, config, credentials) {
   }
 }
 
+// --- Differential Update Flow ---
+
+/**
+ * Updates existing translations by only re-translating changed/new keys.
+ * If a target language file doesn't exist, offers to create it from scratch.
+ * After completion, saves state and re-syncs the config.
+ */
 export async function updateLanguageFiles(languages, config) {
   const credentials = await loadCredentials();
   try {
@@ -169,6 +208,7 @@ export async function updateLanguageFiles(languages, config) {
 
       const targetFile = path.join(i18nAbsolutePath, `${lang}.json`);
 
+      // Language file doesn't exist yet — offer to create it
       if (!fileManager.exists(targetFile)) {
         const isValid = allLanguagesList.some((l) => l.value === lang);
         if (!isValid) {
@@ -216,6 +256,11 @@ export async function updateLanguageFiles(languages, config) {
   }
 }
 
+/**
+ * Compares the current source against the cached state to find changes,
+ * sends only those changes to the API, then merges them back into
+ * the existing target file. Also removes obsolete keys.
+ */
 async function updateLanguage(lang, sourceData, config, credentials, state) {
   const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
   const targetFile = path.join(i18nAbsolutePath, `${lang}.json`);
@@ -253,7 +298,6 @@ async function updateLanguage(lang, sourceData, config, credentials, state) {
       const response = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // REVERTED: Now uses the exact payload from the working version
         body: JSON.stringify({
           data: missingContent,
           targetLanguage: lang,
@@ -275,6 +319,14 @@ async function updateLanguage(lang, sourceData, config, credentials, state) {
   }
 }
 
+// --- Diff Utilities ---
+
+/**
+ * Recursively finds keys in source that are either:
+ *   - Missing from the target (new keys)
+ *   - Changed since the last cached state (modified values)
+ * Returns a partial object containing only what needs to be translated.
+ */
 function findMissingContent(source, target, cachedSource, path = "") {
   const missing = {};
   for (const key in source) {
@@ -297,6 +349,7 @@ function findMissingContent(source, target, cachedSource, path = "") {
         missing[key] = nestedMissing;
       }
     } else {
+      // Value exists in both — only re-translate if the source changed
       if (
         cachedSource &&
         cachedSource[key] !== undefined &&
@@ -309,6 +362,7 @@ function findMissingContent(source, target, cachedSource, path = "") {
   return missing;
 }
 
+/** Recursively merges source into target, preserving existing keys. */
 function deepMerge(target, source) {
   const result = { ...target };
   for (const key in source) {
@@ -325,6 +379,10 @@ function deepMerge(target, source) {
   return result;
 }
 
+/**
+ * Finds keys in the target that no longer exist in the source.
+ * Returns an array of dot-paths like ["nav.oldLink", "footer.removed"].
+ */
 function findObsoleteContent(source, target, path = "") {
   const obsoleteKeys = [];
   for (const key in target) {
@@ -347,6 +405,7 @@ function findObsoleteContent(source, target, path = "") {
   return obsoleteKeys;
 }
 
+/** Deletes the given dot-path keys from a deep-cloned copy of the data. */
 function removeObsoleteKeys(data, obsoleteKeys) {
   const result = JSON.parse(JSON.stringify(data));
   for (const keyPath of obsoleteKeys) {

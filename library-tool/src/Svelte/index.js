@@ -1,3 +1,13 @@
+/**
+ * Svelte adapter for Tradux.
+ *
+ * Exposes writable stores ($t, $currentLanguage, $isReady) that update
+ * automatically when the language changes anywhere in the app.
+ * Two ways to use:
+ *   - `initSvelteTradux()` in your root +layout.svelte
+ *   - `useTradux()` in any component (auto-inits if needed)
+ */
+
 import { writable, get } from "svelte/store";
 import {
   initTradux,
@@ -6,13 +16,11 @@ import {
   onLanguageChange,
 } from "../client.js";
 
-// 1. GLOBAL STORES
 export const t = writable({});
 export const currentLanguage = writable("");
 export const isReady = writable(false);
 let isInitializing = false;
 
-// 2. The Core Update Logic
 const updateState = async () => {
   const instance = await initTradux();
   t.set(instance.t);
@@ -20,10 +28,9 @@ const updateState = async () => {
   isReady.set(true);
 };
 
-// Listen for cross-app language changes
 onLanguageChange(updateState);
 
-// 3. Manual Init (For the "Global Root" approach)
+/** Explicit init for use in the root layout. Safe to call multiple times. */
 export async function initSvelteTradux() {
   if (!get(isReady) && !isInitializing) {
     isInitializing = true;
@@ -32,9 +39,9 @@ export async function initSvelteTradux() {
   }
 }
 
-// 4. The Smart Hook (For standalone components)
+/** Returns stores and helpers. Auto-inits if not already done. */
 export function useTradux() {
-  initSvelteTradux(); // Automatically safely initializes if needed
+  initSvelteTradux();
 
   return {
     t,

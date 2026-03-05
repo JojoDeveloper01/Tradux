@@ -3,8 +3,21 @@ import path from "path";
 import { logger } from "./logger.js";
 import { fileManager } from "../core/file-manager.js";
 
+/**
+ * config.js — Configuration Validation & Auto-Healing
+ *
+ * Ensures tradux.config.json is always valid and in sync with the filesystem.
+ * When invoked (via `tradux init` or before any CLI operation), it:
+ *   1. Creates the config file if missing
+ *   2. Normalizes i18nPath (e.g. "./public/i18n" → "./i18n" to avoid Vite warnings)
+ *   3. Creates the i18n directory and a sample en.json if nothing exists
+ *   4. Syncs availableLanguages with whatever .json files actually exist on disk
+ *   5. Validates defaultLanguage and falls back to "en" or the first file found
+ */
+
 const CONFIG_FILENAME = "tradux.config.json";
 
+/** Default en.json content created for new projects. */
 const SAMPLE_CONTENT = {
   navigation: {
     home: "Home",
@@ -14,6 +27,7 @@ const SAMPLE_CONTENT = {
   welcome: "Welcome to my website!",
 };
 
+/** Checks well-known directories for an existing i18n folder. */
 function findI18nPathSync(dir) {
   const possiblePaths = ["public/i18n", "src/i18n", "app/i18n", "i18n"];
   for (const p of possiblePaths) {
@@ -23,6 +37,11 @@ function findI18nPathSync(dir) {
   return null;
 }
 
+/**
+ * Validates tradux.config.json and auto-fixes any issues it finds.
+ * @param {string} projectRoot - Absolute path to the project root
+ * @param {boolean} silent - When true, suppresses log output (used before CLI operations)
+ */
 export async function validateAndFixConfig(projectRoot, silent = false) {
   const configPath = path.join(projectRoot, CONFIG_FILENAME);
   let config = {};
@@ -40,6 +59,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
+  // --- Ensure i18nPath exists ---
   if (!config.i18nPath) {
     let foundPath = findI18nPathSync(projectRoot);
     if (!foundPath) {
@@ -56,6 +76,8 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
+  // Normalize: Vite warns about importing from "public/" directly,
+  // so the config stores "./i18n" and the runtime prepends "public/" at load time.
   if (
     config.i18nPath === "./public/i18n" ||
     config.i18nPath === "public/i18n"
@@ -68,6 +90,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
+  // Resolve the actual directory on disk (may be under public/)
   let actualI18nPath = path.resolve(projectRoot, config.i18nPath);
   if (!fs.existsSync(actualI18nPath) && config.i18nPath === "./i18n") {
     if (fs.existsSync(path.resolve(projectRoot, "public/i18n"))) {
@@ -84,6 +107,8 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     }
   }
 
+  // --- Sync availableLanguages from the filesystem ---
+  // Reads the i18n directory and treats each .json file (minus hidden files) as a language.
   let existingFiles = [];
   if (fs.existsSync(actualI18nPath)) {
     existingFiles = fs
@@ -101,6 +126,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
+  // --- Validate defaultLanguage ---
   if (
     !config.defaultLanguage ||
     !existingFiles.includes(config.defaultLanguage)
@@ -112,6 +138,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
+  // --- Write back if anything changed ---
   if (configChanged) {
     await fs.writeFile(configPath, JSON.stringify(config, null, 4));
     if (!silent)
@@ -126,6 +153,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
   }
 }
 
+/** Delegates to fileManager.loadConfig() for cached config reads. */
 export async function loadConfig() {
   try {
     const config = await fileManager.loadConfig();

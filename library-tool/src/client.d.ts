@@ -1,4 +1,4 @@
-// TypeScript declarations for Tradux library
+/** TypeScript declarations for the Tradux runtime client (client.js). */
 
 export interface LanguageOption {
     name: string;
@@ -11,18 +11,20 @@ export interface TraduxConfig {
     availableLanguages: string[];
 }
 
-// Recursive type for nested translation objects
+/** Recursive type: translation values can be strings or nested objects. */
 export type TranslationValue = string | { [key: string]: TranslationValue };
 
-// Proxy type that provides both string access and nested object access
+/**
+ * Proxy type that allows both `t.key` (returns string) and
+ * `t.section.nested` (returns another proxy for deeper access).
+ */
 export type TranslationProxy = {
     readonly [key: string]: TranslationProxy;
 } & string;
 
-// Main translation object - provides type-safe access with fallback to string
+/** Lazy proxy — safe to import before initTradux() is called. */
 export declare const t: TranslationProxy;
 
-// Language management
 export function setLanguage(language: string): Promise<boolean>;
 export function getCurrentLanguage(traduxLangCookieValue?: string | null): Promise<string>;
 export function getAvailableLanguages(): LanguageOption[];

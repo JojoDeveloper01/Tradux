@@ -1,3 +1,13 @@
+/**
+ * Vue adapter for Tradux.
+ *
+ * Uses a single `reactive()` state object shared by all components.
+ * Two ways to use:
+ *   - `initVueTradux()` in your app root (e.g. App.vue setup)
+ *   - `useTradux()` composable in any component (auto-inits if needed)
+ * Language changes propagate automatically via the traduxEvents system.
+ */
+
 import { reactive, onMounted, toRefs } from "vue";
 import {
   initTradux,
@@ -6,7 +16,7 @@ import {
   onLanguageChange,
 } from "../client.js";
 
-// 1. GLOBAL MEMORY
+// Shared reactive state — Vue's reactivity system tracks mutations automatically.
 export const traduxState = reactive({
   t: {},
   currentLanguage: "",
@@ -14,7 +24,6 @@ export const traduxState = reactive({
 });
 let isInitializing = false;
 
-// 2. The Core Update Logic
 const updateState = async () => {
   const instance = await initTradux();
   traduxState.t = instance.t;
@@ -22,10 +31,9 @@ const updateState = async () => {
   traduxState.isReady = true;
 };
 
-// Listen for cross-app language changes
 onLanguageChange(updateState);
 
-// 3. Manual Init (For the "Global Root" approach)
+/** Explicit init for use in the app root. Safe to call multiple times. */
 export async function initVueTradux() {
   if (!traduxState.isReady && !isInitializing) {
     isInitializing = true;
@@ -34,13 +42,12 @@ export async function initVueTradux() {
   }
 }
 
-// 4. The Smart Hook (For standalone components)
+/** Composable that auto-inits on mount and returns destructurable refs. */
 export function useTradux() {
   onMounted(() => {
-    initVueTradux(); // Automatically safely initializes if needed
+    initVueTradux();
   });
 
-  // Convert the reactive state into safe, destructure-friendly refs!
   const { t, currentLanguage, isReady } = toRefs(traduxState);
 
   return {

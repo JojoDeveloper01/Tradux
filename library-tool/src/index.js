@@ -1,4 +1,18 @@
 #!/usr/bin/env node
+
+/**
+ * index.js — Tradux CLI
+ *
+ * Entry point for the `npx tradux` command. Provides three operations:
+ *   -t  Translate: generate new language files from the default language
+ *   -u  Update:    re-translate only the keys that changed since last run
+ *   -r  Remove:    delete language files and clean up the config
+ *
+ * Each flag accepts either comma-separated language codes directly
+ * (e.g. `npx tradux -t es,pt`) or opens an interactive multi-select
+ * prompt when no codes are given.
+ */
+
 import { logger } from "./utils/logger.js";
 import { loadConfig, validateAndFixConfig } from "./utils/config.js";
 import { availableLanguages } from "./utils/languages.js";
@@ -16,6 +30,7 @@ const __dirname = path.dirname(__filename);
 const packageJsonPath = path.join(__dirname, "..", "package.json");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
 
+/** Validates the config on first access, then caches it for the session. */
 let cachedConfig = null;
 
 async function getConfig() {
@@ -25,6 +40,8 @@ async function getConfig() {
   }
   return cachedConfig;
 }
+
+// --- CLI Command Definitions ---
 
 program
   .name("tradux")
@@ -80,6 +97,37 @@ program.configureHelp({
 });
 program.parse();
 
+// --- Language Argument Parsing ---
+// All three parsers (getLanguages, getUpdateLanguages, getRemoveLanguages) share
+// the same logic: if the flag has no value, open an interactive prompt; if it has
+// trailing positional args, normalize them into a comma-separated string.
+
+/**
+ * Collects language codes after a flag like `-t es pt` or `-t es,pt`.
+ * Normalizes spaces and commas into a clean comma-separated string.
+ */
+function collectLanguageArgs(flagShort, flagLong) {
+  const flagIndex = process.argv.findIndex(
+    (arg) => arg === flagShort || arg === flagLong,
+  );
+  if (flagIndex === -1) return null;
+
+  const remainingArgs = process.argv.slice(flagIndex + 1);
+  const languageArgs = [];
+  for (const arg of remainingArgs) {
+    if (arg.startsWith("-")) break;
+    languageArgs.push(arg);
+  }
+  if (languageArgs.length === 0) return null;
+
+  return languageArgs
+    .join(" ")
+    .replace(/\s*,\s*/g, ",")
+    .replace(/\s+/g, ",")
+    .replace(/,+/g, ",")
+    .replace(/^,|,$/g, "");
+}
+
 async function getLanguages(options) {
   if (
     !options.languages &&
@@ -94,6 +142,8 @@ async function getLanguages(options) {
     logger.error("\n Configuration file not found!");
     process.exit(1);
   }
+
+  // No value after the flag → open interactive prompt
   if (
     options.languages === undefined ||
     options.languages === true ||
@@ -101,26 +151,10 @@ async function getLanguages(options) {
   ) {
     return await promptLanguages();
   }
+
   if (options.languages) {
-    const tIndex = process.argv.findIndex(
-      (arg) => arg === "-t" || arg === "--languages",
-    );
-    if (tIndex !== -1) {
-      const remainingArgs = process.argv.slice(tIndex + 1);
-      const languageArgs = [];
-      for (const arg of remainingArgs) {
-        if (arg.startsWith("-")) break;
-        languageArgs.push(arg);
-      }
-      if (languageArgs.length > 0) {
-        return languageArgs
-          .join(" ")
-          .replace(/\s*,\s*/g, ",")
-          .replace(/\s+/g, ",")
-          .replace(/,+/g, ",")
-          .replace(/^,|,$/g, "");
-      }
-    }
+    const parsed = collectLanguageArgs("-t", "--languages");
+    if (parsed) return parsed;
     return options.languages;
   }
   return await promptLanguages();
@@ -146,25 +180,8 @@ async function getUpdateLanguages(options) {
     return await promptUpdateAllLanguages();
   }
   if (options.update) {
-    const uIndex = process.argv.findIndex(
-      (arg) => arg === "-u" || arg === "--update",
-    );
-    if (uIndex !== -1) {
-      const remainingArgs = process.argv.slice(uIndex + 1);
-      const languageArgs = [];
-      for (const arg of remainingArgs) {
-        if (arg.startsWith("-")) break;
-        languageArgs.push(arg);
-      }
-      if (languageArgs.length > 0) {
-        return languageArgs
-          .join(" ")
-          .replace(/\s*,\s*/g, ",")
-          .replace(/\s+/g, ",")
-          .replace(/,+/g, ",")
-          .replace(/^,|,$/g, "");
-      }
-    }
+    const parsed = collectLanguageArgs("-u", "--update");
+    if (parsed) return parsed;
     return options.update;
   }
   return await promptUpdateAllLanguages();
@@ -190,39 +207,26 @@ async function getRemoveLanguages(options) {
     return await promptRemoveLanguages();
   }
   if (options.remove) {
-    const rIndex = process.argv.findIndex(
-      (arg) => arg === "-r" || arg === "--remove",
-    );
-    if (rIndex !== -1) {
-      const remainingArgs = process.argv.slice(rIndex + 1);
-      const languageArgs = [];
-      for (const arg of remainingArgs) {
-        if (arg.startsWith("-")) break;
-        languageArgs.push(arg);
-      }
-      if (languageArgs.length > 0) {
-        return languageArgs
-          .join(" ")
-          .replace(/\s*,\s*/g, ",")
-          .replace(/\s+/g, ",")
-          .replace(/,+/g, ",")
-          .replace(/^,|,$/g, "");
-      }
-    }
+    const parsed = collectLanguageArgs("-r", "--remove");
+    if (parsed) return parsed;
     return options.remove;
   }
   return await promptRemoveLanguages();
 }
 
+// --- Core Operations ---
+
+/**
+ * Deletes the JSON files for the given languages from the i18n directory,
+ * then re-syncs the config so availableLanguages stays accurate.
+ * Refuses to delete the default language.
+ */
 async function removeLanguageFiles(languages) {
   const config = await getConfig();
   const { fileManager } = await import("./core/file-manager.js");
 
-  // DELETED the bad dynamic import that was pointing to postinstall.js!
-
   const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
 
-  // The filter(Boolean) MAGIC FIX prevents the empty ".json" bug!
   const languageList = languages
     .split(",")
     .map((lang) => lang.trim())
@@ -249,14 +253,17 @@ async function removeLanguageFiles(languages) {
     }
   }
 
+  // Re-sync config.availableLanguages after deleting files
   if (filesRemoved) {
-    // This uses the global validateAndFixConfig we imported at the top of index.js!
     await validateAndFixConfig(process.cwd(), true);
   }
 
   logger.success("\n \u2606 Language removal process completed \u2606");
 }
 
+// --- Interactive Prompts ---
+
+/** Confirms update, then returns all non-default languages as a comma string. */
 async function promptUpdateAllLanguages() {
   try {
     logger.info("\nTradux Language Update");
@@ -275,7 +282,6 @@ async function promptUpdateAllLanguages() {
     }
 
     const config = await getConfig();
-    // Since config is auto-healed, config.availableLanguages is 100% accurate!
     const languagesToUpdate = config.availableLanguages.filter(
       (lang) => lang !== config.defaultLanguage,
     );
@@ -304,9 +310,9 @@ async function promptUpdateAllLanguages() {
   }
 }
 
+/** Multi-select prompt for choosing which languages to delete. Requires confirmation. */
 async function promptRemoveLanguages() {
   const config = await getConfig();
-  // Since config is auto-healed, config.availableLanguages is 100% accurate!
   const removableLanguages = config.availableLanguages.filter(
     (lang) => lang !== config.defaultLanguage,
   );
@@ -373,6 +379,7 @@ Usage:
   }
 }
 
+/** Multi-select prompt for choosing new languages to translate into. */
 async function promptLanguages() {
   try {
     logger.info("\nTradux Language Selection");

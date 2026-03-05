@@ -1,3 +1,12 @@
+/**
+ * React adapter for Tradux.
+ *
+ * Provides a `useTradux()` hook that returns reactive translation state.
+ * Uses a module-level cache so that when multiple components call the hook,
+ * only the first triggers an async init — the rest get instant values.
+ * Listens for cross-component language changes via the traduxEvents system.
+ */
+
 import { useState, useEffect } from "react";
 import {
   initTradux,
@@ -6,7 +15,7 @@ import {
   onLanguageChange,
 } from "../client.js";
 
-// Global cache so subsequent components load instantly without flashing "Loading"
+// Shared across all hook instances so subsequent mounts are instant.
 let cachedState = {
   t: {},
   currentLanguage: "",
@@ -14,15 +23,12 @@ let cachedState = {
 };
 
 export function useTradux() {
-  // Initialize with whatever is in the cache right now
   const [state, setState] = useState(cachedState);
 
   useEffect(() => {
     let mounted = true;
 
     const syncState = async () => {
-      // Because initTradux uses `browserInstancePromise` in client.js,
-      // calling this 1000 times safely returns the exact same promise!
       const instance = await initTradux();
 
       cachedState = {
@@ -36,13 +42,12 @@ export function useTradux() {
       }
     };
 
-    // 1. Always sync on mount (This fixes the Vite Strict Mode bug!)
+    // Sync on every mount (handles Vite/React Strict Mode double-mount)
     syncState();
 
-    // 2. Listen for cross-app language changes
+    // Re-sync when any component calls setLanguage()
     onLanguageChange(syncState);
 
-    // Cleanup listener when component unmounts
     return () => {
       mounted = false;
     };
