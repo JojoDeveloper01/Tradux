@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - 'library-tool/src/**'
-      - 'library-tool/postinstall.js'
-      - 'library-tool/package.json'
-      - 'library-tool/pnpm-lock.yaml'
+      - "library-tool/src/**"
+      - "library-tool/postinstall.js"
+      - "library-tool/package.json"
+      - "library-tool/pnpm-lock.yaml"
 
 permissions:
   contents: write
@@ -32,10 +32,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
-          cache-dependency-path: 'library-tool/pnpm-lock.yaml'
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+          cache-dependency-path: "library-tool/pnpm-lock.yaml"
 
       - name: Configure Git
         run: |
@@ -74,7 +74,7 @@ jobs:
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           if npm view tradux@$CURRENT_VERSION version >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Version $CURRENT_VERSION already exists on NPM"
@@ -112,7 +112,6 @@ jobs:
 
           # Safe push
           git push --force-with-lease origin main
-
 
       - name: Publish to NPM
         working-directory: ./library-tool
