@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
           cache-dependency-path: "library-tool/pnpm-lock.yaml"
@@ -115,9 +115,7 @@ jobs:
 
       - name: Publish to NPM
         working-directory: ./library-tool
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --no-git-checks
+        run: npm publish --access public
 
       - name: Create Git Tag
         run: |
