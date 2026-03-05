@@ -1,17 +1,10 @@
-import {
-  t,
-  setLanguage,
-  getAvailableLanguages,
-  getCurrentLanguage,
-} from "tradux"
+import { useTradux } from "tradux/react";
 
-const currentLanguage = await getCurrentLanguage();
+export default function StandaloneApp() {
+  // The hook automatically initializes the library and locks it!
+  const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
 
-function App() {
-  const changeLanguage = async (e) => {
-    await setLanguage(e.target.value);
-    location.reload();
-  };
+  if (!isReady) return <p>Loading translations...</p>;
 
   return (
     <div>
@@ -20,16 +13,14 @@ function App() {
       <p>{t.navigation.home}</p>
       <p>{t.navigation.about}</p>
       <p>{t.navigation.services}</p>
-
-      <select value={currentLanguage} onChange={changeLanguage}>
+      <select
+        value={currentLanguage}
+        onChange={(e) => setLanguage(e.target.value)}
+      >
         {getAvailableLanguages().map(({ name, value }) => (
-          <option key={value} value={value}>
-            {name}
-          </option>
+          <option key={value} value={value}>{name}</option>
         ))}
       </select>
     </div>
   );
 }
-
-export default App;

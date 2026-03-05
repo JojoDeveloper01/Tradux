@@ -1,42 +1,43 @@
-import { test } from 'node:test';
-import { ok } from 'node:assert';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { performance } from 'node:perf_hooks';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 
-const projectRoot = join(process.cwd(), 'tests', 'temp-perf');
+/**
+ * PERFORMANCE SMOKE TESTS
+ *
+ * Verifies that core imports and initialization stay within
+ * reasonable time budgets. Thresholds are generous on purpose
+ * so they don't fail on slow CI runners — the goal is to catch
+ * regressions, not enforce absolute times.
+ */
+const MAX_IMPORT_MS = 500;   // generous budget for cold import
+const MAX_INIT_MS = 500;     // generous budget for initTradux()
 
-test('Tradux client initialization performance', async () => {
-    const startTime = performance.now();
+describe('Performance — import & init times', () => {
 
-    // Simulate initialization
-    await new Promise(resolve => setTimeout(resolve, 1));
+  it(`client.js import should complete within ${MAX_IMPORT_MS}ms`, async () => {
+    const start = performance.now();
+    await import('../../src/client.js');
+    const elapsed = performance.now() - start;
+    console.log(`  ⏱  client.js import: ${elapsed.toFixed(1)}ms`);
+    assert.ok(elapsed < MAX_IMPORT_MS, `Import took ${elapsed.toFixed(1)}ms (limit: ${MAX_IMPORT_MS}ms)`);
+  });
 
-    const endTime = performance.now();
-    const initTime = endTime - startTime;
+  it(`initTradux() should resolve within ${MAX_INIT_MS}ms`, async () => {
+    const { initTradux } = await import('../../src/client.js');
+    const start = performance.now();
+    await initTradux();
+    const elapsed = performance.now() - start;
+    console.log(`  ⏱  initTradux(): ${elapsed.toFixed(1)}ms`);
+    assert.ok(elapsed < MAX_INIT_MS, `Init took ${elapsed.toFixed(1)}ms (limit: ${MAX_INIT_MS}ms)`);
+  });
 
-    ok(initTime < 100, `Initialization should be fast (got ${initTime.toFixed(2)}ms)`);
-    console.log(`✅ Client initialization: ${initTime.toFixed(2)}ms`);
-});
-
-test('Configuration loading performance', async () => {
-    const startTime = performance.now();
-
-    try {
-        const configPath = join(projectRoot, 'tradux.config.json');
-        const configData = await readFile(configPath, 'utf8');
-        const config = JSON.parse(configData);
-
-        ok(config && typeof config === 'object', 'Config should be loaded successfully');
-        ok(config.defaultLanguage && typeof config.defaultLanguage === 'string', 'Config should have defaultLanguage');
-
-        const endTime = performance.now();
-        const loadTime = endTime - startTime;
-
-        ok(loadTime < 50, `Config loading should be fast (got ${loadTime.toFixed(2)}ms)`);
-        console.log(`✅ Config loading: ${loadTime.toFixed(2)}ms`);
-    } catch (error) {
-        console.log('⚠️  No tradux.config.json found for performance test');
-        ok(false, `Config file should exist: ${error.message}`);
-    }
+  it('languages.js import should be fast', async () => {
+    const start = performance.now();
+    const { availableLanguages } = await import('../../src/utils/languages.js');
+    const elapsed = performance.now() - start;
+    console.log(`  ⏱  languages.js import: ${elapsed.toFixed(1)}ms`);
+    assert.ok(elapsed < 200, `Languages import took ${elapsed.toFixed(1)}ms`);
+    assert.ok(availableLanguages.length > 0, 'Should have loaded languages');
+  });
 });

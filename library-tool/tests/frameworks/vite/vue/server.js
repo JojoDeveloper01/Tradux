@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
-import { t, getCurrentLanguage } from "tradux";
+import { initTradux } from "tradux";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,11 +27,13 @@ async function createServer() {
 
             const traduxLang =
                 req.headers.cookie?.split("; ").find(c => c.startsWith("tradux_lang="))?.split("=")[1] || "en";
-            const lang = await getCurrentLanguage(traduxLang);
+
+            // Use isolated instance per request - safe for concurrent users
+            const { t, currentLanguage } = await initTradux(traduxLang);
             const title = t.navigation.home;
 
             const html = template
-                .replace(/<html lang=".*?">/, `<html lang="${lang}">`)
+                .replace(/<html lang=".*?">/, `<html lang="${currentLanguage}">`)
                 .replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
 
             res.status(200).set({ "Content-Type": "text/html" }).end(html);

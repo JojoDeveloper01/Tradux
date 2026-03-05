@@ -1,36 +1,20 @@
 # 🌐 Tradux - Intelligent Translation Library
 
-**Tradux** is a developer-friendly translation library that automates the process of managing multilingual content in your projects. It seamlessly integrates with Cloudflare Workers to provide AI-powered translations using language models.
+**Tradux** is a developer-friendly translation library designed to automate multilingual content management. It uses Cloudflare Workers AI to translate your JSON files and provides lightweight, reactive hooks to handle language switching in modern JavaScript frameworks.
 
-## 🌍 SEO & Internationalization: Dynamic Meta Tags
-
-Tradux makes it easy to dynamically update meta tags such as `<html lang="...">` and `<title>` based on the user's selected language.
-
-You can update meta tags dynamically in client-side apps (React, Vue, Svelte, Vanilla JS) using JavaScript, or on the server using SSR (Server-Side Rendering) with frameworks like Express or Vite SSR. See the examples below for implementation details.
-
-
-## 🎯 Purpose
-
-Tradux solves the common problem of managing translations in modern applications by:
-
-- **Automating translation workflows** - No more manual translation files
-- **Providing intelligent updates** - Sync translations when your base language changes
-- **Offering simple integration** - Works with any JavaScript framework
-- **Maintaining consistency** - Ensures all languages stay in sync with your default language
-- **Auto-syncing config** - Automatically updates `availableLanguages` when files are added/removed
+Whether you are building a simple single-page app or an SEO-focused server-rendered website, Tradux aims to reduce the manual friction of managing translations.
 
 ## ⚡ Key Features
 
-- **AI-Powered Translations** via Cloudflare Workers API
-- **Automatic Language Synchronization** - Add/remove content across all languages
-- **Smart Update System** - Only translates missing content, preserves existing translations
-- **Auto Config Management** - Automatically syncs `availableLanguages` with actual files
-- **Framework Agnostic** - Works with React, Vue, Vanilla JS, Node.js, and more
-- **Local Storage Integration** - Remembers user language preferences
-- **Simple CLI Interface** - Easy-to-use command line tools
-- **Intelligent Path Resolution** - Automatically finds i18n folders in public directories
+- **AI-Powered CLI:** Automates JSON translation using Cloudflare's `m2m100-1.2b` model.
+- **Differential Updates:** Tradux remembers your previous translations. If you change a specific English string, it only updates that string, saving API calls.
+- **Native Framework Hooks:** Ready-to-use hooks for React, Vue, Svelte, and Vanilla JS.
+- **Cross-Component Reactivity:** Change the language in one component, and the rest of the app updates instantly without a page reload.
+- **Auto-Syncing Config:** The CLI automatically manages your `availableLanguages` list based on the actual files in your folder.
 
 ---
+
+# Quick Start
 
 ## 🚀 Installation
 
@@ -43,19 +27,22 @@ yarn add tradux
 
 ### For pnpm and bun (requires extra step):
 ```bash
-pnpm install tradux && pnpx tradux init
+pnpm install tradux && pnpm tradux init
 # or
 bun install tradux && bunx tradux init
 ```
 
 ## 📋 Setup Requirements
 
-1. **Cloudflare Account** - You need Cloudflare API credentials
-2. **Environment Variables** - Create a `.env` file with:
-   ```env
-   CLOUDFLARE_ACCOUNT_ID=your_account_id
-   CLOUDFLARE_API_TOKEN=your_api_token
-   ```
+1. **Cloudflare Account:** You need Cloudflare API credentials to run the CLI translator.
+2. **Environment Variables:** Create a `.env` file at the root of your project:
+    ```env
+    CLOUDFLARE_ACCOUNT_ID=your_account_id
+    CLOUDFLARE_API_TOKEN=your_api_token
+    ```
+    > ⚠️ **Important Note:** The `CLOUDFLARE_API_TOKEN` must specifically be a **Workers AI** token, not a standard global API key. You can generate this in your Cloudflare dashboard under API Tokens.
+
+<br>
 
 ## ⚙️ Configuration
 
@@ -76,19 +63,14 @@ After installation, Tradux automatically creates a `tradux.config.json` file:
 
 ---
 
+<br>
+
 ## 🛠️ CLI Usage
 
-### View all available commands:
-```bash
-npx tradux
-```
+Once your default language file (`en.json`) is ready, use the CLI to manage your translations:
 
-### Initialize Tradux in your project:
-```bash
-npx tradux init
-```
+1. **Translate (`-t`):** Create *new* language files based on your default language.
 
-### Translate to specific languages:
 ```bash
 # Single language
 npx tradux -t es
@@ -100,7 +82,8 @@ npx tradux -t es,pt,fr
 npx tradux -t
 ```
 
-### Update existing translations:
+2. **Update (`-u`):** Sync existing languages. If you add new keys or *change* existing English text, this command smartly updates the translations without overwriting your manual adjustments.
+
 ```bash
 # Update all existing languages
 npx tradux -u
@@ -109,7 +92,8 @@ npx tradux -u
 npx tradux -u es,pt
 ```
 
-### Remove language files:
+3. **Remove (`-r`):** Safely delete language files and auto-sync your configuration.
+
 ```bash
 # Interactive removal
 npx tradux -r
@@ -118,189 +102,197 @@ npx tradux -r
 npx tradux -r es,pt
 ```
 
-> **Update vs Translate**: Update (`-u`) syncs existing language files with your default language, adding missing content and removing obsolete keys. Translate (`-t`) creates new translation files. Remove (`-r`) deletes language files and automatically updates the config.
-
 ---
 
-## 💻 JavaScript API
+<br>
+
+## 🧰 Core API & Functions
 
 
 Import Tradux functions in your application:
 
+
 ```javascript
-import { t, setLanguage, getAvailableLanguages, getCurrentLanguage, config } from 'tradux';
+const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
 ```
 
-### Core Functions
+Whether you use `useTradux()` in a framework or `initTradux()` in Vanilla JS/SSR, Tradux exposes a standard set of variables and functions:
 
-| Function/Variable                   | Purpose                                       | Use Case                |
-| ----------------------------------- | --------------------------------------------- | ----------------------- |
-| `t`                                 | Access translations                           | `t.navigation.home`     |
-| `setLanguage(lang)`                 | Switch active language                        | User language selection |
-| `getCurrentLanguage([cookieValue])` | Get current language (optionally from cookie) | SSR, browser, server    |
-| `getAvailableLanguages()`           | Available language list                       | Language selector lists |
-| `config`                            | Access configuration                          | View current settings   |
-
-### Function Details
-
-**`setLanguage(lang)`**
-- Changes the active language system-wide
-- Updates the global `t` object
-- Saves preference to cookie (browser) or sets cookie header (server)
-- Use for: Language switchers, user preferences
-
-**`getCurrentLanguage([cookieValue])`**
-- Returns the currently active language code as a string
-- On the server, pass the value of the `tradux_lang` cookie (not the whole cookie string)
-- On the browser, call with no arguments for auto-detection
-- Use for: Displaying current language, SSR, conditional logic
-
-**`getAvailableLanguages()`**
-- Returns array of available language objects `{ name, value }` from config
-- Use for: Building language selectors, validation
+<br>
 
 ---
+
+## Core API
+
+| Function / Variable       | Purpose                                             | Use Case                         |
+| ------------------------- | --------------------------------------------------- | -------------------------------- |
+| `t`                       | Access translations safely (with fallback behavior) | `t.homepage.hero.title`          |
+| `currentLanguage`         | Get the currently active language code              | Conditional UI, debugging        |
+| `isReady`                 | Check if translations finished loading *(frontend)* | Prevent UI flash, loading states |
+| `setLanguage(lang)`       | Switch active language globally                     | Language switchers, preferences  |
+| `getAvailableLanguages()` | Retrieve configured language list                   | Build language selectors         |
+
+---
+
+## Function Details
+
+### `setLanguage(lang)`
+
+* Changes the active language system-wide
+* Updates the global `t` object reactively
+* Persists preference via cookie
+* Triggers UI updates automatically
+
+**Use for:**
+Language switchers, user preferences, dynamic locale changes
+
+---
+
+### `getAvailableLanguages()`
+
+* Returns an array of language objects:
+
+  ```ts
+  { name: string; value: string }
+  ```
+* Derived directly from your config file
+
+**Use for:**
+Building selectors, validation, dynamic UI generation
+
+---
+
+### `currentLanguage`
+
+* A string representing the active language
+* Always reflects the current global state
+
+**Use for:**
+Conditional rendering, displaying selected language
+
+---
+
+### `isReady`
+
+* Boolean flag indicating translation loading status
+* Prevents rendering before translations are available
+
+**Use for:**
+Loading states, SSR hydration control, avoiding flicker
+
+---
+
+<br>
 
 ## 📄 Examples
 
-### React Application
+Tradux provides sub-path exports for your favorite frameworks. These hooks automatically fetch translations and provide a reactive state.
+
+### ⚛️ React
+
 ```jsx
-import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux"
+import { useTradux } from "tradux/react";
 
-const currentLang = await getCurrentLanguage();
+export default function App() {
+    const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
 
-function App() {
-	const changeLanguage = async (e) => {
-		await setLanguage(e.target.value);
-		location.reload();
-	};
+    if (!isReady) return <p>Loading...</p>;
 
-	return (
-		<div>
-			<h1>React</h1>
-			<h2>{t.welcome}</h2>
-			<p>{t.navigation.home}</p>
-			<p>{t.navigation.about}</p>
-			<p>{t.navigation.services}</p>
-
-			<select value={currentLang} onChange={changeLanguage}>
-				{getAvailableLanguages().map(({ name, value }) => (
-					<option key={value} value={value}>
-						{name}
-					</option>
-				))}
-			</select>
-		</div>
-	);
+    return (
+        <div>
+            <h2>{t.welcome}</h2>
+            <select value={currentLanguage} onChange={(e) => setLanguage(e.target.value)}>
+                {getAvailableLanguages().map((lang) => (
+                    <option key={lang.value} value={lang.value}>{lang.name}</option>
+                ))}
+            </select>
+        </div>
+    );
 }
-export default App;
+
 ```
 
+### 🟢 Vue 3
 
-### Vue Application
-```jsx
+```html
 <script setup>
-import { ref, onMounted } from 'vue'
-import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux"
+import { useTradux } from "tradux/vue";
 
-const selectedLanguage = ref('')
-
-onMounted(async () => {
-  selectedLanguage.value = await getCurrentLanguage()
-})
-
-const changeLanguage = async (e) => {
-  const newLang = e.target.value
-  if (await setLanguage(newLang)) {
-    selectedLanguage.value = newLang
-    window.location.reload()
-  }
-}
+const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
 </script>
 
 <template>
-  <h1>Vue</h1>
-  <h2>{{ t.welcome }}</h2>
-  <p>{{ t.navigation.home }}</p>
-  <p>{{ t.navigation.about }}</p>
-  <p>{{ t.navigation.services }}</p>
-  <select v-model="selectedLanguage" @change="changeLanguage">
-    <option v-for="lang in getAvailableLanguages()" :key="lang.value" :value="lang.value">
-      {{ lang.name }}
-    </option>
-  </select>
+  <div v-if="isReady">
+    <h2>{{ t.welcome }}</h2>
+    <select :value="currentLanguage" @change="(e) => setLanguage(e.target.value)">
+      <option v-for="lang in getAvailableLanguages()" :key="lang.value" :value="lang.value">
+        {{ lang.name }}
+      </option>
+    </select>
+  </div>
 </template>
+
 ```
 
+### 🟠 Svelte
 
-### Svelte Application
-```jsx
+```html
 <script>
-  import { t, setLanguage, getCurrentLanguage, getAvailableLanguages } from "tradux";
+  import { useTradux } from "tradux/svelte";
 
-  let currentLanguage = "";
-
-  async function init() {
-    currentLanguage = await getCurrentLanguage();
-  }
-  init();
-
-  async function changeLanguage(event) {
-    const lang = event.target.value;
-    if (await setLanguage(lang)) {
-      currentLanguage = lang;
-      location.reload();
-    }
-  }
+  const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
 </script>
 
-<div>
-  <h1>Svelte</h1>
-  <h2>{t.welcome}</h2>
-  <p>{t.navigation.home}</p>
-  <p>{t.navigation.about}</p>
-  <p>{t.navigation.services}</p>
-  <select bind:value={currentLanguage} on:change={changeLanguage}>
-    {#each getAvailableLanguages() as { name, value }}
-      <option {value}>{name}</option>
-    {/each}
-  </select>
-</div>
+{#if $isReady}
+  <div>
+    <h2>{$t.welcome}</h2>
+    <select value={$currentLanguage} on:change={(e) => setLanguage(e.target.value)}>
+      {#each getAvailableLanguages() as { name, value }}
+        <option {value}>{name}</option>
+      {/each}
+    </select>
+  </div>
+{/if}
+
 ```
 
-### AstroJS
+### 🟣 Astro
+
+Because Astro heavily utilizes Server-Side Rendering (SSR), you need to collect the Tradux cookie from the incoming request and pass it to `initTradux` to ensure the server renders the correct language before sending it to the client.
+
 ```jsx
 ---
-import { t, setLanguage getAvailableLanguages, getCurrentLanguage } from "tradux";
+import { initTradux, getAvailableLanguages } from "tradux";
 
 const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
-const currentLang = await getCurrentLanguage(traduxCookie);
+const { t, currentLanguage } = await initTradux(traduxCookie);
 ---
+
 <section>
-  <h1>Astro</h1>
-  <h2>{t.welcome}</h2>
-  <p>{t.navigation.home}</p>
-  <p>{t.navigation.about}</p>
-  <p>{t.navigation.services}</p>
+  <h1>{t.welcome}</h1>
   <select id="lang-select">
-    {getAvailableLanguages().map(lang => (
-      <option value={lang.value} selected={lang.value === currentLang}>{lang.name}</option>
-    ))}
+    {getAvailableLanguages().map((lang) => (
+        <option value={lang.value} selected={lang.value === currentLanguage}>
+          {lang.name}
+        </option>
+      ))}
   </select>
 </section>
 
 <script>
-      import { setLanguage } from "tradux";
-      const langSelect = document.getElementById("lang-select");
-      langSelect.addEventListener("change", async (e) => {
-        await setLanguage(e.target.value);
-        location.reload();
-      });
+  import { setLanguage } from "tradux";
+  const langSelect = document.getElementById("lang-select") as HTMLElement;
+  langSelect.addEventListener("change", async (e: Event) => {
+    await setLanguage((e.target as HTMLSelectElement).value);
+    location.reload();
+  });
 </script>
+
 ```
 
-### Vanilla JS Example
-```js
+### 🟡 Vanilla JS 
+
+```html
 <section>
   <h1>Vanilla JS</h1>
   <h2 data-key="welcome"></h2>
@@ -339,72 +331,169 @@ const currentLang = await getCurrentLanguage(traduxCookie);
     })();
 </script>
 ```
+
 ---
+
+<br>
+<br>
+
+# Advanced Usage
+
+## 🏗️ Global State & Reusability
+
+Tradux uses a shared memory cache. If you have multiple translated components on a single page, you do not need to manage loading states for all of them.
+
+Initialize Tradux *once* at the root of your app. Child components will instantly receive translations with zero network requests or loading flicker.
+
+**1. The Root Component (`App.jsx`):**
+
+```jsx
+import { useTradux } from "tradux/react";
+import Navbar from "./Navbar";
+
+export default function App() {
+    const { isReady } = useTradux(); 
+    // Block the whole app until translations arrive once
+    if (!isReady) return <div>Loading...</div>;
+    return <Navbar />;
+}
+
+```
+
+**2. The Child Component (`Navbar.jsx`):**
+
+```jsx
+import { useTradux } from "tradux/react";
+
+export default function Navbar() {
+    // Instantly ready! No loading checks needed.
+    const { t } = useTradux(); 
+    return <nav>{t.navigation?.home}</nav>;
+}
+
+```
+
+## 🌍 SEO & Server-Side Routing (SSR)
+
+For search engines (like Google) to index your translated content, languages should be tied to the URL (e.g., `mysite.com/es/about`). Search engines ignore local storage and cookies.
+
+Tradux supports this natively. Instead of using `setLanguage()` (which relies on cookies), use your framework's router to extract the language from the URL and pass it directly to Tradux.
+
+**Astro SSR Example (`src/pages/[lang]/index.astro`):**
+
+```jsx
+---
+import { initTradux } from "tradux";
+
+// 1. Extract 'es' from the URL ([mysite.com/es/](https://mysite.com/es/))
+const { lang } = Astro.params; 
+
+// 2. Pass 'es' directly to Tradux (bypasses cookies)
+const { t } = await initTradux(lang);
+---
+<html lang={lang}>
+  <body>
+    <h1>{t.welcome}</h1>
+  </body>
+</html>
+
+```
+
+### Dynamically Updating `<head>` Tags in SSR (Express & Vite)
+
+When using Custom SSR setups, you can use Tradux isolated instances to intercept requests, read the translation file on the server, and inject the correct `<html lang="x">` and `<title>` tags into your raw HTML before serving it to the client.
+
+**Example using Vite SSR & Express:**
+
+```javascript
+import express from "express";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import { createServer as createViteServer } from "vite";
+import { initTradux } from "tradux";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function createServer() {
+  const app = express();
+
+  // 1️⃣ Vite dev server in middleware mode
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: "custom",
+  });
+  app.use(vite.middlewares);
+
+  // 2️⃣ Catch-all route for HTML pages
+  app.use(/.*/, async (req, res, next) => {
+    try {
+      const url = req.originalUrl;
+
+      let template = await fs.readFile(
+        path.resolve(__dirname, "index.html"),
+        "utf-8",
+      );
+      template = await vite.transformIndexHtml(url, template);
+
+      const traduxLang =
+        req.headers.cookie
+          ?.split("; ")
+          .find((c) => c.startsWith("tradux_lang="))
+          ?.split("=")[1] || "en";
+
+      // Use isolated instance per request - safe for concurrent users
+      const { t, currentLanguage } = await initTradux(traduxLang);
+      const title = t.navigation?.home || "My Website";
+
+      // Dynamically inject SEO tags!
+      const html = template
+        .replace(/<html lang=".*?">/, `<html lang="${currentLanguage}">`)
+        .replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    } catch (e) {
+      vite.ssrFixStacktrace(e);
+      next(e);
+    }
+  });
+
+  app.listen(3000, () => {
+    console.log("Server running at http://localhost:3000");
+  });
+}
+
+createServer();
+
+```
+
+<br>
+<br>
+
+## 🤖 How the CLI Works Under the Hood
+
+### 1. The Auto-Healer
+
+Whenever you run a Tradux CLI command, the system validates your setup. If you manually delete a language file like `pt.json` from your folder, Tradux automatically removes it from your `tradux.config.json` array. If your folder paths get misconfigured, the CLI attempts to correct them safely.
+
+### 2. Differential Translation (`.tradux-state.json`)
+
+When you translate files, Tradux leaves a hidden `.tradux-state.json` file in your `i18n` folder to act as a state snapshot.
+When you run `npx tradux -u`, Tradux compares your current `en.json` against this snapshot. It calculates exactly which existing strings were modified and which were newly added, sending only the differences to the Cloudflare API.
 
 ## 📁 File Structure
 
-After setup, your project will have:
+After setup, your project will look similar to this:
 
-```
+```text
 your-project/
-├── .env                    # Cloudflare credentials
-├── tradux.config.json      # Tradux configuration
-└── public/                 # or src/ depending on your setup
+├── .env                        # Cloudflare credentials
+├── tradux.config.json          # Auto-managed config
+└── public/
     └── i18n/
-        ├── en.json        # Default language (created automatically)
-        ├── es.json        # Generated after translation
-        ├── pt.json        # Generated after translation
-        └── fr.json        # Generated after translation
+        ├── .tradux-state.json  # Hidden tracker for differential updates
+        ├── en.json             # Default language
+        ├── es.json             # AI generated translation
+        └── pt.json             # AI generated translation
+
 ```
-
-1. **Safety Checks**: Prevents deletion of default language files
-2. **Interactive Selection**: Shows available languages for removal
-3. **Confirmation Prompts**: Requires user confirmation before deletion
-4. **File Deletion**: Removes selected language files from filesystem
-5. **Config Sync**: Automatically updates `availableLanguages` array in config
-
-### 5. **Client-Side Loading System**
-When your application imports Tradux:
-
-1. **Configuration Resolution**: Automatically loads `tradux.config.json`
-2. **Environment Detection**: Determines if running in browser or Node.js
-3. **Path Resolution**: Automatically resolves i18n paths for different environments
-4. **Language Detection**:
-  - Browser: Tradux looks for the "tradux_lang" cookie to determine the user's preferred language.
-  - Serve: Tradux uses the value of the "tradux_lang" cookie provided by the user (from the request) to set the language.
-5. **File Loading Strategy**:
-   - Browser: Dynamic imports with relative paths
-   - Node.js: File system access with absolute paths
-6. **Fallback Chain**: Default language → 'en' → empty object
-7. **Global State Management**: Populates the `t` object with translations
-
-### 6. **Language Switching Mechanism**
-When `setLanguage()` is called:
-
-1. **File Resolution**: Constructs correct path for target language
-2. **Dynamic Loading**: Uses appropriate loading method for environment
-3. **Validation**: Ensures language file exists and is properly formatted
-4. **State Update**: Clears existing `t` object and repopulates with new translations
-5. **Persistence**: Saves language choice to a cookie ("tradux_lang") in the browser, or sets the cookie header on the server
-6. **Error Handling**: Falls back to default language if target fails to load
-
-### 7. **AI Translation Integration**
-The Cloudflare Workers API process:
-
-1. **Request Formation**: Structures translation request with source data and target language
-2. **Authentication**: Uses provided Cloudflare credentials for API access
-3. **Model Processing**: Leverages Cloudflare's `m2m100-1.2b` translation model
-4. **Context Preservation**: Maintains JSON structure and nested object relationships
-5. **Response Formatting**: Returns translated content in identical structure
-6. **Error Recovery**: Provides detailed error messages for debugging
-
-### 8. **File System Management**
-Tradux handles files intelligently:
-
-1. **Path Resolution**: Converts relative paths to absolute paths across different environments
-2. **Auto-Discovery**: Automatically finds i18n folders in common locations (public, src)
-3. **JSON Format**: Uses JSON format for better compatibility and performance
-4. **Pretty Formatting**: JSON files are formatted with proper indentation
-5. **Config Synchronization**: Automatically keeps `availableLanguages` in sync with actual files
-6. **Cross-Platform**: Works on Windows, macOS, and Linux
-7. **Environment Adaptation**: Handles different project structures (Vite, React, etc.)

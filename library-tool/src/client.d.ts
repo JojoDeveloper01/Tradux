@@ -26,6 +26,7 @@ export declare const t: TranslationProxy;
 export function setLanguage(language: string): Promise<boolean>;
 export function getCurrentLanguage(traduxLangCookieValue?: string | null): Promise<string>;
 export function getAvailableLanguages(): LanguageOption[];
+export function initTradux(langOrCookies?: string | null): Promise<{ t: TranslationProxy; currentLanguage: string; setLanguage: (language: string) => Promise<boolean> }>;
 export const config: Readonly<TraduxConfig>;
 
 declare module 'tradux/languages' {

@@ -70,8 +70,7 @@ const runTestSuite = async (suite) => {
 
         const child = spawn('node', ['--test', ...testFiles], {
             stdio: 'inherit',
-            cwd: process.cwd(),
-            shell: true
+            cwd: process.cwd()
         });
 
         child.on('close', (code) => {
@@ -110,10 +109,11 @@ const runCoverage = async () => {
             return;
         }
 
-        const child = spawn('npx', ['c8', '--reporter=text', '--reporter=html', 'node', '--test', ...allTestFiles], {
+        // Use local c8 binary from node_modules
+        const c8Bin = join(process.cwd(), 'node_modules', '.bin', 'c8');
+        const child = spawn(c8Bin, ['--reporter=text', '--reporter=html', 'node', '--test', ...allTestFiles], {
             stdio: ['inherit', 'pipe', 'pipe'],
-            cwd: process.cwd(),
-            shell: true
+            cwd: process.cwd()
         });
 
         let coverageOutput = '';
@@ -252,6 +252,6 @@ export { runAllTests, runTestSuite, testSuites };
 const scriptPath = process.argv[1].replace(/\\/g, '/');
 const expectedUrl = `file:///${scriptPath}`;
 
-if (import.meta.url === expectedUrl) {
+if (import.meta.url === expectedUrl || import.meta.url === `file://${scriptPath}`) {
     runAllTests();
 }

@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node server.js",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "express": "^5.1.0",
-    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux",
+    "tradux": "link:../../../..",
     "vue": "^3.5.22"
   },
   "devDependencies": {
@@ -19,7 +19,7 @@
   },
   "pnpm": {
     "overrides": {
-      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+      "tradux": "link:../../../.."
     }
   }
 }

@@ -1,24 +1,51 @@
 {
   "name": "tradux",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "A CLI tool for automated translation of JSON files using Cloudflare Workers AI.",
   "type": "module",
+  "private": false,
+  "main": "./src/client.js",
+  "types": "./src/client.d.ts",
+  "bin": {
+    "tradux": "src/index.js"
+  },
+  "files": [
+    "src",
+    "postinstall.js",
+    "readme.md"
+  ],
+  "browser": {
+    "fs": false,
+    "fs/promises": false,
+    "path": false
+  },
   "exports": {
     ".": {
-      "import": "./src/client.js",
       "types": "./src/client.d.ts",
+      "import": "./src/client.js",
       "default": "./src/client.js"
     },
+    "./react": {
+      "types": "./src/react/index.d.ts",
+      "import": "./src/react/index.js",
+      "default": "./src/react/index.js"
+    },
+    "./vue": {
+      "types": "./src/vue/index.d.ts",
+      "import": "./src/vue/index.js",
+      "default": "./src/vue/index.js"
+    },
+    "./svelte": {
+      "types": "./src/svelte/index.d.ts",
+      "import": "./src/svelte/index.js",
+      "default": "./src/svelte/index.js"
+    },
     "./languages": {
+      "types": "./src/client.d.ts",
       "import": "./src/utils/languages.js",
       "default": "./src/utils/languages.js"
     },
     "./package.json": "./package.json"
-  },
-  "main": "./src/client.js",
-  "types": "./index.d.ts",
-  "bin": {
-    "tradux": "src/index.js"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js || exit 0",
@@ -45,12 +72,25 @@
     "commander": "12.1.0",
     "fs-extra": "11.3.1",
     "prompts": "2.4.2",
-    "recast": "0.23.11",
-    "tradux": "link:"
+    "recast": "0.23.11"
   },
-  "pnpm": {
-    "overrides": {
-      "tradux": "link:..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "svelte": "^4.0.0 || ^5.0.0",
+    "vue": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
     }
+  },
+  "devDependencies": {
+    "c8": "^11.0.0"
   }
 }

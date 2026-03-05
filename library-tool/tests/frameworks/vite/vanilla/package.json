@@ -13,11 +13,11 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+    "tradux": "link:../../../.."
   },
   "pnpm": {
     "overrides": {
-      "tradux": "link:..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\pnpm\\global\\5\\node_modules\\tradux"
+      "tradux": "link:../../../.."
     }
   }
 }
