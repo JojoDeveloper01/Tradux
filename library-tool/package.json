@@ -1,6 +1,6 @@
 {
   "name": "tradux",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "description": "A CLI tool for automated translation of JSON files using Cloudflare Workers AI.",
   "type": "module",
   "private": false,
