@@ -9,7 +9,6 @@ on:
       - "library-tool/src/**"
       - "library-tool/postinstall.js"
       - "library-tool/package.json"
-      - "library-tool/pnpm-lock.yaml"
 
 permissions:
   contents: write
