@@ -402,10 +402,6 @@ export function getTProxy() {
           }
 
           if (!browserInstance) {
-            console.warn(
-              `Tradux not initialized yet. Attempted to read: ${prop}`,
-            );
-
             // Returns a chainable dummy that resolves to "" for any depth,
             // preventing crashes when templates render before init completes.
             const dummyProxy = new Proxy(

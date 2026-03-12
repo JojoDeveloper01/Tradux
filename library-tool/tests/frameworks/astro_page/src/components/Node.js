@@ -1,29 +1,29 @@
-import { setLanguage, t, getAvailableLanguages, getCurrentLanguage } from 'tradux';
+import { getAvailableLanguages, initTradux } from "tradux";
 
 export async function test() {
-    const availableLanguages = getAvailableLanguages();
-    await setLanguage('pt');
+  const availableLanguages = getAvailableLanguages();
 
-    let nav = {
-        home: t.navigation.home,
-        about: t.navigation.about,
-        services: t.navigation.services
-    };
+  // Create isolated instances for each language test
+  // This is the safe way for SSR/server environments
 
-    //navigation with pt translate
-    const navigationPT = nav
+  const ptInstance = await initTradux("pt");
+  const nav_pt = {
+    home: ptInstance.t.navigation.home,
+    about: ptInstance.t.navigation.about,
+    services: ptInstance.t.navigation.services,
+  };
+  const navigationPT = nav_pt;
 
-    await setLanguage('ja');
+  const jaInstance = await initTradux("ja");
+  const nav_ja = {
+    home: jaInstance.t.navigation.home,
+    about: jaInstance.t.navigation.about,
+    services: jaInstance.t.navigation.services,
+  };
+  const navigationJA = nav_ja;
 
-    nav = {
-        home: t.navigation.home,
-        about: t.navigation.about,
-        services: t.navigation.services
-    };
+  // Get the last instance's current language
+  const currentLanguage = jaInstance.currentLanguage;
 
-    //navigation with ja translate
-    const navigationJA = nav
-
-    const currentLanguage = await getCurrentLanguage();
-    return { availableLanguages, currentLanguage, navigationPT, navigationJA }
+  return { availableLanguages, currentLanguage, navigationPT, navigationJA };
 }

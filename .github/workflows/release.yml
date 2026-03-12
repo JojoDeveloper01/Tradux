@@ -84,18 +84,6 @@ jobs:
             echo "Version $CURRENT_VERSION does not exist on NPM"
           fi
 
-      - name: Determine bump type
-        id: bump-type
-        if: steps.check.outputs.exists == 'true'
-        run: |
-          if git log -1 --pretty=%B | grep -i "breaking\|major"; then
-            echo "bump_type=major" >> $GITHUB_OUTPUT
-          elif git log -1 --pretty=%B | grep -i "feat\|feature\|minor"; then
-            echo "bump_type=minor" >> $GITHUB_OUTPUT
-          else
-            echo "bump_type=patch" >> $GITHUB_OUTPUT
-          fi
-
       - name: Bump version if needed
         if: steps.check.outputs.exists == 'true'
         working-directory: ./library-tool
@@ -104,8 +92,8 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-          # Bump version
-          NEW_VERSION=$(pnpm version ${{ steps.bump-type.outputs.bump_type }} --no-git-tag-version)
+          # Always bump patch (manual edits to package.json control major/minor)
+          NEW_VERSION=$(pnpm version patch --no-git-tag-version)
 
           # Commit the version bump
           git add package.json pnpm-lock.yaml

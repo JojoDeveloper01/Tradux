@@ -24,20 +24,21 @@ export const traduxState = reactive({
 });
 let isInitializing = false;
 
-const updateState = async () => {
-  const instance = await initTradux();
-  traduxState.t = instance.t;
+const updateState = async (lang = null) => {
+  const instance = await initTradux(lang);
+  traduxState.t = new Proxy(instance.t, {});
   traduxState.currentLanguage = instance.currentLanguage;
   traduxState.isReady = true;
 };
 
 onLanguageChange(updateState);
 
-/** Explicit init for use in the app root. Safe to call multiple times. */
-export async function initVueTradux() {
+/** Explicit init for use in the app root. Safe to call multiple times.
+ *  Pass a language code (e.g. from a cookie) during SSR to pre-populate state. */
+export async function initVueTradux(lang = null) {
   if (!traduxState.isReady && !isInitializing) {
     isInitializing = true;
-    await updateState();
+    await updateState(lang);
     isInitializing = false;
   }
 }

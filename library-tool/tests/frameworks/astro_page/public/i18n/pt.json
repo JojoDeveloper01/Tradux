@@ -1,8 +1,8 @@
 {
   "navigation": {
-    "home": "Home →",
+    "home": "Home",
     "about": "Sobre nós",
     "services": "Nossos serviços"
   },
-  "welcome": "Bem-vindo ao meu site!"
+  "welcome": "Bem-vindo!"
 }

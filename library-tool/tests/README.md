@@ -105,6 +105,54 @@ The tests cover:
 - ✅ **Environment** - Cross-platform compatibility (Windows/Unix)
 - ✅ **Modern Standards** - ES modules and JSON configuration format
 
+## 🌐 Framework Integration Tests
+
+The `frameworks/` directory contains full runnable app projects that test Tradux end-to-end in real framework environments. These are manual/visual tests — run them with `pnpm dev` to verify behavior in the browser.
+
+```
+tests/frameworks/
+├── astro/             # Astro SSR app with all 4 integrations on one page
+│   └── src/components/
+│       ├── Astro.astro      # Native Astro SSR usage
+│       ├── ReactApp.jsx     # React island via tradux/react
+│       ├── SvelteApp.svelte # Svelte island via tradux/svelte
+│       └── VueApp.vue       # Vue island via tradux/vue
+├── astro_page/        # Minimal Astro page-level SSR test
+└── vite/
+    ├── react/         # React + Vite SPA (useTradux hook)
+    ├── svelte/        # Svelte + Vite SPA (useTradux stores)
+    ├── vue/           # Vue + Vite SPA (useTradux composable)
+    └── vanilla/       # Vanilla JS + Vite (initTradux direct API)
+```
+
+### Running Framework Tests
+
+Install all dependencies from the library root first:
+```bash
+# From library-tool/
+pnpm install
+```
+
+Then run any individual framework:
+```bash
+cd tests/frameworks/vite/react && pnpm dev
+cd tests/frameworks/vite/vue && pnpm dev
+cd tests/frameworks/vite/svelte && pnpm dev
+cd tests/frameworks/vite/vanilla && pnpm dev
+cd tests/frameworks/astro && pnpm dev
+cd tests/frameworks/astro_page && pnpm dev
+```
+
+### What Each Framework Test Covers
+
+| Framework   | Import Path     | Key Test                                                |
+| ----------- | --------------- | ------------------------------------------------------- |
+| React       | `tradux/react`  | `useTradux()` hook, language switching, re-render       |
+| Vue 3       | `tradux/vue`    | `useTradux()` composable, reactive state update         |
+| Svelte      | `tradux/svelte` | `useTradux()` stores, `$t` / `$isReady` reactivity      |
+| Vanilla JS  | `tradux`        | `initTradux()` direct API, DOM update without reload    |
+| Astro (SSR) | `tradux`        | `initTradux(cookie)` server-side, cookie-based language |
+
 ## 📊 Reports
 
 ### Typical Test Output

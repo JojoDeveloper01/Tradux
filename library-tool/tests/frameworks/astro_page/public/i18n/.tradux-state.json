@@ -1,0 +1,10 @@
+{
+  "sourceCache": {
+    "navigation": {
+      "home": "Home",
+      "about": "Sobre nós",
+      "services": "Nossos serviços"
+    },
+    "welcome": "Bem-vindo!"
+  }
+}

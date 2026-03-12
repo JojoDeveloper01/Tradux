@@ -293,43 +293,35 @@ const { t, currentLanguage } = await initTradux(traduxCookie);
 ### 🟡 Vanilla JS 
 
 ```html
-<section>
-  <h1>Vanilla JS</h1>
-  <h2 data-key="welcome"></h2>
-  <p data-key="navigation.home"></p>
-  <p data-key="navigation.about"></p>
-  <p data-key="navigation.services"></p>
-  <select id="lang-select"></select>
-</section>
+  <section>
+    <h1>Vanilla JS + Vite</h1>
+    <h2 data-key="welcome"></h2>
+    <p data-key="navigation.home"></p>
+    <p data-key="navigation.about"></p>
+    <p data-key="navigation.services"></p>
+    <select id="lang-select"></select>
+  </section>
+  
+  <script type="module">
+    import { initTradux, setLanguage, getAvailableLanguages, onLanguageChange } from "tradux";
 
-<script>
-    import { t, setLanguage, getAvailableLanguages, getCurrentLanguage } from "tradux";
+    const { t, currentLanguage } = await initTradux();
+    const select = document.getElementById("lang-select");
 
-    (async () => {
-      const select = document.getElementById("lang-select");
-      const currentLanguage = await getCurrentLanguage();
-      const availableLanguages = getAvailableLanguages();
-      availableLanguages.forEach(({ name, value }) => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = name;
-        if (value === currentLanguage) option.selected = true;
-        select.appendChild(option);
-      });
-      select.onchange = async (e) => {
-        const selectedLang = e.target.value;
-        if (selectedLang !== currentLanguage) {
-          await setLanguage(selectedLang);
-          window.location.reload();
-        }
-      };
+    const render = () =>
       document.querySelectorAll("[data-key]").forEach((el) => {
-        const key = el.dataset.key;
-        const value = key.split(".").reduce((acc, k) => acc && acc[k], t);
+        const value = el.dataset.key.split(".").reduce((acc, k) => acc?.[k], t);
         el.textContent = typeof value === "string" ? value : "";
       });
-    })();
-</script>
+
+    getAvailableLanguages().forEach(({ name, value }) => {
+      select.add(new Option(name, value, false, value === currentLanguage));
+    });
+
+    render();
+    onLanguageChange(render);
+    select.onchange = async (e) => { await setLanguage(e.target.value); render(); };
+  </script>
 ```
 
 ---
