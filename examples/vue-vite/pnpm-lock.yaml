@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       tradux:
-        specifier: file:../../library-tool
-        version: file:../../library-tool(vue@3.5.30(typescript@5.9.3))
+        specifier: 1.5.8
+        version: 1.5.8(vue@3.5.30(typescript@5.9.3))
       vue:
         specifier: 3.5.30
         version: 3.5.30(typescript@5.9.3)
@@ -453,8 +453,8 @@ packages:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
 
-  tradux@file:../../library-tool:
-    resolution: {directory: ../../library-tool, type: directory}
+  tradux@1.5.8:
+    resolution: {integrity: sha512-wZDIN/300crNwvTJJsB01QEswNPwjjQLSfMT43gUWO3IFy2TaMpkiu8BO2AMC8IhHYeaqSjs9bvQUnpP8QyMCQ==}
     hasBin: true
     peerDependencies:
       react: 18.0.0 || 19.0.0
@@ -919,7 +919,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
 
-  tradux@file:../../library-tool(vue@3.5.30(typescript@5.9.3)):
+  tradux@1.5.8(vue@3.5.30(typescript@5.9.3)):
     dependencies:
       '@babel/parser': 7.28.4
       '@clack/prompts': 1.2.0

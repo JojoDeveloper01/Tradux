@@ -10,7 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "dependencies": {
-    "tradux": "file:../../library-tool"
+    "tradux": "1.5.8"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "7.0.0",

@@ -3,6 +3,7 @@
     "defaultLanguage": "en",
     "availableLanguages": [
         "en",
+        "es",
         "pt"
     ],
     "translation": {

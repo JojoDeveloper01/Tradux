@@ -16,6 +16,6 @@
     "@astrojs/sitemap": "3.7.2",
     "astro": "6.1.8",
     "sharp": "0.34.3",
-    "tradux": "file:../../library-tool"
+    "tradux": "1.5.8"
   }
 }

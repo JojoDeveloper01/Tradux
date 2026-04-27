@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "tradux": "file:../../library-tool"
+    "tradux": "1.5.8"
   },
   "devDependencies": {
     "typescript": "5.9.3",

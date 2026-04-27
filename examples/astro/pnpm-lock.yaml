@@ -21,8 +21,8 @@ importers:
         specifier: 0.34.3
         version: 0.34.3
       tradux:
-        specifier: file:../../library-tool
-        version: file:../../library-tool
+        specifier: ^1.5.8
+        version: 1.5.8
 
 packages:
 
@@ -931,8 +931,8 @@ packages:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
-  jsonfile@6.2.0:
-    resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
+  jsonfile@6.2.1:
+    resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
 
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
@@ -1324,8 +1324,8 @@ packages:
     resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
     engines: {node: '>=12.0.0'}
 
-  tradux@file:../../library-tool:
-    resolution: {directory: ../../library-tool, type: directory}
+  tradux@1.5.8:
+    resolution: {integrity: sha512-wZDIN/300crNwvTJJsB01QEswNPwjjQLSfMT43gUWO3IFy2TaMpkiu8BO2AMC8IhHYeaqSjs9bvQUnpP8QyMCQ==}
     hasBin: true
     peerDependencies:
       react: 18.0.0 || 19.0.0
@@ -2291,7 +2291,7 @@ snapshots:
   fs-extra@11.3.1:
     dependencies:
       graceful-fs: 4.2.11
-      jsonfile: 6.2.0
+      jsonfile: 6.2.1
       universalify: 2.0.1
 
   fsevents@2.3.3:
@@ -2428,7 +2428,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jsonfile@6.2.0:
+  jsonfile@6.2.1:
     dependencies:
       universalify: 2.0.1
     optionalDependencies:
@@ -3099,7 +3099,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
 
-  tradux@file:../../library-tool:
+  tradux@1.5.8:
     dependencies:
       '@babel/parser': 7.28.4
       '@clack/prompts': 1.2.0
