@@ -1,0 +1,25 @@
+---
+import { initTradux } from "tradux";
+import BlogPost from "../../layouts/BlogPost.astro";
+
+export const prerender = false;
+
+const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
+const { t } = await initTradux(traduxCookie);
+
+const slug = Astro.params.slug as string;
+const post = t.blog.posts[slug];
+
+if (!post || !post.title) {
+  return Astro.redirect("/blog");
+}
+---
+
+<BlogPost
+  title={String(post.title)}
+  description={String(post.description)}
+  pubDate={new Date(String(post.pubDate))}
+  heroImage={post.heroImage}
+>
+  {(post.content as unknown as string[]).map((paragraph) => <p>{paragraph}</p>)}
+</BlogPost>

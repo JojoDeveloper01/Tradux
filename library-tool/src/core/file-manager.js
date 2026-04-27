@@ -88,7 +88,7 @@ class FileManager {
       const fileContent = await fs.readFile(languageFile, "utf8");
       return JSON.parse(fileContent);
     } catch (error) {
-      console.error(`Failed to load language file: ${languageFile}`);
+      console.error(`\nFailed to load language file: ${languageFile}`);
       return null;
     }
   }
@@ -122,6 +122,8 @@ class FileManager {
         i18nPath: resolvedI18nPath,
         defaultLanguage: config.defaultLanguage,
         availableLanguages: config.availableLanguages || [],
+        translation: config.translation || null,
+        workerUrl: config.workerUrl || null,
       };
 
       return this.configCache;

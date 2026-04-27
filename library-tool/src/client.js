@@ -64,8 +64,11 @@ async function loadLanguageDefinitions() {
 async function loadConfig() {
   try {
     if (isBrowser) {
-      const configModule = await import("/tradux.config.json");
-      config = { ...config, ...configModule };
+      const response = await fetch("/tradux.config.json");
+      if (response.ok) {
+        const configJson = await response.json();
+        config = { ...config, ...configJson };
+      }
     } else {
       const { readFile } = await import("fs/promises");
       const { join } = await import("path");
@@ -86,7 +89,7 @@ async function loadConfig() {
  * to be compatible with different project structures.
  */
 async function loadLanguage(lang) {
-  if (translationCache[lang]) {
+  if (isBrowser && translationCache[lang]) {
     return translationCache[lang];
   }
 
@@ -134,7 +137,7 @@ async function loadLanguage(lang) {
       }
     }
 
-    if (result) {
+    if (result && isBrowser) {
       translationCache[lang] = result;
     }
     return result;
@@ -246,6 +249,15 @@ async function createInstance(langOrCookies = null) {
    * - If it resolves to a nested object, returns another proxy.
    * - If the key is missing, logs a warning and returns the dot-path as a string fallback.
    */
+  function resolvePathValue(pathArray) {
+    let value = translations;
+    for (const key of pathArray) {
+      if (value && typeof value === "object") value = value[key];
+      else return undefined;
+    }
+    return value;
+  }
+
   function createTranslationProxy(pathArray = []) {
     return new Proxy(
       {},
@@ -254,21 +266,17 @@ async function createInstance(langOrCookies = null) {
           if (isInternalProperty(prop)) return undefined;
 
           const currentPath = [...pathArray, prop];
-          let value = translations;
-          for (const key of currentPath) {
-            if (value && typeof value === "object") value = value[key];
-            else {
-              value = undefined;
-              break;
-            }
-          }
+          const value = resolvePathValue(currentPath);
 
           if (value !== undefined) {
-            if (
-              typeof value === "object" &&
-              value !== null &&
-              !Array.isArray(value)
-            ) {
+            if (Array.isArray(value)) {
+              return value.map((item, i) =>
+                item && typeof item === "object"
+                  ? createTranslationProxy([...currentPath, i])
+                  : item,
+              );
+            }
+            if (typeof value === "object" && value !== null) {
               return createTranslationProxy(currentPath);
             }
             return value;
@@ -279,7 +287,26 @@ async function createInstance(langOrCookies = null) {
             console.warn(
               `Tradux: Translation missing for key: "${missingPath}"`,
             );
-            return missingPath;
+            return "";
+          }
+          return undefined;
+        },
+        ownKeys: () => {
+          const value = resolvePathValue(pathArray);
+          if (value && typeof value === "object" && !Array.isArray(value)) {
+            return Object.keys(value);
+          }
+          return [];
+        },
+        getOwnPropertyDescriptor: (target, prop) => {
+          const value = resolvePathValue(pathArray);
+          if (value && typeof value === "object" && prop in value) {
+            return {
+              configurable: true,
+              enumerable: true,
+              writable: true,
+              value: value[prop],
+            };
           }
           return undefined;
         },

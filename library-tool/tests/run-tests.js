@@ -92,7 +92,7 @@ const runTestSuite = async (suite) => {
         });
       } else {
         console.log(
-          `\n${colors.red}❌ ${suite.name} failed${colors.reset} ${colors.bright}(${duration}s)${colors.reset}`,
+          `\n${colors.red} ${suite.name} failed${colors.reset} ${colors.bright}(${duration}s)${colors.reset}`,
         );
         reject({
           suite: suite.name,
@@ -126,7 +126,7 @@ const runCoverage = async () => {
 
     if (allTestFiles.length === 0) {
       console.log(
-        `\n${colors.yellow}⚠️  No test files found for coverage${colors.reset}`,
+        `\n${colors.yellow}  No test files found for coverage${colors.reset}`,
       );
       resolve();
       return;
@@ -290,12 +290,12 @@ async function runAllTests() {
 
 process.on("SIGINT", () => {
   console.log(
-    `\n\n${colors.yellow}⚠️  Test run interrupted by user${colors.reset}`,
+    `\n\n${colors.yellow}  Test run interrupted by user${colors.reset}`,
   );
   process.exit(130);
 });
 process.on("SIGTERM", () => {
-  console.log(`\n\n${colors.yellow}⚠️  Test run terminated${colors.reset}`);
+  console.log(`\n\n${colors.yellow}  Test run terminated${colors.reset}`);
   process.exit(143);
 });
 process.on("uncaughtException", (error) => {

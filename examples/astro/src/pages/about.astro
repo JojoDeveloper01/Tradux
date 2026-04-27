@@ -1,0 +1,36 @@
+---
+import AboutHeroImage from "../assets/blog-placeholder-about.jpg";
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import { initTradux, getAvailableLanguages } from "tradux";
+
+export const prerender = false;
+
+const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
+const { t, currentLanguage } = await initTradux(traduxCookie);
+---
+
+<Layout
+  title={t.about.title}
+  description={t.about.description}
+  {currentLanguage}
+  {getAvailableLanguages}
+  {t}
+>
+  <article>
+    <div class="hero-image">
+      <Image width={1020} height={510} src={AboutHeroImage} alt="" />
+    </div>
+    <div class="prose">
+      <div class="title">
+        <h1>{t.about.title}</h1>
+        <hr />
+      </div>
+      {
+        (t.about.content as unknown as string[]).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))
+      }
+    </div>
+  </article>
+</Layout>

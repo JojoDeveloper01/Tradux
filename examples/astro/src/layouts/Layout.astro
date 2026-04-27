@@ -1,0 +1,31 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import type { TranslationProxy, LanguageOption } from "tradux";
+
+interface Props {
+  title: string;
+  description: string;
+  currentLanguage: string;
+  getAvailableLanguages: () => LanguageOption[];
+  t: TranslationProxy;
+}
+
+const { title, description, currentLanguage, getAvailableLanguages, t } =
+  Astro.props as Props;
+---
+
+<!doctype html>
+<html lang={currentLanguage}>
+  <head>
+    <BaseHead {title} {description} />
+  </head>
+  <body>
+    <Header {getAvailableLanguages} {currentLanguage} {t} />
+    <main>
+      <slot />
+    </main>
+    <Footer {t} />
+  </body>
+</html>

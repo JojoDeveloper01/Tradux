@@ -1,0 +1,31 @@
+---
+import { initTradux, getAvailableLanguages } from "tradux";
+import Layout from "../layouts/Layout.astro";
+
+export const prerender = false;
+
+const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
+const { t, currentLanguage } = await initTradux(traduxCookie);
+---
+
+<Layout
+  title={t.site.title}
+  description={t.site.description}
+  {currentLanguage}
+  {getAvailableLanguages}
+  {t}
+>
+  <h1>{t.home.heading}</h1>
+  <p set:html={t.home.intro} />
+  <p set:html={t.home.integrations} />
+  <p>{t.home.getStarted}</p>
+  <ul>
+    <li set:html={t.home.tips.editPage} />
+    <li set:html={t.home.tips.editHeader} />
+    <li set:html={t.home.tips.editFooter} />
+    <li set:html={t.home.tips.checkBlog} />
+    <li set:html={t.home.tips.customizeLayout} />
+  </ul>
+  <p set:html={t.home.haveFun} />
+  <p set:html={t.home.moreTemplates} />
+</Layout>

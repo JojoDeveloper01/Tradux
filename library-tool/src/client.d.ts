@@ -25,6 +25,7 @@ export type TranslationProxy = {
 /** Lazy proxy — safe to import before initTradux() is called. */
 export declare const t: TranslationProxy;
 
+export function onLanguageChange(callback: () => void): void;
 export function setLanguage(language: string): Promise<boolean>;
 export function getCurrentLanguage(traduxLangCookieValue?: string | null): Promise<string>;
 export function getAvailableLanguages(): LanguageOption[];

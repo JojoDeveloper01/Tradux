@@ -1,0 +1,20 @@
+{
+  "sourceCache": {
+    "welcome": "Bienvenue sur mon site !",
+    "hero": {
+      "heading": "Démarrer",
+      "description": "Modifier src/App.svelte et enregistrer pour tester HMR",
+      "counter": "Le comte est"
+    },
+    "docs": {
+      "heading": "Documentation",
+      "description": "Vos questions, réponses",
+      "exploreVite": "Explorez vite",
+      "learnMore": "En savoir plus"
+    },
+    "social": {
+      "heading": "Connectez avec nous",
+      "description": "Rejoignez la communauté Vite"
+    }
+  }
+}

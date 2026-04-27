@@ -1,0 +1,18 @@
+{
+  "welcome": "Bem-vindo ao meu site!",
+  "hero": {
+    "heading": "Começar",
+    "description": "Modifique src/App.svelte e salve para testar o HMR",
+    "counter": "A contagem é"
+  },
+  "docs": {
+    "heading": "Documentação",
+    "description": "Suas perguntas, respostas",
+    "exploreVite": "Explore o Vite",
+    "learnMore": "Saiba mais"
+  },
+  "social": {
+    "heading": "Conecte-se conosco",
+    "description": "Junte-se à comunidade Vite"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "welcome": "私のサイトへようこそ！",
+  "hero": {
+    "heading": "はじめる",
+    "description": "src/App.svelteを編集して保存し、HMRをテストしてください",
+    "counter": "カウントは"
+  },
+  "docs": {
+    "heading": "ドキュメント",
+    "description": "ご質問と回答",
+    "exploreVite": "Viteを探索する",
+    "learnMore": "詳細を見る"
+  },
+  "social": {
+    "heading": "つながる",
+    "description": "Viteコミュニティに参加する"
+  }
+}

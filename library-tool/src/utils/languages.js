@@ -1,4 +1,3 @@
-/** All languages supported by the Cloudflare m2m100 translation model. */
 export const availableLanguages = [
   { name: "Afrikaans", value: "af" },
   { name: "Albanian", value: "sq" },

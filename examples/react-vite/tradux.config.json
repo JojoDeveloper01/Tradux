@@ -1,0 +1,22 @@
+{
+    "i18nPath": "./i18n",
+    "defaultLanguage": "en",
+    "availableLanguages": [
+        "en",
+        "es",
+        "pt"
+    ],
+    "translation": {
+        "default": {
+            "provider": "openrouter",
+            "model": "google/gemini-2.0-flash-001"
+        },
+        "fallback": {
+            "provider": "openrouter",
+            "model": "google/gemini-2.0-flash-lite-001"
+        },
+        "review": {
+            "enabled": true
+        }
+    }
+}

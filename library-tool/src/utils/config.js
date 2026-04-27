@@ -2,22 +2,10 @@ import fs from "fs-extra";
 import path from "path";
 import { logger } from "./logger.js";
 import { fileManager } from "../core/file-manager.js";
-
-/**
- * config.js — Configuration Validation & Auto-Healing
- *
- * Ensures tradux.config.json is always valid and in sync with the filesystem.
- * When invoked (via `tradux init` or before any CLI operation), it:
- *   1. Creates the config file if missing
- *   2. Normalizes i18nPath (e.g. "./public/i18n" → "./i18n" to avoid Vite warnings)
- *   3. Creates the i18n directory and a sample en.json if nothing exists
- *   4. Syncs availableLanguages with whatever .json files actually exist on disk
- *   5. Validates defaultLanguage and falls back to "en" or the first file found
- */
+import { PROVIDERS, getRequiredEnvVars, isValidProvider } from "./providers.js";
 
 const CONFIG_FILENAME = "tradux.config.json";
 
-/** Default en.json content created for new projects. */
 const SAMPLE_CONTENT = {
   navigation: {
     home: "Home",
@@ -27,7 +15,6 @@ const SAMPLE_CONTENT = {
   welcome: "Welcome to my website!",
 };
 
-/** Checks well-known directories for an existing i18n folder. */
 function findI18nPathSync(dir) {
   const possiblePaths = ["public/i18n", "src/i18n", "app/i18n", "i18n"];
   for (const p of possiblePaths) {
@@ -37,11 +24,6 @@ function findI18nPathSync(dir) {
   return null;
 }
 
-/**
- * Validates tradux.config.json and auto-fixes any issues it finds.
- * @param {string} projectRoot - Absolute path to the project root
- * @param {boolean} silent - When true, suppresses log output (used before CLI operations)
- */
 export async function validateAndFixConfig(projectRoot, silent = false) {
   const configPath = path.join(projectRoot, CONFIG_FILENAME);
   let config = {};
@@ -59,7 +41,6 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
-  // --- Ensure i18nPath exists ---
   if (!config.i18nPath) {
     let foundPath = findI18nPathSync(projectRoot);
     if (!foundPath) {
@@ -76,8 +57,6 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
-  // Normalize: Vite warns about importing from "public/" directly,
-  // so the config stores "./i18n" and the runtime prepends "public/" at load time.
   if (
     config.i18nPath === "./public/i18n" ||
     config.i18nPath === "public/i18n"
@@ -90,7 +69,6 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
-  // Resolve the actual directory on disk (may be under public/)
   let actualI18nPath = path.resolve(projectRoot, config.i18nPath);
   if (!fs.existsSync(actualI18nPath) && config.i18nPath === "./i18n") {
     if (fs.existsSync(path.resolve(projectRoot, "public/i18n"))) {
@@ -107,8 +85,6 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     }
   }
 
-  // --- Sync availableLanguages from the filesystem ---
-  // Reads the i18n directory and treats each .json file (minus hidden files) as a language.
   let existingFiles = [];
   if (fs.existsSync(actualI18nPath)) {
     existingFiles = fs
@@ -126,7 +102,6 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
-  // --- Validate defaultLanguage ---
   if (
     !config.defaultLanguage ||
     !existingFiles.includes(config.defaultLanguage)
@@ -138,9 +113,84 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     configChanged = true;
   }
 
-  // --- Write back if anything changed ---
+  if (!config.translation || typeof config.translation !== "object") {
+    if (!silent) {
+      logger.warn("\n  No 'translation' block found in tradux.config.json.");
+      logger.info(
+        '   Run "npx tradux init" to configure your provider and model.',
+      );
+    }
+    config.translation = {
+      default: { provider: "provider_code", model: "model_code" },
+    };
+    configChanged = true;
+  } else {
+    // Migrates older flat config structure to the new nested 'default' object
+    if (config.translation.provider && !config.translation.default) {
+      config.translation.default = {
+        provider: config.translation.provider,
+        model: config.translation.model || "model_code",
+      };
+      delete config.translation.provider;
+      delete config.translation.model;
+      configChanged = true;
+    }
+
+    if (!config.translation.default) {
+      config.translation.default = {
+        provider: "provider_code",
+        model: "model_code",
+      };
+      configChanged = true;
+    }
+
+    const validProviders = Object.keys(PROVIDERS);
+
+    if (
+      !config.translation.default.provider ||
+      config.translation.default.provider === "provider_code"
+    ) {
+      if (!silent)
+        logger.warn(
+          `\n  translation.default.provider is required. Set it to one of: ${validProviders.join(", ")}`,
+        );
+      if (!config.translation.default.provider) {
+        config.translation.default.provider = "provider_code";
+        configChanged = true;
+      }
+    } else if (!isValidProvider(config.translation.default.provider)) {
+      if (!silent)
+        logger.warn(
+          `\n  Unknown provider "${config.translation.default.provider}". Valid options: ${validProviders.join(", ")}`,
+        );
+    }
+
+    if (
+      !config.translation.default.model ||
+      config.translation.default.model === "model_code"
+    ) {
+      if (!silent)
+        logger.warn(
+          `\n  translation.default.model is required. Set it to your chosen model name.`,
+        );
+      if (!config.translation.default.model) {
+        config.translation.default.model = "model_code";
+        configChanged = true;
+      }
+    }
+  }
+
   if (configChanged) {
-    await fs.writeFile(configPath, JSON.stringify(config, null, 4));
+    // Reorders the object keys to prioritize the translation block at the top
+    const reorderedConfig = {
+      i18nPath: config.i18nPath,
+      defaultLanguage: config.defaultLanguage,
+      availableLanguages: config.availableLanguages,
+      translation: config.translation,
+      ...config,
+    };
+
+    await fs.writeFile(configPath, JSON.stringify(reorderedConfig, null, 4));
     if (!silent)
       logger.success(
         `\n Tradux configuration generated/updated at ${CONFIG_FILENAME}`,
@@ -153,7 +203,106 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
   }
 }
 
-/** Delegates to fileManager.loadConfig() for cached config reads. */
+export async function executeRemoveLanguages(languages, config) {
+  const i18nAbsolutePath = fileManager.getAbsoluteI18nPath(config.i18nPath);
+  const languageList = languages
+    .split(",")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  let filesRemoved = false;
+
+  for (const lang of languageList) {
+    if (lang === config.defaultLanguage) {
+      continue;
+    }
+    const fp = path.join(i18nAbsolutePath, `${lang}.json`);
+    if (fs.existsSync(fp)) {
+      fs.unlinkSync(fp);
+      filesRemoved = true;
+    }
+  }
+  if (filesRemoved) await validateAndFixConfig(process.cwd(), true);
+}
+
+export function checkEnvCredentials(config) {
+  const t = config?.translation || {};
+  const defaultProv =
+    t.default?.provider || config?.translationProvider || "provider_code";
+  const fallbackProv = t.fallback?.provider || "provider_code";
+
+  if (defaultProv === "provider_code" && fallbackProv === "provider_code") {
+    logger.warn(
+      '\n  Translation providers are not configured yet. Run "npx tradux init" to set them up.',
+    );
+    return false;
+  }
+
+  let defaultOk = false;
+  let fallbackOk = false;
+
+  const envPath = path.join(process.cwd(), ".env");
+  const envExists = fs.existsSync(envPath);
+  const envContent = envExists ? fs.readFileSync(envPath, "utf8") : "";
+
+  const validateKeys = (providerId, label, muteWarning = false) => {
+    if (providerId === "provider_code") return false;
+    const requiredVars = getRequiredEnvVars(providerId);
+    if (requiredVars.length === 0) return true;
+
+    if (!envExists) {
+      if (!muteWarning)
+        logger.warn(
+          `\n  No .env file found. Create one with ${requiredVars.join(" and ")} to enable ${label} translations.`,
+        );
+      return false;
+    }
+
+    const missing = requiredVars.filter(
+      (v) => !new RegExp(`${v}=.+`).test(envContent),
+    );
+    if (missing.length > 0) {
+      if (!muteWarning)
+        logger.warn(
+          `\n  .env is missing ${missing.join(" and ")} for ${label} provider "${providerId}".`,
+        );
+      return false;
+    }
+    return true;
+  };
+
+  if (defaultProv !== "provider_code") {
+    defaultOk = validateKeys(defaultProv, "primary");
+  }
+
+  if (fallbackProv !== "provider_code") {
+    // Silencia o aviso do fallback se o principal já estiver funcional
+    fallbackOk = validateKeys(fallbackProv, "fallback", defaultOk);
+  }
+
+  if (defaultOk && fallbackProv !== "provider_code" && !fallbackOk) {
+    logger.info(
+      `\nℹ️  Note: Primary provider is ready, but Fallback is missing credentials.`,
+    );
+    return true;
+  }
+
+  if (!defaultOk && fallbackOk) {
+    logger.info(
+      `\nℹ️  Primary provider is unconfigured or missing keys. Tradux will proceed using the Fallback.`,
+    );
+    return true;
+  }
+
+  if (!defaultOk && !fallbackOk) {
+    logger.error(
+      `\nNo valid credentials found for any configured provider. Translations will not work.`,
+    );
+    return false;
+  }
+
+  return true;
+}
+
 export async function loadConfig() {
   try {
     const config = await fileManager.loadConfig();

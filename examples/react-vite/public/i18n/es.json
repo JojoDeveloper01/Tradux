@@ -1,0 +1,18 @@
+{
+  "hero": {
+    "heading": "¡Bienvenido al React + Vite Starter!",
+    "description": "Este es un proyecto de demostración que utiliza Tradux para i18n.",
+    "counter": "Contador:"
+  },
+  "docs": {
+    "heading": "Documentación",
+    "description": "Descubre más sobre Vite y React.",
+    "exploreVite": "Explorar la documentación de Vite",
+    "learnMore": "Aprender más sobre React"
+  },
+  "social": {
+    "heading": "Enlaces sociales",
+    "description": "Conéctate con nosotros en estas plataformas:",
+    "github": "GitHub"
+  }
+}

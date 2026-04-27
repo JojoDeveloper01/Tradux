@@ -1,0 +1,20 @@
+{
+  "sourceCache": {
+    "welcome": "Welcome to my website!",
+    "hero": {
+      "heading": "Get started",
+      "description": "Edit src/App.svelte and save to test HMR",
+      "counter": "Count is"
+    },
+    "docs": {
+      "heading": "Documentation",
+      "description": "Your questions, answered",
+      "exploreVite": "Explore Vite",
+      "learnMore": "Learn more"
+    },
+    "social": {
+      "heading": "Connect with us",
+      "description": "Join the Vite community"
+    }
+  }
+}

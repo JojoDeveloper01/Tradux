@@ -1,13 +1,14 @@
 {
   "name": "tradux",
-  "version": "1.5.7",
-  "description": "A CLI tool for automated translation of JSON files using Cloudflare Workers AI.",
+  "version": "1.5.8",
+  "description": "Automated JSON i18n translation for React, Vue, Svelte, Astro and Vanilla JS — powered by any AI provider.",
   "type": "module",
   "private": false,
   "main": "./src/client.js",
   "types": "./src/client.d.ts",
   "bin": {
-    "tradux": "src/index.js"
+    "tradux": "src/index.js",
+    "tx": "src/index.js"
   },
   "files": [
     "src",
@@ -61,8 +62,16 @@
     "i18n",
     "translation",
     "localization",
+    "openrouter",
+    "openai",
+    "anthropic",
+    "google-ai",
     "cloudflare",
-    "workers-ai"
+    "workers-ai",
+    "react",
+    "vue",
+    "svelte",
+    "astro"
   ],
   "author": "JojoDeveloper001 <jojo.programmer01@gmail.com>",
   "license": "ISC",
@@ -71,17 +80,18 @@
     "url": "https://github.com/JojoDeveloper01/Tradux"
   },
   "dependencies": {
-    "@babel/parser": "^7.28.4",
+    "@babel/parser": "7.28.4",
+    "@clack/prompts": "1.2.0",
     "chalk": "5.6.0",
     "commander": "12.1.0",
     "fs-extra": "11.3.1",
-    "prompts": "2.4.2",
-    "recast": "0.23.11"
+    "recast": "0.23.11",
+    "prompts": "2.4.2"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "svelte": "^4.0.0 || ^5.0.0",
-    "vue": "^3.0.0"
+    "react": "18.0.0 || 19.0.0",
+    "svelte": "4.0.0 || 5.0.0",
+    "vue": "3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -95,6 +105,6 @@
     }
   },
   "devDependencies": {
-    "c8": "^11.0.0"
+    "c8": "11.0.0"
   }
 }

@@ -1,0 +1,50 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { initTradux, getAvailableLanguages } from "tradux";
+
+export const prerender = false;
+
+const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
+const { t, currentLanguage } = await initTradux(traduxCookie);
+
+const postKeys = Object.keys(t.blog.posts);
+---
+
+<style>
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<Layout
+  title={t.site.title}
+  description={t.site.description}
+  {currentLanguage}
+  {getAvailableLanguages}
+  {t}
+>
+  <section>
+    <ul>
+      {
+        postKeys.map((slug) => (
+          <li>
+            <a href={`/blog/${slug}/`}>
+              {t.blog.posts[slug].heroImage && (
+                <img
+                  width={720}
+                  height={360}
+                  src={String(t.blog.posts[slug].heroImage)}
+                  alt=""
+                />
+              )}
+              <h4 class="title">{t.blog.posts[slug].title}</h4>
+              <p class="date">{t.blog.posts[slug].pubDate}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>
