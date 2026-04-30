@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
           cache-dependency-path: "library-tool/pnpm-lock.yaml"
@@ -101,14 +101,9 @@ jobs:
           # Safe push
           git push --force-with-lease origin main
 
-      - name: Clear .npmrc token
-        run: |
-          NPMRC="${RUNNER_TEMP}/.npmrc"
-          echo "//registry.npmjs.org/" > "$NPMRC"
-
       - name: Publish to NPM
         working-directory: ./library-tool
-        run: npm publish --access public --provenance
+        run: npm publish --access public
 
       - name: Create Git Tag
         run: |
