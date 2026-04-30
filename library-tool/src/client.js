@@ -27,6 +27,56 @@ let languageDefinitions = [];
 let configLoaded = false;
 const translationCache = {};
 
+function normalizeBrowserBasePath(basePath = "/") {
+  if (!basePath || basePath === ".") return "/";
+
+  const withLeadingSlash = basePath.startsWith("/") ? basePath : `/${basePath}`;
+  return withLeadingSlash.endsWith("/")
+    ? withLeadingSlash
+    : `${withLeadingSlash}/`;
+}
+
+function getBrowserBasePath() {
+  if (!isBrowser) return "/";
+
+  try {
+    const viteBase = import.meta.env?.BASE_URL;
+    if (typeof viteBase === "string") {
+      return normalizeBrowserBasePath(viteBase);
+    }
+  } catch {}
+
+  try {
+    const moduleUrl = new URL(import.meta.url);
+    const assetsIndex = moduleUrl.pathname.lastIndexOf("/assets/");
+
+    if (assetsIndex !== -1) {
+      return normalizeBrowserBasePath(moduleUrl.pathname.slice(0, assetsIndex + 1));
+    }
+  } catch {}
+
+  return "/";
+}
+
+function getBrowserAssetCandidates(relativePath) {
+  const cleanPath = relativePath.replace(/^\/+/, "");
+  const basePath = getBrowserBasePath();
+  return [...new Set([`${basePath}${cleanPath}`, `/${cleanPath}`])];
+}
+
+async function fetchFirstJson(candidates) {
+  for (const candidate of candidates) {
+    try {
+      const response = await fetch(candidate);
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch {}
+  }
+
+  return null;
+}
+
 // --- Event System ---
 // Frameworks subscribe to "change" events to re-render when the language switches.
 // DummyEventTarget is a no-op fallback for environments without EventTarget (old Node, edge runtimes).
@@ -64,9 +114,11 @@ async function loadLanguageDefinitions() {
 async function loadConfig() {
   try {
     if (isBrowser) {
-      const response = await fetch("/tradux.config.json");
-      if (response.ok) {
-        const configJson = await response.json();
+      const configJson = await fetchFirstJson(
+        getBrowserAssetCandidates("tradux.config.json"),
+      );
+
+      if (configJson) {
         config = { ...config, ...configJson };
       }
     } else {
@@ -100,8 +152,9 @@ async function loadLanguage(lang) {
       const path = config.i18nPath
         .replace(/^\.\//, "")
         .replace(/^public\//, "");
-      const response = await fetch(`/${path}/${lang}.json`);
-      result = response.ok ? await response.json() : null;
+      result = await fetchFirstJson(
+        getBrowserAssetCandidates(`${path}/${lang}.json`),
+      );
     } else {
       const { readFile } = await import("fs/promises");
       const { join } = await import("path");

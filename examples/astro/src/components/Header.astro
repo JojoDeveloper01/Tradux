@@ -10,6 +10,10 @@ interface Props {
 }
 
 const { getAvailableLanguages, currentLanguage, t } = Astro.props as Props;
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const languagePath = `${basePath}language`;
 ---
 
 <style>
@@ -56,7 +60,7 @@ const { getAvailableLanguages, currentLanguage, t } = Astro.props as Props;
 
 <header>
   <nav>
-    <h2><a href="/">{SITE_TITLE}</a></h2>
+    <h2><a href={basePath}>{SITE_TITLE}</a></h2>
     <div class="internal-links">
       <HeaderLink href="/">{t.nav.home}</HeaderLink>
       <HeaderLink href="/blog">{t.nav.blog}</HeaderLink>
@@ -103,11 +107,14 @@ const { getAvailableLanguages, currentLanguage, t } = Astro.props as Props;
   </nav>
 </header>
 
-<script>
-  import { setLanguage } from "tradux";
-  const langSelect = document.getElementById("lang-select") as HTMLElement;
-  langSelect.addEventListener("change", async (e: Event) => {
-    await setLanguage((e.target as HTMLSelectElement).value);
-    location.reload();
+<script is:inline data-language-path={languagePath}>
+  const languagePath = document.currentScript?.dataset.languagePath || "/language";
+  const langSelect = document.getElementById("lang-select");
+  langSelect?.addEventListener("change", (e) => {
+    const language = e.target.value;
+    const url = new URL(languagePath, window.location.origin);
+    url.searchParams.set("lang", language);
+    url.searchParams.set("redirect", window.location.pathname + window.location.search);
+    window.location.href = url.toString();
   });
 </script>

@@ -1,7 +1,7 @@
 {
   "site": {
-    "title": "Блог Astro",
-    "description": "Добро пожаловать на мой сайт!"
+    "title": "Tradux | Интеллектуальная библиотека переводов",
+    "description": "Автоматизируйте управление многоязычным контентом."
   },
   "nav": {
     "home": "Главная",
@@ -27,84 +27,116 @@
     },
     "haveFun": "Развлекайтесь! Если вы застряли, не забудьте <a href=\"https://docs.astro.build/\">прочитать документацию</a> или <a href=\"https://astro.build/chat\">присоединиться к нам в Discord</a>, чтобы задать вопросы.",
     "moreTemplates": "Ищете шаблон блога с немного большей индивидуальностью? Ознакомьтесь с <a href=\"https://github.com/Charca/astro-blog-template\">astro-blog-template</a> от <a href=\"https://twitter.com/Charca\">Maxi Ferreira</a>.",
-    "brand_name": "Tradux"
+    "brand_name": "Tradux",
+    "hero": {
+      "title": "🌐 Tradux",
+      "desc1": "Tradux — это библиотека переводов, дружелюбная к разработчикам, предназначенная для автоматизации управления многоязычным контентом. Она использует выбранного вами провайдера ИИ (OpenRouter, OpenAI, Anthropic, Google и др.) для перевода ваших JSON-файлов и предоставляет лёгкие, реактивные хуки для обработки переключения языков в современных фреймворках JavaScript.",
+      "desc2": "Независимо от того, создаёте ли вы простое одностраничное приложение или сайт с серверным рендерингом, ориентированный на SEO, Tradux стремится уменьшить ручные затраты на управление переводами."
+    },
+    "features": {
+      "title": "⚡ Ключевые возможности",
+      "ai": {
+        "title": "CLI с ИИ-поддержкой",
+        "desc": "Автоматизирует перевод JSON с использованием любого провайдера ИИ по вашему выбору."
+      },
+      "diff": {
+        "title": "Дифференциальные обновления",
+        "desc": "Tradux запоминает ваши предыдущие переводы. Если вы изменяете конкретную английскую строку, он обновляет только её, экономя вызовы API и токены."
+      },
+      "fallback": {
+        "title": "Резервирование (Fallback)",
+        "desc": "Автоматически переключается на резервного провайдера, если ваш основной API завершается ошибкой или исчерпывает кредиты."
+      },
+      "hooks": {
+        "title": "Нативные хуки фреймворков",
+        "desc": "Готовые к использованию хуки для React, Vue, Svelte и чистого JS."
+      },
+      "reactive": {
+        "title": "Кросскомпонентная реактивность",
+        "desc": "Изменяя язык в одном компоненте, остальная часть приложения мгновенно обновляется без перезагрузки страницы."
+      },
+      "sync": {
+        "title": "Автосинхронизация конфигурации",
+        "desc": "CLI автоматически управляет списком доступных языков на основе реальных файлов в вашей папке."
+      }
+    }
   },
   "about": {
-    "title": "Обо мне",
-    "description": "Lorem ipsum dolor sit amet",
+    "title": "О Tradux",
+    "description": "Узнайте больше об автоматизированной библиотеке i18n и о том, как она упрощает ваш рабочий процесс.",
     "content": [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-      "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-      "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-      "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-      "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+      "Tradux — это удобная для разработчиков библиотека перевода, предназначенная для автоматизации управления многоязычным контентом. Независимо от того, создаете ли вы простое одностраничное приложение или SEO-ориентированный веб-сайт с рендерингом на стороне сервера, Tradux стремится уменьшить ручное трение при управлении переводами.",
+      "Основная философия проста: напишите свой контент на одном языке по умолчанию (обычно английском) внутри JSON-файла, а остальное предоставьте AI. Благодаря прямой интеграции с ведущими поставщиками AI, такими как OpenAI, Anthropic, Google и OpenRouter, Tradux может контекстуализировать весь словарь вашего приложения нативно.",
+      "Одной из выдающихся особенностей Tradux является его система дифференциальных обновлений. Он запоминает ваши предыдущие переводы, используя локальный файл состояния. Если вы измените определенную английскую строку, он отправит только это одно обновление в AI, экономя вызовы API и значительно снижая затраты на токены.",
+      "Для внешнего интерфейса Tradux предоставляет легкие, реактивные хуки для современных фреймворков, включая React, Vue, Svelte и Vanilla JS. Изменение языка в одном компоненте мгновенно обновляет остальную часть приложения, не требуя перезагрузки страницы или сложной настройки.",
+      "Надежность встроена. С помощью функции избыточности вы можете настроить резервного поставщика. Если ваш основной API выходит из строя или заканчиваются кредиты, Tradux автоматически переключается на резервного поставщика, гарантируя, что ваши конвейеры сборки и переводы никогда не сломаются."
     ]
   },
   "blog": {
     "lastUpdatedOn": "Последнее обновление",
     "posts": {
-      "first-post": {
-        "title": "Первая запись",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-08",
+      "getting-started": {
+        "title": "Начало работы с Tradux",
+        "description": "Узнайте, как установить и настроить Tradux в вашем проекте.",
+        "pubDate": "2026-04-26",
         "heroImage": "/images/blog-placeholder-1.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "Начало работы с Tradux чрезвычайно просто. Сначала вам нужно установить его в ваш проект с помощью предпочитаемого менеджера пакетов. Мы рекомендуем `pnpm` или `npm`.",
+          "Выполните `npm install tradux` или `pnpm install tradux`. После установки вы можете инициализировать интерактивный мастер настройки, запустив `npx tradux init`.",
+          "Мастер проведёт вас через выбор базового языка, папки с переводами (обычно `./i18n`) и вашего предпочтительного провайдера ИИ (например, OpenRouter или OpenAI).",
+          "После настройки убедитесь, что вы добавили ваш ключ API в файл `.env` (например, `OPENROUTER_API_KEY=sk-or-...`).",
+          "Наконец, выполните `npx tradux -t es,pt,fr` чтобы мгновенно сгенерировать переводы на испанский, португальский и французский языки на основе вашего JSON-файла по умолчанию!"
         ]
       },
-      "second-post": {
-        "title": "Вторая запись",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-15",
+      "differential-updates": {
+        "title": "Понимание дифференциальных обновлений",
+        "description": "Экономьте токены и деньги, переводя только изменённое.",
+        "pubDate": "2026-04-27",
         "heroImage": "/images/blog-placeholder-2.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "Когда вы запускаете Tradux, вам не нужно повторно переводить весь файл каждый раз, когда вы исправляете опечатку. Tradux использует умную систему дифференциальных обновлений.",
+          "При переводе файлов Tradux оставляет скрытый файл `.tradux-state.json` в вашей папке i18n, который служит снимком состояния.",
+          "Когда вы запускаете `npx tradux -u`, Tradux сравнивает ваш текущий JSON языка по умолчанию со этим снимком. Он точно определяет, какие существующие строки были изменены, а какие добавлены вновь.",
+          "Затем он отправляет только различия в API. Это гарантирует, что ваши ручные правки в целевых языках не будут перезаписаны, и вы значительно экономите на использовании токенов ИИ."
         ]
       },
-      "third-post": {
-        "title": "Третья запись",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-22",
+      "special-markers": {
+        "title": "Использование специальных маркеров перевода",
+        "description": "Контролируйте точно, как ИИ обрабатывает конкретные ключи JSON.",
+        "pubDate": "2026-04-28",
         "heroImage": "/images/blog-placeholder-3.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "Иногда в вашем JSON есть данные, которые не следует переводить, например, пути к изображениям, URL-адреса или названия брендов. Tradux предоставляет специальные префиксы-маркеры для точного управления.",
+          "**=== (Без перевода):** Копирует значение точно как есть в целевые языки. Пример: `\"===heroImage\": \"/images/hero.jpg\"`.",
+          "**+++ (Принудительный перевод):** Принудительно выполняет повторный перевод при каждом запуске обновления, даже если английское значение не изменилось. Полезно для сложных контекстных строк.",
+          "**--- (Игнорировать):** Полностью игнорирует ключ. Он не будет переведён или добавлен в целевые файлы. Идеально для заметок разработчика: `\"---devNote\": \"TODO: пересмотрите этот текст перед запуском\"`."
         ]
       },
-      "using-mdx": {
-        "title": "Использование MDX",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2024-06-01",
+      "framework-hooks": {
+        "title": "Реактивные хуки фреймворков",
+        "description": "Использование Tradux с React, Vue и Svelte.",
+        "pubDate": "2026-04-29",
         "heroImage": "/images/blog-placeholder-4.jpg",
         "content": [
-          "Эта тема поставляется с интеграцией <a href='https://docs.astro.build/en/guides/integrations-guide/mdx/'>@astrojs/mdx</a>, установленной и настроенной в вашем файле конфигурации <code>astro.config.mjs</code>. Если вы предпочитаете не использовать MDX, вы можете отключить поддержку, удалив интеграцию из файла конфигурации.",
-          "MDX — это особый вид Markdown, который поддерживает встроенный JavaScript и синтаксис JSX. Это открывает возможность <a href='https://docs.astro.build/en/guides/integrations-guide/mdx/#mdx-in-astro'>смешивать JavaScript и компоненты пользовательского интерфейса в вашем контенте Markdown</a> для таких вещей, как диаграммы или интерактивные оповещения.",
-          "Если у вас есть существующий контент, созданный в MDX, эта интеграция, надеюсь, сделает миграцию в Astro проще простого."
+          "Tradux — это не просто CLI; он предоставляет нативные реактивные хуки для вашего фронтенда. Вы можете импортировать `useTradux()` напрямую из подпутей вроде `tradux/react`, `tradux/vue` или `tradux/svelte`.",
+          "Эти хуки предоставляют стандартный набор переменных: `t` (для ваших переводов), `currentLanguage`, `isReady` и функции вроде `setLanguage()` и `getAvailableLanguages()`.",
+          "Поскольку Tradux использует общий кэш в памяти, вам достаточно дождаться `isReady` в корне вашего приложения. Все дочерние компоненты мгновенно получат переводы без сетевых запросов или мерцания загрузки."
         ]
       },
-      "markdown-style-guide": {
-        "title": "Руководство по стилю Markdown",
-        "description": "Вот пример некоторого базового синтаксиса Markdown, который можно использовать при написании контента Markdown в Astro.",
-        "pubDate": "2024-06-19",
+      "seo-ssr": {
+        "title": "Tradux с SSR и SEO",
+        "description": "Обработка серверного рендеринга и динамических тегов head.",
+        "pubDate": "2026-04-30",
         "heroImage": "/images/blog-placeholder-5.jpg",
         "content": [
-          "Вот пример некоторого базового синтаксиса Markdown, который можно использовать при написании контента Markdown в Astro."
+          "Для правильной индексации переведённого контента поисковыми системами языки должны быть привязаны к URL (например, `mysite.com/es/about`). Поисковые системы игнорируют локальное хранилище и куки.",
+          "Tradux поддерживает это нативно. Вместо использования `setLanguage()`, используйте роутер вашего фреймворка для извлечения языка из URL и передачи его напрямую в `initTradux(lang)` на сервере.",
+          "При использовании пользовательских конфигураций SSR (например, Astro или Express) вы можете использовать изолированные экземпляры Tradux для перехвата запросов, чтения файла перевода на сервере и внедрения правильных тегов `<html lang=\"x\">` и `<title>` в ваш исходный HTML перед отправкой клиенту."
         ]
       }
     }
   },
   "footer": {
-    "copyright": "Ваше имя здесь. Все права защищены."
+    "copyright": "Tradux. Все права защищены."
   }
 }

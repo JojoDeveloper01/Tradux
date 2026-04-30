@@ -8,6 +8,10 @@ const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
 const { t, currentLanguage } = await initTradux(traduxCookie);
 
 const postKeys = Object.keys(t.blog.posts);
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${basePath}${path.replace(/^\//, '')}`;
 ---
 
 <style>
@@ -30,12 +34,12 @@ const postKeys = Object.keys(t.blog.posts);
       {
         postKeys.map((slug) => (
           <li>
-            <a href={`/blog/${slug}/`}>
+            <a href={withBase(`/blog/${slug}/`)}>
               {t.blog.posts[slug].heroImage && (
                 <img
                   width={720}
                   height={360}
-                  src={String(t.blog.posts[slug].heroImage)}
+                  src={withBase(String(t.blog.posts[slug].heroImage))}
                   alt=""
                 />
               )}

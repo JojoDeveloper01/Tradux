@@ -1,0 +1,157 @@
+{
+  "sourceCache": {
+    "examples": {
+      "meta": {
+        "title": "Tradux Examples & Integrations",
+        "description": "Browse Tradux live starters, docs, and clone-and-run commands for React, Vue, Svelte, Vanilla JS, and Astro with SSR-friendly language switching."
+      },
+      "hero": {
+        "eyebrow": "Tradux examples",
+        "title": "Ship multilingual UI without starting from zero",
+        "lead": "Browse live Tradux starters, compare the framework integrations, and copy the exact clone-and-run commands you need. This root page now switches locale on the server, so the HTML itself arrives translated and accessible.",
+        "repository": "Open repository",
+        "documentation": "Read documentation",
+        "languagePrompt": "Try Tradux here →",
+        "languageLabel": "Language"
+      },
+      "stats": [
+        {
+          "value": "5",
+          "label": "live starters"
+        },
+        {
+          "value": "SSR + SPA",
+          "label": "server and client examples"
+        },
+        {
+          "value": "AI CLI",
+          "label": "translation workflow"
+        }
+      ],
+      "terminal": {
+        "eyebrow": "Tradux workflow",
+        "title": "From install to translated UI",
+        "note": "The examples follow the README path: install Tradux, initialize config, generate locales, then switch language from your app.",
+        "toolbarPrimary": "Quick start",
+        "toolbarSecondary": "README flow",
+        "lines": [
+          "npm install tradux && npm tradux init",
+          "npx tradux -t es,pt,fr"
+        ]
+      },
+      "summary": [
+        {
+          "title": "AI-powered CLI",
+          "description": "Initialize your config, translate JSON with your preferred provider, and keep the workflow close to your codebase."
+        },
+        {
+          "title": "Differential updates",
+          "description": "Tradux remembers what changed, so update runs only retranslate the keys that actually moved."
+        },
+        {
+          "title": "SSR-friendly cookies",
+          "description": "Server-rendered apps can read the tradux_lang cookie before rendering and ship the right locale immediately."
+        },
+        {
+          "title": "Real starters",
+          "description": "Open a framework example, inspect the import path, and test the live route before cloning anything locally."
+        }
+      ],
+      "workflow": {
+        "eyebrow": "How Tradux works",
+        "title": "Translate JSON once, then let the runtime react everywhere",
+        "description": "The landing page is aligned with the project README: CLI first, reactive runtime second, SSR support when your stack needs it.",
+        "steps": [
+          {
+            "title": "1. Create source copy",
+            "description": "Keep a default language JSON as the source of truth and use special markers when some keys must stay untouched or always update."
+          },
+          {
+            "title": "2. Generate locales with the CLI",
+            "description": "Tradux translates the missing content, updates only what changed later, and keeps available languages synchronized with your files."
+          },
+          {
+            "title": "3. Render the right language",
+            "description": "Framework hooks keep SPAs reactive, while SSR apps can read the cookie first and send fully localized HTML from the server."
+          }
+        ]
+      },
+      "integrationsSection": {
+        "eyebrow": "Available integrations",
+        "title": "Pick the starter that matches your stack",
+        "description": "Every card includes the live route, the right import path, a quick explanation of when to use it, and a richer command block you can copy."
+      },
+      "card": {
+        "howToStart": "How to start",
+        "previewRoute": "Live preview route",
+        "cloneAndRun": "Clone and run",
+        "copyCommand": "Copy command",
+        "copied": "Copied",
+        "copyManually": "Copy manually",
+        "livePreview": "Live preview",
+        "documentation": "Documentation",
+        "exampleSource": "Example source",
+        "commandLabel": "Starter commands",
+        "commandMeta": "Clone the monorepo, jump into the example, install, and run.",
+        "pathLabel": "Route",
+        "commandToolbar": "Clone → install → dev",
+        "openRouteAria": "Open preview route for {name}",
+        "livePreviewAria": "Open live preview for {name}",
+        "documentationAria": "Open Tradux documentation for {name}",
+        "exampleSourceAria": "Open source for {name}"
+      },
+      "integrations": {
+        "react": {
+          "name": "React + Vite",
+          "badge": "UI hook",
+          "importPath": "tradux/react",
+          "description": "Use the React hook when you want reactive translations inside components with language switching triggered from your UI.",
+          "start": "Clone the repository, enter the React example, install dependencies with pnpm, and start the Vite dev server.",
+          "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/react-vite",
+          "previewPath": "/react-vite/",
+          "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/react-vite\npnpm install\npnpm dev"
+        },
+        "vue": {
+          "name": "Vue + Vite",
+          "badge": "Composable API",
+          "importPath": "tradux/vue",
+          "description": "Use the Vue integration when you want Tradux state inside components through the framework composable API.",
+          "start": "Clone the repository, open the Vue example, install dependencies, and run the local Vite server.",
+          "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/vue-vite",
+          "previewPath": "/vue-vite/",
+          "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/vue-vite\npnpm install\npnpm dev"
+        },
+        "svelte": {
+          "name": "Svelte + Vite",
+          "badge": "Reactive stores",
+          "importPath": "tradux/svelte",
+          "description": "Use the Svelte integration when you want Tradux values exposed as stores with automatic updates after a language change.",
+          "start": "Clone the repository, move into the Svelte example, install packages, and start the Vite dev server.",
+          "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/svelte-vite",
+          "previewPath": "/svelte-vite/",
+          "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/svelte-vite\npnpm install\npnpm dev"
+        },
+        "vanilla": {
+          "name": "Vanilla JS + Vite",
+          "badge": "Base runtime",
+          "importPath": "tradux",
+          "description": "Use the base package when you are outside a framework and want to initialize Tradux directly with JavaScript or TypeScript.",
+          "start": "Clone the repository, open the Vanilla example, install dependencies, and run the Vite environment.",
+          "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/vanilla-vite",
+          "previewPath": "/vanilla-vite/",
+          "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/vanilla-vite\npnpm install\npnpm dev"
+        },
+        "astro": {
+          "name": "Astro",
+          "badge": "SSR-ready",
+          "importPath": "tradux",
+          "description": "Use the Astro example when you need server-rendered translations and want to read the Tradux cookie before sending HTML.",
+          "start": "Clone the repository, open the Astro example, install dependencies, and start the Astro dev server.",
+          "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/astro",
+          "previewPath": "/astro/",
+          "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/astro\npnpm install\npnpm dev"
+        }
+      }
+    }
+  }
+}

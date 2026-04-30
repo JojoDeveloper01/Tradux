@@ -11,16 +11,13 @@
         "ru"
     ],
     "translation": {
-        "fallback": {
-            "provider": "openrouter",
-            "model": "google/gemini-2.0-flash-001"
-        },
         "default": {
             "provider": "openrouter",
             "model": "google/gemini-2.0-flash-001"
         },
-        "review": {
-            "enabled": true
+        "fallback": {
+            "provider": "openrouter",
+            "model": "google/gemini-2.0-flash-lite-001"
         }
     }
 }

@@ -27,7 +27,39 @@
     },
     "haveFun": "楽しんでください！行き詰まった場合は、<a href=\"https://docs.astro.build/\">ドキュメントを読む</a>か、<a href=\"https://astro.build/chat\">Discordに参加</a>して質問することを忘れないでください。",
     "moreTemplates": "もう少し個性的なブログテンプレートをお探しですか？<a href=\"https://github.com/Charca/astro-blog-template\">astro-blog-template</a>（<a href=\"https://twitter.com/Charca\">Maxi Ferreira</a>作）をチェックしてください。",
-    "brand_name": "Tradux"
+    "brand_name": "Tradux",
+    "hero": {
+      "title": "🌐 Tradux",
+      "desc1": "Traduxは、多言語コンテンツ管理を自動化するために設計された開発者向け翻訳ライブラリです。お好みのAIプロバイダー（OpenRouter、OpenAI、Anthropic、Googleなど）を使用してJSONファイルを翻訳し、最新のJavaScriptフレームワークで言語切り替えを処理する軽量かつリアクティブなフックを提供します。",
+      "desc2": "シンプルなシングルページアプリでも、SEOに重点を置いたサーバーレンダリングサイトでも、Traduxは翻訳管理の手間を軽減することを目指しています。"
+    },
+    "features": {
+      "title": "⚡ 主な機能",
+      "ai": {
+        "title": "AI搭載CLI",
+        "desc": "お好みのAIプロバイダーを使用してJSONファイルの翻訳を自動化します。"
+      },
+      "diff": {
+        "title": "差分更新",
+        "desc": "Traduxは以前の翻訳を記憶しています。特定の英語文字列を変更した場合、その文字列のみを更新するため、API呼び出しとトークンを節約できます。"
+      },
+      "fallback": {
+        "title": "冗長性（フォールバック）",
+        "desc": "プライマリーAPIが失敗したり、クレジットがなくなったりした場合に、自動的にバックアッププロバイダーに切り替わります。"
+      },
+      "hooks": {
+        "title": "ネイティブフレームワークフック",
+        "desc": "React、Vue、Svelte、Vanilla JSですぐに使えるフック。"
+      },
+      "reactive": {
+        "title": "クロスコンポーネントリアクティビティ",
+        "desc": "1つのコンポーネントで言語を変更すると、ページをリロードせずにアプリ全体が即座に更新されます。"
+      },
+      "sync": {
+        "title": "自動同期構成",
+        "desc": "フォルダー内の実際のファイルに基づいて、利用可能な言語リストを自動的に管理します。"
+      }
+    }
   },
   "about": {
     "title": "私について",
@@ -43,63 +75,63 @@
   "blog": {
     "lastUpdatedOn": "最終更新日",
     "posts": {
-      "first-post": {
-        "title": "最初の投稿",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-08",
+      "getting-started": {
+        "title": "Tradux入門",
+        "description": "プロジェクトへのTraduxのインストールと設定方法を学びます。",
+        "pubDate": "2026-04-26",
         "heroImage": "/images/blog-placeholder-1.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "Traduxの導入はとても簡単です。まず、お好みのパッケージマネージャーを使ってプロジェクトにインストールしてください。`pnpm`または`npm`をおすすめします。",
+          "`npm install tradux`または`pnpm install tradux`を実行します。インストール後、`npx tradux init`を実行してインタラクティブなセットアップウィザードを起動してください。",
+          "ウィザードは、基本言語、翻訳フォルダー（通常は `./i18n`）、およびお好みのAIプロバイダー（OpenRouterやOpenAIなど）の選択をガイドします。",
+          "セットアップ後、`.env`ファイルにAPIキーを追加してください（例：`OPENROUTER_API_KEY=sk-or-...`）。",
+          "最後に、`npx tradux -t es,pt,fr`を実行して、デフォルトのJSONファイルに基づいてスペイン語、ポルトガル語、フランス語の翻訳を即座に生成してください！"
         ]
       },
-      "second-post": {
-        "title": "2番目の投稿",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-15",
+      "differential-updates": {
+        "title": "差分更新について",
+        "description": "変更された部分だけを翻訳して、トークンとコストを節約します。",
+        "pubDate": "2026-04-27",
         "heroImage": "/images/blog-placeholder-2.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "Traduxを実行すると、タイプミスを修正するたびにファイル全体を再翻訳する必要はありません。Traduxはスマートな差分更新システムを使用します。",
+          "ファイルを翻訳すると、Traduxは状態スナップショットとして機能する `.tradux-state.json` ファイルを i18n フォルダーに残します。",
+          "`npx tradux -u`を実行すると、Traduxはこのスナップショットと現在のデフォルト言語JSONを比較し、変更された既存文字列と新規追加文字列を正確に特定します。",
+          "次に、差分のみをAPIに送信します。これにより、ターゲット言語への手動調整が上書きされず、AIトークンの使用量を大幅に削減できます。"
         ]
       },
-      "third-post": {
-        "title": "3番目の投稿",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2022-07-22",
+      "special-markers": {
+        "title": "特別な翻訳マーカーの使用",
+        "description": "AIが特定のJSONキーをどう扱うかを正確に制御します。",
+        "pubDate": "2026-04-28",
         "heroImage": "/images/blog-placeholder-3.jpg",
         "content": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.",
-          "Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.",
-          "Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.",
-          "Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.",
-          "Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna."
+          "画像パス、URL、ブランド名など、翻訳すべきでないデータがJSONに含まれることがあります。Traduxは、詳細な制御を可能にする特別なマーカープレフィックスを提供します。",
+          "**===（翻訳しない）：** 値をそのままターゲット言語にコピーします。例: `\"===heroImage\": \"/images/hero.jpg\"`。",
+          "**+++（強制翻訳）：** 英語の値が変更されていなくても、更新時に再翻訳を強制します。コンテキストが複雑な文字列に役立ちます。",
+          "**---（無視）：** キーを完全に無視します。翻訳されず、ターゲットファイルにも追加されません。開発者向けメモに最適です。例: `\"---devNote\": \"TODO: 起動前にこのコピーを再検討してください\"`"
         ]
       },
-      "using-mdx": {
-        "title": "MDXの使用",
-        "description": "Lorem ipsum dolor sit amet",
-        "pubDate": "2024-06-01",
+      "framework-hooks": {
+        "title": "リアクティブフレームワークフック",
+        "description": "React、Vue、SvelteでTraduxを使用する方法",
+        "pubDate": "2026-04-29",
         "heroImage": "/images/blog-placeholder-4.jpg",
         "content": [
-          "このテーマには、<a href='https://docs.astro.build/en/guides/integrations-guide/mdx/'>@astrojs/mdx</a>統合がインストールされ、<code>astro.config.mjs</code>構成ファイルで構成されています。MDXを使用しない場合は、構成ファイルから統合を削除してサポートを無効にできます。",
-          "MDXは、埋め込みJavaScriptとJSX構文をサポートする特別な種類のMarkdownです。これにより、<a href='https://docs.astro.build/en/guides/integrations-guide/mdx/#mdx-in-astro'>JavaScriptとUIコンポーネントをMarkdownコンテンツに混在させる</a>ことができ、チャートやインタラクティブなアラートなどのことが可能になります。",
-          "MDXで構築された既存のコンテンツがある場合、この統合により、Astroへの移行が簡単になることを願っています。"
+          "Traduxは単なるCLIではなく、フロントエンド用のネイティブリアクティブフックも提供します。`tradux/react`、`tradux/vue`、`tradux/svelte`から`useTradux()`を直接インポートできます。",
+          "これらのフックは、次の標準的な変数を公開します：`t`（翻訳用）、`currentLanguage`、`isReady`、および `setLanguage()`、`getAvailableLanguages()` などの関数。",
+          "Traduxは共有メモリキャッシュを使用しているため、アプリケーションのルートで `isReady` を待つだけで十分です。すべての子コンポーネントは、ネットワークリクエストや読み込みのちらつきなく、即座に翻訳を受け取ります。"
         ]
       },
-      "markdown-style-guide": {
-        "title": "Markdownスタイルガイド",
-        "description": "AstroでMarkdownコンテンツを作成するときに使用できる基本的なMarkdown構文のサンプルを次に示します。",
-        "pubDate": "2024-06-19",
+      "seo-ssr": {
+        "title": "SSRおよびSEOでのTradux",
+        "description": "サーバーサイドレンダリングと動的なヘッドタグの扱い",
+        "pubDate": "2026-04-30",
         "heroImage": "/images/blog-placeholder-5.jpg",
         "content": [
-          "AstroでMarkdownコンテンツを作成するときに使用できる基本的なMarkdown構文のサンプルを次に示します。"
+          "検索エンジンが翻訳コンテンツを適切にインデックスするには、言語をURLに関連付ける必要があります（例：`mysite.com/es/about`）。検索エンジンはローカルストレージやCookieを無視します。",
+          "Traduxはこれをネイティブでサポートしています。`setLanguage()`の代わりに、フレームワークのルーターでURLから言語を取得し、サーバー側の `initTradux(lang)` に直接渡してください。",
+          "AstroやExpressなどのカスタムSSRセットアップでは、Traduxの分離インスタンスを使ってリクエストをインターセプトし、サーバー上の翻訳ファイルを読み取って、クライアントに送信する前に正しい `<html lang=\"x\">` と `<title>` タグを生HTMLに挿入できます。"
         ]
       }
     }

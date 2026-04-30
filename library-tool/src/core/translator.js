@@ -586,6 +586,8 @@ async function translateLanguage(lang, sourceData, config, txConfig) {
       }
     }
 
+    translatedContent = normalizeToSourceShape(forTranslation, translatedContent);
+
     if (JSON.stringify(translatedContent) === JSON.stringify(forTranslation)) {
       logger.error(
         `\nTranslation for ${lang} returned the same content as the source — the API call likely failed (invalid credentials or quota exceeded). File not created.`,
@@ -807,6 +809,11 @@ async function updateLanguage(lang, sourceData, config, txConfig, state) {
         }
       }
 
+      translatedContent = normalizeToSourceShape(
+        missingContent,
+        translatedContent,
+      );
+
       if (
         JSON.stringify(translatedContent) === JSON.stringify(missingContent)
       ) {
@@ -846,10 +853,15 @@ async function updateLanguage(lang, sourceData, config, txConfig, state) {
  */
 function findMissingContent(source, target, cachedSource, path = "") {
   const missing = {};
+  const safeTarget =
+    typeof target === "object" && target !== null ? target : {};
+
   for (const key in source) {
     const ck = cleanKey(key);
     const currentPath = path ? `${path}.${ck}` : ck;
     const sourceVal = source[key];
+    const targetVal = safeTarget[ck];
+    const cachedVal = cachedSource?.[key] ?? cachedSource?.[ck];
 
     if (isIgnoreKey(key)) continue; // --- key: skip entirely
     if (isNoTranslateKey(key)) continue; // === key: handled via direct copy path
@@ -860,14 +872,30 @@ function findMissingContent(source, target, cachedSource, path = "") {
       continue;
     }
 
-    if (!(ck in target)) {
+    if (!(ck in safeTarget)) {
       missing[ck] = sourceVal;
+    } else if (Array.isArray(sourceVal)) {
+      if (!Array.isArray(targetVal)) {
+        missing[ck] = sourceVal;
+      } else if (
+        cachedVal !== undefined &&
+        JSON.stringify(cachedVal) !== JSON.stringify(sourceVal)
+      ) {
+        missing[ck] = sourceVal;
+      }
     } else if (typeof sourceVal === "object" && sourceVal !== null) {
-      const cachedEntry = cachedSource?.[key] ?? cachedSource?.[ck];
-      const nestedCached = typeof cachedEntry === "object" ? cachedEntry : {};
+      if (Array.isArray(targetVal)) {
+        missing[ck] = sourceVal;
+        continue;
+      }
+
+      const nestedCached =
+        typeof cachedVal === "object" && cachedVal !== null && !Array.isArray(cachedVal)
+          ? cachedVal
+          : {};
       const nestedMissing = findMissingContent(
         sourceVal,
-        target[ck],
+        targetVal,
         nestedCached,
         currentPath,
       );
@@ -876,7 +904,6 @@ function findMissingContent(source, target, cachedSource, path = "") {
       }
     } else {
       // Only re-translate if the source value changed since last run
-      const cachedVal = cachedSource?.[key] ?? cachedSource?.[ck];
       if (cachedVal !== undefined && cachedVal !== sourceVal) {
         missing[ck] = sourceVal;
       }
@@ -885,15 +912,80 @@ function findMissingContent(source, target, cachedSource, path = "") {
   return missing;
 }
 
+function cloneValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneValue(item));
+  }
+
+  if (typeof value === "object" && value !== null) {
+    const cloned = {};
+    for (const key in value) {
+      cloned[key] = cloneValue(value[key]);
+    }
+    return cloned;
+  }
+
+  return value;
+}
+
+function normalizeToSourceShape(sourceShape, value) {
+  if (Array.isArray(sourceShape)) {
+    if (Array.isArray(value)) {
+      return sourceShape.map((item, index) =>
+        normalizeToSourceShape(item, value[index]),
+      );
+    }
+
+    if (typeof value === "object" && value !== null) {
+      return sourceShape.map((item, index) =>
+        normalizeToSourceShape(item, value[index]),
+      );
+    }
+
+    return cloneValue(value);
+  }
+
+  if (typeof sourceShape === "object" && sourceShape !== null) {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return cloneValue(value);
+    }
+
+    const normalized = {};
+    for (const key in value) {
+      normalized[key] = key in sourceShape
+        ? normalizeToSourceShape(sourceShape[key], value[key])
+        : cloneValue(value[key]);
+    }
+    return normalized;
+  }
+
+  return cloneValue(value);
+}
+
 /** Recursively merges source into target, preserving existing keys. */
 function deepMerge(target, source) {
-  const result = { ...target };
+  if (Array.isArray(source)) {
+    return cloneValue(source);
+  }
+
+  const safeTarget =
+    typeof target === "object" && target !== null && !Array.isArray(target)
+      ? target
+      : {};
+  const result = { ...safeTarget };
+
   for (const key in source) {
-    if (typeof source[key] === "object" && source[key] !== null) {
-      if (typeof result[key] === "object" && result[key] !== null) {
+    if (Array.isArray(source[key])) {
+      result[key] = cloneValue(source[key]);
+    } else if (typeof source[key] === "object" && source[key] !== null) {
+      if (
+        typeof result[key] === "object" &&
+        result[key] !== null &&
+        !Array.isArray(result[key])
+      ) {
         result[key] = deepMerge(result[key], source[key]);
       } else {
-        result[key] = source[key];
+        result[key] = cloneValue(source[key]);
       }
     } else {
       result[key] = source[key];
