@@ -1,6 +1,6 @@
 {
   "name": "tradux",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "Automated JSON i18n translation for React, Vue, Svelte, Astro and Vanilla JS — powered by any AI provider.",
   "type": "module",
   "private": false,
