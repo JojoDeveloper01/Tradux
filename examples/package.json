@@ -7,7 +7,7 @@
     "node": ">=22.12.0"
   },
   "dependencies": {
-    "tradux": "link:../library-tool"
+    "tradux": "1.5.8"
   },
   "scripts": {
     "dev": "node ./scripts/root-server.mjs dev",
