@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tradux Examples &amp; Integrations</title>
+  <meta name="description"
+    content="Browse Tradux live starters, docs, and clone-and-run commands for React, Vue, Svelte, Vanilla JS, and Astro with SSR-friendly language switching." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-topbar">
+        <div>
+          <div class="brand-mark"><span class="brand-badge">T</span><span>Tradux examples</span></div>
+          <span class="eyebrow">Tradux examples</span>
+        </div>
+
+        <div class="language-switcher" aria-label="Language switcher">
+          <span class="language-switcher-label">Try Tradux here →</span>
+          <form class="language-form" method="get" action="/" data-language-form>
+            <label class="visually-hidden" for="lang-select">Select language</label>
+            <select id="lang-select" name="lang" class="language-select" data-language-select>
+              <option value="en" selected>English</option>
+              <option value="pt">Português</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="ja">日本語</option>
+              <option value="pl">Polski</option>
+              <option value="ru">Русский</option>
+            </select>
+          </form>
+        </div>
+      </div>
+
+      <div class="hero-grid">
+        <div>
+          <h1>Ship multilingual UI without starting from zero</h1>
+          <p class="lead">Browse live Tradux starters, compare the framework integrations, and copy the exact clone-and-run commands you need. The root page now switches locale on the server, so the HTML itself is accessible and translated before hydration.</p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/JojoDeveloper01/Tradux/blob/main/readme.md" target="_blank" rel="noreferrer">Read documentation</a>
+          </div>
+
+          <ul class="stats-grid" aria-label="Highlights">
+            <li class="stat-card"><span class="stat-value">5</span><span class="stat-label">live starters</span></li>
+            <li class="stat-card"><span class="stat-value">SSR + SPA</span><span class="stat-label">server and client examples</span></li>
+            <li class="stat-card"><span class="stat-value">AI CLI</span><span class="stat-label">translation workflow</span></li>
+          </ul>
+        </div>
+
+        <aside class="hero-terminal" aria-label="Tradux workflow">
+          <p class="panel-eyebrow">Tradux workflow</p>
+          <h2>From install to translated UI</h2>
+          <p class="terminal-note">The examples follow the README path: install Tradux, initialize config, generate locales, then switch language from your app.</p>
+
+          <div class="command-panel command-panel-featured">
+            <div class="command-toolbar">
+              <span>Quick start</span>
+              <span>README flow</span>
+            </div>
+            <pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">pnpm install tradux &amp;&amp; pnpm tradux init</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">npx tradux -t es,pt,fr</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">setLanguage('fr')</span></span></code></pre>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="summary-grid" aria-label="Tradux capabilities">
+      <article class="summary-card" data-icon="⚡">
+        <h3>AI-powered CLI</h3>
+        <p>Initialize your config, translate JSON with your preferred provider, and keep the workflow close to your codebase.</p>
+      </article>
+      <article class="summary-card" data-icon="🧠">
+        <h3>Differential updates</h3>
+        <p>Tradux remembers what changed, so update runs only retranslate the keys that actually moved.</p>
+      </article>
+      <article class="summary-card" data-icon="🍪">
+        <h3>SSR-friendly cookies</h3>
+        <p>Server-rendered apps can read the <code>tradux_lang</code> cookie before rendering and ship the right locale immediately.</p>
+      </article>
+      <article class="summary-card" data-icon="🌍">
+        <h3>Real starters</h3>
+        <p>Open a framework example, inspect the import path, and test the live route before cloning anything locally.</p>
+      </article>
+    </section>
+
+    <section class="workflow-section">
+      <div class="section-heading">
+        <span class="eyebrow">How Tradux works</span>
+        <h2>Translate JSON once, then let the runtime react everywhere</h2>
+        <p class="section-description">The landing page is aligned with the project README: CLI first, reactive runtime second, SSR support when your stack needs it.</p>
+      </div>
+
+      <div class="workflow-grid">
+        <article class="workflow-card">
+          <strong>1. Create source copy</strong>
+          <p>Keep a default language JSON as the source of truth and use special markers when some keys must stay untouched or always update.</p>
+        </article>
+        <article class="workflow-card">
+          <strong>2. Generate locales with the CLI</strong>
+          <p>Tradux translates the missing content, updates only what changed later, and keeps available languages synchronized with your files.</p>
+        </article>
+        <article class="workflow-card">
+          <strong>3. Render the right language</strong>
+          <p>Framework hooks keep SPAs reactive, while SSR apps can read the cookie first and send fully localized HTML from the server.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="integrations-section">
+      <div class="section-heading">
+        <span class="eyebrow">Available integrations</span>
+        <h2>Pick the starter that matches your stack</h2>
+        <p class="section-description">Every card includes the live route, the right import path, a quick explanation of when to use it, and a richer command block you can copy.</p>
+      </div>
+
+      <div class="integrations-grid">
+        <article class="integration-card theme-react">
+          <div class="card-header">
+            <div>
+              <p class="integration-badge">UI hook</p>
+              <h3>React + Vite</h3>
+            </div>
+            <span class="import-path">tradux/react</span>
+          </div>
+
+          <p class="integration-description">Use the React hook when you want reactive translations inside components with language switching triggered from your UI.</p>
+
+          <div class="integration-meta">
+            <div>
+              <span class="meta-label">How to start</span>
+              <p class="integration-start">Clone the repository, enter the React example, install dependencies with pnpm, and start the Vite dev server.</p>
+            </div>
+            <div>
+              <span class="meta-label">Route</span>
+              <p class="preview-label"><a class="preview-path" href="/react-vite/">/react-vite/</a></p>
+              <span class="route-chip">Live preview route</span>
+            </div>
+          </div>
+
+          <div class="command-panel">
+            <div class="command-toolbar"><span>Starter commands</span><span>Clone → install → dev</span></div>
+            <pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">git clone https://github.com/JojoDeveloper01/Tradux.git</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">cd Tradux/examples/frameworks/react-vite</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">pnpm install</span></span><span class="command-line"><span class="line-number">04</span><span class="line-prompt">$</span><span class="line-command">pnpm dev</span></span></code></pre>
+            <div class="command-footer">
+              <p class="command-caption">Clone the monorepo, jump into the example, install, and run.</p>
+              <button class="copy-button" type="button" data-copy-command data-command="git%20clone%20https%3A%2F%2Fgithub.com%2FJojoDeveloper01%2FTradux.git%0Acd%20Tradux%2Fexamples%2Fframeworks%2Freact-vite%0Apnpm%20install%0Apnpm%20dev" data-copy-default="Copy command" data-copy-success="Copied" data-copy-fallback="Copy manually">Copy command</button>
+            </div>
+          </div>
+
+          <div class="card-links">
+            <a class="text-link" href="/react-vite/" target="_blank">Live preview</a>
+            <a class="text-link" href="https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/react-vite" target="_blank" rel="noreferrer">Documentation</a>
+          </div>
+        </article>
+
+        <article class="integration-card theme-vue">
+          <div class="card-header">
+            <div><p class="integration-badge">Composable API</p><h3>Vue + Vite</h3></div>
+            <span class="import-path">tradux/vue</span>
+          </div>
+          <p class="integration-description">Use the Vue integration when you want Tradux state inside components through the framework composable API.</p>
+          <div class="integration-meta"><div><span class="meta-label">How to start</span><p class="integration-start">Clone the repository, open the Vue example, install dependencies, and run the local Vite server.</p></div><div><span class="meta-label">Route</span><p class="preview-label"><a class="preview-path" href="/vue-vite/">/vue-vite/</a></p><span class="route-chip">Live preview route</span></div></div>
+          <div class="command-panel"><div class="command-toolbar"><span>Starter commands</span><span>Clone → install → dev</span></div><pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">git clone https://github.com/JojoDeveloper01/Tradux.git</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">cd Tradux/examples/frameworks/vue-vite</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">pnpm install</span></span><span class="command-line"><span class="line-number">04</span><span class="line-prompt">$</span><span class="line-command">pnpm dev</span></span></code></pre><div class="command-footer"><p class="command-caption">Clone the monorepo, jump into the example, install, and run.</p><button class="copy-button" type="button" data-copy-command data-command="git%20clone%20https%3A%2F%2Fgithub.com%2FJojoDeveloper01%2FTradux.git%0Acd%20Tradux%2Fexamples%2Fframeworks%2Fvue-vite%0Apnpm%20install%0Apnpm%20dev" data-copy-default="Copy command" data-copy-success="Copied" data-copy-fallback="Copy manually">Copy command</button></div></div>
+          <div class="card-links"><a class="text-link" href="/vue-vite/" target="_blank">Live preview</a><a class="text-link" href="https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/vue-vite" target="_blank" rel="noreferrer">Documentation</a></div>
+        </article>
+
+        <article class="integration-card theme-svelte">
+          <div class="card-header">
+            <div><p class="integration-badge">Reactive stores</p><h3>Svelte + Vite</h3></div>
+            <span class="import-path">tradux/svelte</span>
+          </div>
+          <p class="integration-description">Use the Svelte integration when you want Tradux values exposed as stores with automatic updates after a language change.</p>
+          <div class="integration-meta"><div><span class="meta-label">How to start</span><p class="integration-start">Clone the repository, move into the Svelte example, install packages, and start the Vite dev server.</p></div><div><span class="meta-label">Route</span><p class="preview-label"><a class="preview-path" href="/svelte-vite/">/svelte-vite/</a></p><span class="route-chip">Live preview route</span></div></div>
+          <div class="command-panel"><div class="command-toolbar"><span>Starter commands</span><span>Clone → install → dev</span></div><pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">git clone https://github.com/JojoDeveloper01/Tradux.git</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">cd Tradux/examples/frameworks/svelte-vite</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">pnpm install</span></span><span class="command-line"><span class="line-number">04</span><span class="line-prompt">$</span><span class="line-command">pnpm dev</span></span></code></pre><div class="command-footer"><p class="command-caption">Clone the monorepo, jump into the example, install, and run.</p><button class="copy-button" type="button" data-copy-command data-command="git%20clone%20https%3A%2F%2Fgithub.com%2FJojoDeveloper01%2FTradux.git%0Acd%20Tradux%2Fexamples%2Fframeworks%2Fsvelte-vite%0Apnpm%20install%0Apnpm%20dev" data-copy-default="Copy command" data-copy-success="Copied" data-copy-fallback="Copy manually">Copy command</button></div></div>
+          <div class="card-links"><a class="text-link" href="/svelte-vite/" target="_blank">Live preview</a><a class="text-link" href="https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/svelte-vite" target="_blank" rel="noreferrer">Documentation</a></div>
+        </article>
+
+        <article class="integration-card theme-vanilla">
+          <div class="card-header">
+            <div><p class="integration-badge">Base runtime</p><h3>Vanilla JS + Vite</h3></div>
+            <span class="import-path">tradux</span>
+          </div>
+          <p class="integration-description">Use the base package when you are outside a framework and want to initialize Tradux directly with JavaScript or TypeScript.</p>
+          <div class="integration-meta"><div><span class="meta-label">How to start</span><p class="integration-start">Clone the repository, open the Vanilla example, install dependencies, and run the Vite environment.</p></div><div><span class="meta-label">Route</span><p class="preview-label"><a class="preview-path" href="/vanilla-vite/">/vanilla-vite/</a></p><span class="route-chip">Live preview route</span></div></div>
+          <div class="command-panel"><div class="command-toolbar"><span>Starter commands</span><span>Clone → install → dev</span></div><pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">git clone https://github.com/JojoDeveloper01/Tradux.git</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">cd Tradux/examples/frameworks/vanilla-vite</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">pnpm install</span></span><span class="command-line"><span class="line-number">04</span><span class="line-prompt">$</span><span class="line-command">pnpm dev</span></span></code></pre><div class="command-footer"><p class="command-caption">Clone the monorepo, jump into the example, install, and run.</p><button class="copy-button" type="button" data-copy-command data-command="git%20clone%20https%3A%2F%2Fgithub.com%2FJojoDeveloper01%2FTradux.git%0Acd%20Tradux%2Fexamples%2Fframeworks%2Fvanilla-vite%0Apnpm%20install%0Apnpm%20dev" data-copy-default="Copy command" data-copy-success="Copied" data-copy-fallback="Copy manually">Copy command</button></div></div>
+          <div class="card-links"><a class="text-link" href="/vanilla-vite/" target="_blank">Live preview</a><a class="text-link" href="https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/vanilla-vite" target="_blank" rel="noreferrer">Documentation</a></div>
+        </article>
+
+        <article class="integration-card theme-astro">
+          <div class="card-header">
+            <div><p class="integration-badge">SSR-ready</p><h3>Astro</h3></div>
+            <span class="import-path">tradux</span>
+          </div>
+          <p class="integration-description">Use the Astro example when you need server-rendered translations and want to read the Tradux cookie before sending HTML.</p>
+          <div class="integration-meta"><div><span class="meta-label">How to start</span><p class="integration-start">Clone the repository, open the Astro example, install dependencies, and start the Astro dev server.</p></div><div><span class="meta-label">Route</span><p class="preview-label"><a class="preview-path" href="/astro/">/astro/</a></p><span class="route-chip">Live preview route</span></div></div>
+          <div class="command-panel"><div class="command-toolbar"><span>Starter commands</span><span>Clone → install → dev</span></div><pre class="command-lines"><code><span class="command-line"><span class="line-number">01</span><span class="line-prompt">$</span><span class="line-command">git clone https://github.com/JojoDeveloper01/Tradux.git</span></span><span class="command-line"><span class="line-number">02</span><span class="line-prompt">$</span><span class="line-command">cd Tradux/examples/frameworks/astro</span></span><span class="command-line"><span class="line-number">03</span><span class="line-prompt">$</span><span class="line-command">pnpm install</span></span><span class="command-line"><span class="line-number">04</span><span class="line-prompt">$</span><span class="line-command">pnpm dev</span></span></code></pre><div class="command-footer"><p class="command-caption">Clone the monorepo, jump into the example, install, and run.</p><button class="copy-button" type="button" data-copy-command data-command="git%20clone%20https%3A%2F%2Fgithub.com%2FJojoDeveloper01%2FTradux.git%0Acd%20Tradux%2Fexamples%2Fframeworks%2Fastro%0Apnpm%20install%0Apnpm%20dev" data-copy-default="Copy command" data-copy-success="Copied" data-copy-fallback="Copy manually">Copy command</button></div></div>
+          <div class="card-links"><a class="text-link" href="/astro/" target="_blank">Live preview</a><a class="text-link" href="https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/astro" target="_blank" rel="noreferrer">Documentation</a></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./script.js"></script>
+</body>
+
+</html>

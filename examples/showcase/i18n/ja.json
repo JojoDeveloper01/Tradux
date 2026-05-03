@@ -1,0 +1,156 @@
+{
+  "examples": {
+    "meta": {
+      "title": "Tradux のサンプルと連携一覧",
+      "description": "React、Vue、Svelte、Vanilla JS、Astro 向けの Tradux スターター、ドキュメント、すぐ使える clone-and-run コマンドを、サーバー描画の言語切り替え付きで確認できます。"
+    },
+    "hero": {
+      "eyebrow": "Tradux サンプル",
+      "title": "ゼロから始めずに多言語 UI を公開する",
+      "lead": "Tradux のライブスターターを見比べ、各フレームワーク連携を確認し、そのまま使える clone-and-run コマンドをコピーできます。このルートページはサーバー側で言語を切り替えるため、HTML が最初から翻訳済みでアクセシブルです。",
+      "repository": "リポジトリを開く",
+      "documentation": "ドキュメントを読む",
+      "languagePrompt": "ここで Tradux を試す →",
+      "languageLabel": "言語"
+    },
+    "stats": [
+      {
+        "value": "5",
+        "label": "ライブスターター"
+      },
+      {
+        "value": "SSR + SPA",
+        "label": "サーバーとクライアントの例"
+      },
+      {
+        "value": "AI CLI",
+        "label": "翻訳フロー"
+      }
+    ],
+    "terminal": {
+      "eyebrow": "Tradux フロー",
+      "title": "インストールから翻訳 UI まで",
+      "note": "サンプルは README の流れに沿っています。Tradux をインストールし、設定を初期化し、ロケールを生成してから、アプリ側で言語を切り替えます。",
+      "toolbarPrimary": "クイックスタート",
+      "toolbarSecondary": "README の流れ",
+      "lines": [
+        "pnpm install tradux && pnpm tradux init",
+        "npx tradux -t es,pt,fr",
+        null
+      ]
+    },
+    "summary": [
+      {
+        "title": "AI 対応 CLI",
+        "description": "設定を初期化し、好みのプロバイダーで JSON を翻訳し、ワークフローをコードベースの近くに保てます。"
+      },
+      {
+        "title": "差分更新",
+        "description": "Tradux は変更点を覚えているので、更新時は本当に変わったキーだけを再翻訳します。"
+      },
+      {
+        "title": "SSR 向け cookie",
+        "description": "サーバー描画アプリは tradux_lang cookie を描画前に読み取り、最初から正しいロケールを返せます。"
+      },
+      {
+        "title": "実用スターター",
+        "description": "ローカルで clone する前に、サンプル、import パス、ライブルートをその場で確認できます。"
+      }
+    ],
+    "workflow": {
+      "eyebrow": "Tradux の仕組み",
+      "title": "JSON を一度翻訳したら、あとは runtime に全体を反応させる",
+      "description": "このランディングページは README に合わせています。まず CLI、次にリアクティブ runtime、必要なら SSR です。",
+      "steps": [
+        {
+          "title": "1. 元になる文言を用意する",
+          "description": "デフォルト言語の JSON を真実のソースとして管理し、変更してほしくないキーや常に更新したいキーには特別なマーカーを使います。"
+        },
+        {
+          "title": "2. CLI でロケールを生成する",
+          "description": "Tradux は不足分を翻訳し、後続の更新では変わった部分だけを処理し、利用可能な言語一覧をファイルと同期します。"
+        },
+        {
+          "title": "3. 正しい言語を描画する",
+          "description": "SPA では hooks が反応性を保ち、SSR アプリでは cookie を先に読み取ってサーバーから完全にローカライズされた HTML を返せます。"
+        }
+      ]
+    },
+    "integrationsSection": {
+      "eyebrow": "利用できる連携",
+      "title": "自分のスタックに合うスターターを選ぶ",
+      "description": "各カードにはライブ URL、正しい import パス、使いどころの説明、そしてコピーしやすいコマンドブロックが入っています。"
+    },
+    "card": {
+      "howToStart": "始め方",
+      "previewRoute": "ライブ URL",
+      "cloneAndRun": "クローンして実行",
+      "copyCommand": "コマンドをコピー",
+      "copied": "コピーしました",
+      "copyManually": "手動でコピー",
+      "livePreview": "ライブプレビュー",
+      "documentation": "ドキュメント",
+      "exampleSource": "サンプルソース",
+      "commandLabel": "スターターコマンド",
+      "commandMeta": "モノレポを clone して、サンプルに入り、インストールして起動します。",
+      "pathLabel": "ルート",
+      "commandToolbar": "clone → install → dev",
+      "openRouteAria": "{name} のプレビュー URL を開く",
+      "livePreviewAria": "{name} のライブプレビューを開く",
+      "documentationAria": "{name} 向けの Tradux ドキュメントを開く",
+      "exampleSourceAria": "{name} のソースを開く"
+    },
+    "integrations": {
+      "react": {
+        "name": "React + Vite",
+        "badge": "UI hook",
+        "importPath": "tradux/react",
+        "description": "UI から言語を切り替えつつ、コンポーネント内でリアクティブな翻訳を使いたいなら React hook を使います。",
+        "start": "リポジトリを clone し、React サンプルに入り、pnpm で依存関係を入れて Vite 開発サーバーを起動します。",
+        "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/react-vite",
+        "previewPath": "/react-vite/",
+        "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/frameworks/react-vite\npnpm install\npnpm dev"
+      },
+      "vue": {
+        "name": "Vue + Vite",
+        "badge": "Composable API",
+        "importPath": "tradux/vue",
+        "description": "フレームワークの composable API 経由でコンポーネント内に Tradux 状態を持たせたい場合は Vue 連携を使います。",
+        "start": "リポジトリを clone し、Vue サンプルを開き、依存関係を入れてローカルの Vite サーバーを起動します。",
+        "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/vue-vite",
+        "previewPath": "/vue-vite/",
+        "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/frameworks/vue-vite\npnpm install\npnpm dev"
+      },
+      "svelte": {
+        "name": "Svelte + Vite",
+        "badge": "Reactive stores",
+        "importPath": "tradux/svelte",
+        "description": "言語変更後に自動更新される store として Tradux の値を使いたいなら Svelte 連携が向いています。",
+        "start": "リポジトリを clone し、Svelte サンプルに入り、パッケージを入れて Vite 開発サーバーを起動します。",
+        "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/svelte-vite",
+        "previewPath": "/svelte-vite/",
+        "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/frameworks/svelte-vite\npnpm install\npnpm dev"
+      },
+      "vanilla": {
+        "name": "Vanilla JS + Vite",
+        "badge": "Base runtime",
+        "importPath": "tradux",
+        "description": "フレームワークを使わず、JavaScript または TypeScript から直接 Tradux を初期化したいならベースパッケージを使います。",
+        "start": "リポジトリを clone し、Vanilla サンプルを開き、依存関係を入れて Vite 環境を起動します。",
+        "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/vanilla-vite",
+        "previewPath": "/vanilla-vite/",
+        "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/frameworks/vanilla-vite\npnpm install\npnpm dev"
+      },
+      "astro": {
+        "name": "Astro",
+        "badge": "SSR 対応",
+        "importPath": "tradux",
+        "description": "サーバー描画の翻訳が必要で、HTML を返す前に Tradux cookie を読み取りたい場合は Astro サンプルを使います。",
+        "start": "リポジトリを clone し、Astro サンプルを開き、依存関係を入れて Astro 開発サーバーを起動します。",
+        "sourceUrl": "https://github.com/JojoDeveloper01/Tradux/tree/main/examples/frameworks/astro",
+        "previewPath": "/astro/",
+        "command": "git clone https://github.com/JojoDeveloper01/Tradux.git\ncd Tradux/examples/frameworks/astro\npnpm install\npnpm dev"
+      }
+    }
+  }
+}
