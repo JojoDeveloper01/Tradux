@@ -1,3 +1,2 @@
-# Force Nixpacks to use the Node.js provider since all Node-related files
-# are now nested under showcase/ and frameworks/.
-providers = ["node"]
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm"]
