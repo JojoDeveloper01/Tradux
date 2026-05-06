@@ -238,22 +238,56 @@ async function translateObject(data, sourceLanguage, targetLanguage, params) {
 	}
 }
 
-// Headers CORS para permitir requisições de qualquer origem
-const corsHeaders = {
-	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'POST, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type',
-};
+function getAllowedOrigins(env = {}) {
+	return String(env.ALLOWED_ORIGINS || '')
+		.split(',')
+		.map((origin) => origin.trim())
+		.filter(Boolean);
+}
+
+function buildCorsHeaders(request, env = {}) {
+	const origin = request.headers.get('Origin');
+	const allowedOrigins = getAllowedOrigins(env);
+	const headers = {
+		'Access-Control-Allow-Methods': 'POST, OPTIONS',
+		'Access-Control-Allow-Headers': 'Content-Type',
+		Vary: 'Origin',
+	};
+
+	if (!origin) return headers;
+	if (allowedOrigins.includes(origin)) {
+		headers['Access-Control-Allow-Origin'] = origin;
+	}
+	return headers;
+}
+
+function isOriginAllowed(request, env = {}) {
+	const origin = request.headers.get('Origin');
+	if (!origin) return true;
+	return getAllowedOrigins(env).includes(origin);
+}
+
+function forbiddenOriginResponse(request, env = {}) {
+	return new Response(JSON.stringify({ success: false, error: 'Origin is not allowed.' }), {
+		status: 403,
+		headers: buildCorsHeaders(request, env),
+	});
+}
 
 export default {
-	async fetch(request) {
+	async fetch(request, env = {}) {
+		const corsHeaders = buildCorsHeaders(request, env);
+
 		// Handle CORS preflight requests
 		if (request.method === 'OPTIONS') {
+			if (!isOriginAllowed(request, env)) return forbiddenOriginResponse(request, env);
 			return new Response(null, {
-				status: 200,
+				status: 204,
 				headers: corsHeaders,
 			});
 		}
+
+		if (!isOriginAllowed(request, env)) return forbiddenOriginResponse(request, env);
 
 		const url = new URL(request.url);
 
