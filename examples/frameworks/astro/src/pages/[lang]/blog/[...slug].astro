@@ -1,0 +1,47 @@
+---
+import BlogPost from "../../../layouts/BlogPost.astro";
+import { createTraduxFromGlob } from "tradux/astro";
+import { availableLanguages as languageDefinitions } from "tradux/languages";
+import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../../consts";
+
+export const prerender = false;
+
+const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
+  ? Astro.params.lang
+  : "en";
+const slug = Astro.params.slug as string;
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${basePath}${path.replace(/^\//, "")}`;
+
+if (Astro.params.lang !== lang) {
+  return Astro.redirect(withBase(`/${lang}/blog/${slug ?? ""}`));
+}
+
+const { t, currentLanguage } = await createTraduxFromGlob({
+  files: translationFiles,
+  lang,
+  defaultLanguage: "en",
+  availableLanguages: availableLanguageCodes,
+  languageDefinitions: [...languageDefinitions],
+});
+
+const post = t.blog.posts[slug];
+
+if (!post || !post.title) {
+  return Astro.redirect(withBase(`/${currentLanguage}/blog`));
+}
+---
+
+<BlogPost
+  title={String(post.title)}
+  description={String(post.description)}
+  pubDate={new Date(String(post.pubDate))}
+  heroImage={post.heroImage ? withBase(String(post.heroImage)) : undefined}
+  {currentLanguage}
+  getAvailableLanguages={getAstroAvailableLanguages}
+  {t}
+>
+  {(post.content as unknown as string[]).map((paragraph) => <p>{paragraph}</p>)}
+</BlogPost>

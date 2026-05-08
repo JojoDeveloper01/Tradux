@@ -1,29 +1,10 @@
 ---
-import { initTradux } from "tradux";
-import BlogPost from "../../layouts/BlogPost.astro";
-
 export const prerender = false;
 
-const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
-const { t } = await initTradux(traduxCookie);
-
-const slug = Astro.params.slug as string;
-const post = t.blog.posts[slug];
-const basePath = import.meta.env.BASE_URL.endsWith('/')
+const slug = Astro.params.slug;
+const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-const withBase = (path: string) => `${basePath}${path.replace(/^\//, '')}`;
 
-if (!post || !post.title) {
-  return Astro.redirect(withBase("/blog"));
-}
+return Astro.redirect(`${basePath}en/blog/${slug ?? ""}`);
 ---
-
-<BlogPost
-  title={String(post.title)}
-  description={String(post.description)}
-  pubDate={new Date(String(post.pubDate))}
-  heroImage={post.heroImage ? withBase(String(post.heroImage)) : undefined}
->
-  {(post.content as unknown as string[]).map((paragraph) => <p>{paragraph}</p>)}
-</BlogPost>

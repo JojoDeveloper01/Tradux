@@ -5,7 +5,7 @@ import net from 'node:net'
 import { createRequire } from 'node:module'
 import { URL, fileURLToPath, pathToFileURL } from 'node:url'
 import { spawn } from 'node:child_process'
-import { getAvailableLanguages, initTradux } from 'tradux'
+import { getAvailableLanguages, initTradux } from 'tradux/node'
 
 const mode = process.argv[2] ?? 'dev'
 const isDev = mode === 'dev'

@@ -1,0 +1,65 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { createTraduxFromGlob } from "tradux/astro";
+import { availableLanguages as languageDefinitions } from "tradux/languages";
+import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../../consts";
+
+export const prerender = false;
+
+const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
+  ? Astro.params.lang
+  : "en";
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${basePath}${path.replace(/^\//, "")}`;
+
+if (Astro.params.lang !== lang) {
+  return Astro.redirect(withBase(`/${lang}/blog`));
+}
+
+const { t, currentLanguage } = await createTraduxFromGlob({
+  files: translationFiles,
+  lang,
+  defaultLanguage: "en",
+  availableLanguages: availableLanguageCodes,
+  languageDefinitions: [...languageDefinitions],
+});
+
+const postKeys = Object.keys(t.blog.posts);
+---
+
+<style>
+  ul { list-style: none; padding: 0; margin: 0; }
+</style>
+
+<Layout
+  title={t.site.title}
+  description={t.site.description}
+  {currentLanguage}
+  getAvailableLanguages={getAstroAvailableLanguages}
+  {t}
+>
+  <section>
+    <ul>
+      {
+        postKeys.map((slug) => (
+          <li>
+            <a href={withBase(`/${currentLanguage}/blog/${slug}/`)}>
+              {t.blog.posts[slug].heroImage && (
+                <img
+                  width={720}
+                  height={360}
+                  src={withBase(String(t.blog.posts[slug].heroImage))}
+                  alt=""
+                />
+              )}
+              <h4 class="title">{t.blog.posts[slug].title}</h4>
+              <p class="date">{t.blog.posts[slug].pubDate}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>

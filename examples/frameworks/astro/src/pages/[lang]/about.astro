@@ -1,0 +1,54 @@
+---
+import AboutHeroImage from "../../assets/blog-placeholder-about.jpg";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import { createTraduxFromGlob } from "tradux/astro";
+import { availableLanguages as languageDefinitions } from "tradux/languages";
+import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../consts";
+
+export const prerender = false;
+
+const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
+  ? Astro.params.lang
+  : "en";
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+if (Astro.params.lang !== lang) {
+  return Astro.redirect(`${basePath}${lang}/about`);
+}
+
+const { t, currentLanguage } = await createTraduxFromGlob({
+  files: translationFiles,
+  lang,
+  defaultLanguage: "en",
+  availableLanguages: availableLanguageCodes,
+  languageDefinitions: [...languageDefinitions],
+});
+---
+
+<Layout
+  title={t.about.title}
+  description={t.about.description}
+  {currentLanguage}
+  getAvailableLanguages={getAstroAvailableLanguages}
+  {t}
+>
+  <article>
+    <div class="hero-image">
+      <Image width={1020} height={510} src={AboutHeroImage} alt="" />
+    </div>
+    <div class="prose">
+      <div class="title">
+        <h1>{t.about.title}</h1>
+        <hr />
+      </div>
+      {
+        (t.about.content as unknown as string[]).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))
+      }
+    </div>
+  </article>
+</Layout>

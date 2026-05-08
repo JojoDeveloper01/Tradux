@@ -13,7 +13,7 @@ const { getAvailableLanguages, currentLanguage, t } = Astro.props as Props;
 const basePath = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-const languagePath = `${basePath}language`;
+const homePath = `${basePath}${currentLanguage}/`;
 ---
 
 <style>
@@ -60,11 +60,11 @@ const languagePath = `${basePath}language`;
 
 <header>
   <nav>
-    <h2><a href={basePath}>{SITE_TITLE}</a></h2>
+    <h2><a href={homePath}>{SITE_TITLE}</a></h2>
     <div class="internal-links">
-      <HeaderLink href="/">{t.nav.home}</HeaderLink>
-      <HeaderLink href="/blog">{t.nav.blog}</HeaderLink>
-      <HeaderLink href="/about">{t.nav.about}</HeaderLink>
+      <HeaderLink href={`/${currentLanguage}`}>{t.nav.home}</HeaderLink>
+      <HeaderLink href={`/${currentLanguage}/blog`}>{t.nav.blog}</HeaderLink>
+      <HeaderLink href={`/${currentLanguage}/about`}>{t.nav.about}</HeaderLink>
     </div>
     <select id="lang-select">
       {
@@ -107,14 +107,24 @@ const languagePath = `${basePath}language`;
   </nav>
 </header>
 
-<script is:inline data-language-path={languagePath}>
-  const languagePath = document.currentScript?.dataset.languagePath || "/language";
+<script is:inline data-base-path={basePath}>
+  const basePath = document.currentScript?.dataset.basePath || "/";
   const langSelect = document.getElementById("lang-select");
   langSelect?.addEventListener("change", (e) => {
     const language = e.target.value;
-    const url = new URL(languagePath, window.location.origin);
-    url.searchParams.set("lang", language);
-    url.searchParams.set("redirect", window.location.pathname + window.location.search);
-    window.location.href = url.toString();
+    const basePrefix = basePath === "/" ? "/" : basePath;
+    const pathWithoutBase = window.location.pathname.startsWith(basePrefix)
+      ? window.location.pathname.slice(basePrefix.length)
+      : window.location.pathname.replace(/^\//, "");
+    const segments = pathWithoutBase.split("/").filter(Boolean);
+
+    if (segments.length > 0) {
+      segments[0] = language;
+    } else {
+      segments.unshift(language);
+    }
+
+    const nextPath = `${basePrefix}${segments.join("/")}`.replace(/([^:])\/+/g, "$1/");
+    window.location.href = `${nextPath}${window.location.search}${window.location.hash}`;
   });
 </script>

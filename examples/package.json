@@ -1,5 +1,13 @@
 {
   "private": true,
+  "type": "module",
+  "scripts": {
+    "install:showcase": "pnpm --dir showcase install",
+    "dev": "pnpm --dir showcase dev",
+    "build": "pnpm --dir showcase build",
+    "start": "pnpm --dir showcase start",
+    "preview": "pnpm --dir showcase start"
+  },
   "engines": {
     "node": ">=22"
   },

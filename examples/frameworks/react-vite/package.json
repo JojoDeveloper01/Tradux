@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tradux": "1.5.9"
+    "tradux": "1.5.10"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",

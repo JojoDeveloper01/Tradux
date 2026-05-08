@@ -1,0 +1,114 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { createTraduxFromGlob } from "tradux/astro";
+import { availableLanguages as languageDefinitions } from "tradux/languages";
+import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../consts";
+
+export const prerender = false;
+
+const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
+  ? Astro.params.lang
+  : "en";
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+if (Astro.params.lang !== lang) {
+  return Astro.redirect(`${basePath}${lang}/`);
+}
+
+const { t, currentLanguage } = await createTraduxFromGlob({
+  files: translationFiles,
+  lang,
+  defaultLanguage: "en",
+  availableLanguages: availableLanguageCodes,
+  languageDefinitions: [...languageDefinitions],
+});
+---
+
+<Layout
+  title={t.site.title}
+  description={t.site.description}
+  {currentLanguage}
+  getAvailableLanguages={getAstroAvailableLanguages}
+  {t}
+>
+  <div>
+    <div>
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1>{t.home.hero.title}</h1>
+        <p class="subtitle">
+          {t.home.hero.desc1}
+        </p>
+        <p class="subtitle">
+          {t.home.hero.desc2}
+        </p>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features">
+        <h2>{t.home.features.title}</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>🤖 {t.home.features.ai.title}</h3>
+            <p>
+              {t.home.features.ai.desc}
+            </p>
+          </div>
+          <div class="card">
+            <h3>
+              🔄 {t.home.features.diff.title}
+            </h3>
+            <p>
+              {t.home.features.diff.desc}
+            </p>
+          </div>
+          <div class="card">
+            <h3>
+              🛡️ {t.home.features.fallback.title}
+            </h3>
+            <p>
+              {t.home.features.fallback.desc}
+            </p>
+          </div>
+          <div class="card">
+            <h3>
+              🪝 {t.home.features.hooks.title}
+            </h3>
+            <p>
+              {t.home.features.hooks.desc}
+            </p>
+          </div>
+          <div class="card">
+            <h3>
+              ⚡ {t.home.features.reactive.title}
+            </h3>
+            <p>
+              {t.home.features.reactive.desc}
+            </p>
+          </div>
+          <div class="card">
+            <h3>📂 {t.home.features.sync.title}</h3>
+            <p>
+              {t.home.features.sync.desc}
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero { text-align: center; margin-bottom: 4rem; }
+  .hero h1 { font-size: 3rem; color: #111; margin-bottom: 1rem; }
+  .subtitle { font-size: 1.15rem; color: #444; max-width: 800px; margin: 0 auto 1.5rem auto; line-height: 1.6; }
+  .features { margin-bottom: 5rem; }
+  .features h2 { text-align: center; margin-bottom: 2rem; font-size: 2rem; border-bottom: none; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .card { border: 1px solid #eaeaea; padding: 1.5rem; border-radius: 12px; background: #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); transition: transform 0.2s; }
+  .card:hover { transform: translateY(-5px); }
+  .card h3 { margin-top: 0; color: #222; font-size: 1.1rem; }
+  .card p { color: #555; font-size: 0.95rem; line-height: 1.5; margin-bottom: 0; }
+</style>

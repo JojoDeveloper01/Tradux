@@ -13,24 +13,24 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.8",
-    "@astrojs/react": "4.4.0",
+    "@astrojs/check": "0.9.9",
+    "@astrojs/react": "5.0.4",
     "@astrojs/rss": "4.0.18",
     "@astrojs/sitemap": "3.7.2",
-    "@astrojs/svelte": "7.2.0",
-    "@astrojs/vue": "5.1.1",
+    "@astrojs/svelte": "8.1.0",
+    "@astrojs/vue": "6.0.1",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
-    "astro": "6.1.8",
+    "astro": "6.3.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "sharp": "0.34.3",
     "svelte": "5.39.8",
-    "tradux": "1.5.9",
+    "tradux": "1.5.10",
     "typescript": "6.0.3",
     "vue": "3.5.22"
   },
   "devDependencies": {
-    "@astrojs/node": "10.0.4"
+    "@astrojs/node": "10.1.0"
   }
 }

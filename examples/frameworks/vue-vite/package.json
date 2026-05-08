@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "tradux": "1.5.9",
+    "tradux": "1.5.10",
     "vue": "3.5.30"
   },
   "devDependencies": {
