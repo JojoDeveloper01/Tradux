@@ -126,10 +126,24 @@ Add markers to key names in your source JSON (`en.json`) to control how Tradux h
 
 ## 🧰 Core API & Functions
 
-Import Tradux functions in your application:
+Import Tradux functions from the runtime that matches your environment. The default `tradux` export is browser-safe and does not pull Node `fs` or `path` into Cloudflare/Vite bundles.
+
+### Runtime entrypoints
+
+| Entrypoint | Use it for | Notes |
+| :--------- | :--------- | :---- |
+| `tradux` / `tradux/browser` | Browser apps and framework hooks | Fetches `/tradux.config.json` and `/i18n/*.json`, writes language cookies, emits language-change events. |
+| `tradux/node` | Node SSR only | Reads config/translations from disk with `fs/promises` and `path`. Do not import this in Cloudflare Workers. |
+| `tradux/edge` | Cloudflare Workers and other edge runtimes | Receives config/translations as JavaScript objects. No filesystem and no `window`/`document`. |
+| `tradux/astro` | Astro SSR with `import.meta.glob` | Converts eager glob results into an edge-safe Tradux instance. |
+
+Browser happy path:
 
 ```javascript
-const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useTradux();
+import { initTradux, setLanguage } from "tradux/browser";
+
+const { t, currentLanguage } = await initTradux();
+await setLanguage("es");
 ```
 
 Whether you use `useTradux()` in a framework or `initTradux()` in Vanilla JS/SSR, Tradux exposes a standard set of variables and functions:
@@ -235,25 +249,28 @@ const { t, currentLanguage, isReady, setLanguage, getAvailableLanguages } = useT
 ```
 
 ### 🟣 Astro
-Because Astro heavily utilizes Server-Side Rendering (SSR), you need to collect the Tradux cookie from the incoming request and pass it to `initTradux` to ensure the server renders the correct language before sending it to the client.
+Use `tradux/astro` for Cloudflare-safe SSR. It works with Astro's eager glob output and never imports Node `fs` or `path`.
 
 ```jsx
 ---
-import { initTradux, getAvailableLanguages } from "tradux";
+import { createTraduxFromGlob } from "tradux/astro";
+
+const files = import.meta.glob("/public/i18n/*.json", {
+  eager: true,
+  import: "default",
+});
 
 const traduxCookie = Astro.cookies.get("tradux_lang")?.value;
-const { t, currentLanguage } = await initTradux(traduxCookie);
+const { t, currentLanguage } = await createTraduxFromGlob({
+  files,
+  lang: traduxCookie || "en",
+  defaultLanguage: "en",
+});
 ---
 
 <section>
   <h1>{t.welcome}</h1>
-  <select id="lang-select">
-    {getAvailableLanguages().map((lang) => (
-        <option value={lang.value} selected={lang.value === currentLanguage}>
-          {lang.name}
-        </option>
-      ))}
-  </select>
+  <p>Current language: {currentLanguage}</p>
 </section>
 
 <script>
@@ -334,11 +351,16 @@ For search engines (like Google) to index your translated content, languages sho
 **Astro SSR Example (`src/pages/[lang]/index.astro`):**
 ```jsx
 ---
-import { initTradux } from "tradux";
+import { createTraduxFromGlob } from "tradux/astro";
+
+const files = import.meta.glob("/public/i18n/*.json", {
+  eager: true,
+  import: "default",
+});
 
 const { lang } = Astro.params; 
 
-const { t } = await initTradux(lang);
+const { t } = await createTraduxFromGlob({ files, lang, defaultLanguage: "en" });
 ---
 <html lang={lang}>
   <body>
@@ -359,7 +381,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
-import { initTradux } from "tradux";
+import { initTradux } from "tradux/node";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

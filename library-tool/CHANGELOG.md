@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com)
 
 ---
 
+## [1.5.9]
+
+### Added
+
+- Cloudflare/Astro-safe runtime entrypoints: `tradux/browser`, `tradux/node`, `tradux/edge`, and `tradux/astro`.
+- Astro `createTraduxFromGlob()` adapter for eager `import.meta.glob('/public/i18n/*.json', { eager: true, import: 'default' })` translation maps.
+
+### Changed
+
+- Default `tradux` runtime now points at the browser-safe entrypoint so browser and edge bundles are not contaminated by Node `fs`/`path` imports.
+- Language cookies now include `Path=/`, `Max-Age=31536000`, and `SameSite=Lax`, with `Secure` added automatically on HTTPS.
+
+### Fixed
+
+- Translation proxies now support `Object.entries()`, property descriptors, and the `in` operator for template iteration and enumeration.
+
+---
+
 ## [1.5.8] — 2026-04-26
 
 ### Added

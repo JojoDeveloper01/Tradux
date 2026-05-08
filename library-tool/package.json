@@ -26,6 +26,26 @@
       "import": "./src/client.js",
       "default": "./src/client.js"
     },
+    "./browser": {
+      "types": "./src/browser.d.ts",
+      "import": "./src/browser.js",
+      "default": "./src/browser.js"
+    },
+    "./node": {
+      "types": "./src/node.d.ts",
+      "import": "./src/node.js",
+      "default": "./src/node.js"
+    },
+    "./edge": {
+      "types": "./src/edge.d.ts",
+      "import": "./src/edge.js",
+      "default": "./src/edge.js"
+    },
+    "./astro": {
+      "types": "./src/astro.d.ts",
+      "import": "./src/astro.js",
+      "default": "./src/astro.js"
+    },
     "./react": {
       "types": "./src/react/index.d.ts",
       "import": "./src/react/index.js",
