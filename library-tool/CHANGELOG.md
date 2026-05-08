@@ -5,7 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com)
 
 ---
 
-## [1.5.9]
+## [1.5.10]
 
 ### Added
 
