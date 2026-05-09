@@ -17,23 +17,39 @@ const EXPECTED_VERSION = pkgJson.version; // e.g. "1.5.1"
 
 function runCLI(args = [], opts = {}) {
   return new Promise((resolve, reject) => {
-    const { env: extraEnv, ...restOpts } = opts;
+    const { env: extraEnv, timeoutMs = 5_000, ...restOpts } = opts;
     const child = spawn("node", [cliEntry, ...args], {
       cwd: testDir,
       env: { ...process.env, INIT_CWD: testDir, ...extraEnv },
+      stdio: ["ignore", "pipe", "pipe"],
       ...restOpts,
     });
 
     let stdout = "";
     let stderr = "";
+    let settled = false;
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      child.kill("SIGTERM");
+      reject(new Error(`CLI timed out after ${timeoutMs}ms: tradux ${args.join(" ")}`));
+    }, timeoutMs);
+
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      fn(value);
+    };
+
     child.stdout?.on("data", (d) => {
       stdout += d;
     });
     child.stderr?.on("data", (d) => {
       stderr += d;
     });
-    child.on("close", (code) => resolve({ code, stdout, stderr }));
-    child.on("error", reject);
+    child.on("close", (code) => finish(resolve, { code, stdout, stderr }));
+    child.on("error", (error) => finish(reject, error));
   });
 }
 
@@ -56,8 +72,8 @@ describe("Tradux CLI", () => {
 
   // ── Help ─────────────────────────────────────────────────
   describe("Help output", () => {
-    it("should display help when run with no arguments", async () => {
-      const { stdout } = await runCLI([]);
+    it("should display help when run with --help", async () => {
+      const { stdout } = await runCLI(["--help"]);
       // Just verify the key commands are mentioned — not exact text
       const lower = stdout.toLowerCase();
       assert.ok(lower.includes("tradux"), 'Help should mention "tradux"');
@@ -85,7 +101,19 @@ describe("Tradux CLI", () => {
   // ── Init ─────────────────────────────────────────────────
   describe("init command", () => {
     it("should create tradux.config.json", async () => {
-      const { code } = await runCLI(["init"]);
+      const { code } = await runCLI([
+        "init",
+        "--provider",
+        "openai",
+        "--model",
+        "gpt-4o-mini",
+        "--default-lang",
+        "en",
+        "--languages",
+        "es,fr",
+        "--i18n-path",
+        "./i18n",
+      ]);
       assert.ok(code !== null, "Should run without crashing");
 
       // Verify the config file was created
@@ -101,7 +129,19 @@ describe("Tradux CLI", () => {
     });
 
     it("should be idempotent (safe to run twice)", async () => {
-      const { code } = await runCLI(["init"]);
+      const { code } = await runCLI([
+        "init",
+        "--provider",
+        "openai",
+        "--model",
+        "gpt-4o-mini",
+        "--default-lang",
+        "en",
+        "--languages",
+        "es,fr",
+        "--i18n-path",
+        "./i18n",
+      ]);
       assert.ok(code !== null, "Second init should not crash");
     });
   });
@@ -114,6 +154,8 @@ describe("Tradux CLI", () => {
     });
 
     it("should handle translate without credentials gracefully", async () => {
+      await rm(join(testDir, "tradux.config.json"), { force: true });
+
       const { code } = await runCLI(["-t", "es"], {
         env: { CLOUDFLARE_ACCOUNT_ID: "", CLOUDFLARE_API_TOKEN: "" },
       });
