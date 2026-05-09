@@ -1,4 +1,5 @@
 packages:
-  - "packages/*"
-  - "tests/frameworks/*"
-  - "tests/frameworks/vite/*"
+  - "."
+
+settings:
+  autoInstallPeers: false
