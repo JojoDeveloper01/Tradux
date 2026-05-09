@@ -2,16 +2,9 @@ name: Release and Publish
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - "library-tool/src/**"
-      - "library-tool/postinstall.js"
-      - "library-tool/package.json"
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:
@@ -21,8 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -37,36 +29,22 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: "library-tool/pnpm-lock.yaml"
 
-      - name: Configure Git
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
       - name: Verify lockfile exists
         working-directory: ./library-tool
         run: |
-          echo "Contents of library-tool directory:"
-          ls -la
-          echo "Checking for pnpm-lock.yaml:"
-          if [ -f "pnpm-lock.yaml" ]; then
-            echo "✅ pnpm-lock.yaml exists"
-            ls -la pnpm-lock.yaml
-          else
+          if [ ! -f "pnpm-lock.yaml" ]; then
             echo "❌ pnpm-lock.yaml not found"
+            exit 1
           fi
+          echo "✅ pnpm-lock.yaml exists"
 
       - name: Install dependencies
         working-directory: ./library-tool
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         working-directory: ./library-tool
-        run: |
-          pnpm run test:unit || echo "No unit tests"
-          pnpm run test:integration || echo "No integration tests"
-          pnpm run test:cli || echo "No CLI tests"
-          pnpm run test:performance || echo "No performance tests"
-          echo "✅ All test suites finished!"
+        run: pnpm run test:quick
 
       - name: Check current version
         id: check
@@ -76,37 +54,16 @@ jobs:
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
           if npm view tradux@$CURRENT_VERSION version >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Version $CURRENT_VERSION already exists on NPM"
+            echo "❌ Version $CURRENT_VERSION already exists on NPM"
+            exit 1
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Version $CURRENT_VERSION does not exist on NPM"
+            echo "✅ Version $CURRENT_VERSION does not exist on NPM"
           fi
 
-      - name: Bump version if needed
-        if: steps.check.outputs.exists == 'true'
+      - name: Verify package contents
         working-directory: ./library-tool
-        run: |
-          # Fetch and sync with remote branch
-          git fetch origin main
-          git reset --hard origin/main
-
-          # Always bump patch (manual edits to package.json control major/minor)
-          NEW_VERSION=$(pnpm version patch --no-git-tag-version)
-
-          # Commit the version bump
-          git add package.json pnpm-lock.yaml
-          git commit -m "chore: bump version to $NEW_VERSION"
-
-          # Safe push
-          git push --force-with-lease origin main
+        run: npm pack --dry-run
 
       - name: Publish to NPM
         working-directory: ./library-tool
-        run: npm publish --access public
-
-      - name: Create Git Tag
-        run: |
-          VERSION=$(node -p "require('./library-tool/package.json').version")
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+        run: npm publish --access public --provenance

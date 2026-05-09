@@ -238,21 +238,33 @@ async function translateObject(data, sourceLanguage, targetLanguage, params) {
 	}
 }
 
-// Headers CORS para permitir requisições de qualquer origem
-const corsHeaders = {
-	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'POST, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type',
-};
+function jsonResponse(body, init = {}) {
+	return new Response(JSON.stringify(body), {
+		...init,
+		headers: {
+			...init.headers,
+		},
+	});
+}
+
+function browserRequestResponse() {
+	return jsonResponse(
+		{
+			success: false,
+			error: 'Browser requests are not supported. Use Tradux CLI or a trusted server.',
+		},
+		{ status: 403 },
+	);
+}
 
 export default {
-	async fetch(request) {
-		// Handle CORS preflight requests
+	async fetch(request, env = {}) {
+		if (request.headers.get('Origin')) return browserRequestResponse();
+
+		// Browser preflight requests include Origin and are rejected above. Non-browser
+		// OPTIONS requests do not need CORS negotiation.
 		if (request.method === 'OPTIONS') {
-			return new Response(null, {
-				status: 200,
-				headers: corsHeaders,
-			});
+			return new Response(null, { status: 204 });
 		}
 
 		const url = new URL(request.url);
@@ -260,14 +272,13 @@ export default {
 		// The main translation endpoint
 		if (url.pathname === '/api/translate-json') {
 			if (request.method !== 'POST') {
-				return new Response(
-					JSON.stringify({
+				return jsonResponse(
+					{
 						success: false,
 						error: 'Method not allowed',
-					}),
+					},
 					{
 						status: 405,
-						headers: corsHeaders,
 					},
 				);
 			}
@@ -277,12 +288,12 @@ export default {
 				const { data, targetLanguage, sourceLanguage } = body;
 
 				if (!data || !targetLanguage) {
-					return new Response(
-						JSON.stringify({
+					return jsonResponse(
+						{
 							success: false,
 							error: 'Missing required parameters: data and targetLanguage are required.',
-						}),
-						{ status: 400, headers: corsHeaders },
+						},
+						{ status: 400 },
 					);
 				}
 
@@ -290,46 +301,37 @@ export default {
 				const { provider, apiKey, apiToken, accountId } = body;
 
 				if (!provider || provider === 'provider_code') {
-					return new Response(JSON.stringify({ success: false, error: 'A valid translation provider is required.' }), {
-						status: 400,
-						headers: corsHeaders,
-					});
+					return jsonResponse({ success: false, error: 'A valid translation provider is required.' }, { status: 400 });
 				}
 				if (provider === 'cloudflare' && (!apiToken || !accountId)) {
-					return new Response(JSON.stringify({ success: false, error: 'Cloudflare provider requires apiToken and accountId.' }), {
-						status: 400,
-						headers: corsHeaders,
-					});
+					return jsonResponse({ success: false, error: 'Cloudflare provider requires apiToken and accountId.' }, { status: 400 });
 				}
 				if (provider !== 'cloudflare' && !apiKey && !apiToken) {
-					return new Response(
-						JSON.stringify({ success: false, error: `Provider "${provider}" requires an apiKey (or GITHUB_TOKEN for copilot).` }),
-						{ status: 400, headers: corsHeaders },
+					return jsonResponse(
+						{ success: false, error: `Provider "${provider}" requires an apiKey (or GITHUB_TOKEN for copilot).` },
+						{ status: 400 },
 					);
 				}
 
 				const translatedData = await translateObject(data, sourceLanguage || 'en', targetLanguage, body);
 
-				return new Response(
-					JSON.stringify({
+				return jsonResponse(
+					{
 						success: true,
 						translatedData,
 						originalLanguage: sourceLanguage || 'en',
 						targetLanguage,
-					}),
-					{
-						headers: corsHeaders,
 					},
+					{},
 				);
 			} catch (error) {
-				return new Response(
-					JSON.stringify({
+				return jsonResponse(
+					{
 						success: false,
 						error: error.message,
-					}),
+					},
 					{
 						status: 500,
-						headers: corsHeaders,
 					},
 				);
 			}
@@ -337,21 +339,15 @@ export default {
 
 		// Test or informational endpoint for the API
 		if (url.pathname.startsWith('/api/')) {
-			return new Response(
-				JSON.stringify({
+			return jsonResponse(
+				{
 					name: 'Tradux Translation Proxy API',
 					endpoints: ['/api/translate-json'],
 					providers: ['openrouter', 'openai', 'anthropic', 'google', 'cloudflare', 'custom'],
-				}),
-				{
-					headers: corsHeaders,
 				},
 			);
 		}
 
-		return new Response(null, {
-			status: 404,
-			headers: corsHeaders,
-		});
+		return new Response(null, { status: 404 });
 	},
 };
