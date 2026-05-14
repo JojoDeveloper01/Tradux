@@ -2,18 +2,21 @@ name: Deploy Tradux Examples to Cloudflare Pages
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "examples/**"
+      - ".github/workflows/deploy-ex-tradux.yml"
   push:
     branches: [main]
     paths:
       - "examples/**"
-      - "library-tool/src/**"
       - ".github/workflows/deploy-ex-tradux.yml"
 
 permissions:
   contents: read
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,12 +38,55 @@ jobs:
       - name: Build static showcase
         run: pnpm --dir examples/showcase build:static
 
-      - name: Create Cloudflare Pages project if needed
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install showcase dependencies
+        run: pnpm --dir examples install:showcase
+
+      - name: Build static showcase
+        run: pnpm --dir examples/showcase build:static
+
+      - name: Ensure Cloudflare Pages project exists
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          pnpm dlx wrangler pages project create ex-tradux --production-branch main || true
+          set -euo pipefail
+
+          project_response=$(curl -sS \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/ex-tradux" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json")
+
+          if echo "${project_response}" | jq -e '.success == true' >/dev/null; then
+            echo "Cloudflare Pages project ex-tradux already exists."
+            exit 0
+          fi
+
+          error_code=$(echo "${project_response}" | jq -r '.errors[0].code // empty')
+          if [ "${error_code}" != "8000007" ] && [ -n "${error_code}" ]; then
+            echo "Unexpected Cloudflare response while checking project:"
+            echo "${project_response}" | jq .
+            exit 1
+          fi
+
+          pnpm dlx wrangler pages project create ex-tradux --production-branch main
 
       - name: Deploy to Cloudflare Pages
         env:
@@ -49,14 +95,25 @@ jobs:
         run: |
           pnpm dlx wrangler pages deploy examples/showcase/dist --project-name ex-tradux --branch main
 
-      - name: Attach custom domain
+      - name: Ensure custom domain is attached
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          set -euo pipefail
+
+          domains_response=$(curl -fsS \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/ex-tradux/domains" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json")
+
+          if echo "${domains_response}" | jq -e '.result[]? | select(.name == "ex-tradux.100aiprojects.dev")' >/dev/null; then
+            echo "Custom domain ex-tradux.100aiprojects.dev is already attached."
+            exit 0
+          fi
+
           curl -fsS -X POST \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/ex-tradux/domains" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
-            --data '{"name":"ex-tradux.100aiprojects.dev"}' \
-          || true
+            --data '{"name":"ex-tradux.100aiprojects.dev"}'
