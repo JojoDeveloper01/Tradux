@@ -5,6 +5,7 @@
         "en",
         "es",
         "fr",
+        "it",
         "ja",
         "pl",
         "pt",
@@ -12,8 +13,8 @@
     ],
     "translation": {
         "default": {
-            "provider": "openrouter",
-            "model": "google/gemini-2.0-flash-001"
+            "provider": "codex",
+            "model": "gpt-5.5"
         },
         "fallback": {
             "provider": "openrouter",
