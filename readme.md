@@ -13,6 +13,8 @@ Whether you are building a simple single-page app or an SEO-focused server-rende
 * **Cross-Component Reactivity:** Change the language in one component, and the rest of the app updates instantly without a page reload.
 * **Auto-Syncing Config:** The CLI automatically manages your `availableLanguages` list based on the actual files in your folder.
 
+Want to see Tradux working in real projects? The [examples folder](https://github.com/JojoDeveloper01/Tradux/tree/main/examples#readme) includes React + Vite, Vue + Vite, Svelte + Vite, Vanilla + Vite, and Astro examples, with a live showcase at https://ex-tradux.100aiprojects.dev/. Tradux also powers https://100aiprojects.dev/, the first project from the 100 AI Projects challenge.
+
 <br/>
 
 ## Quick Start
@@ -169,15 +171,6 @@ Whether you use `useTradux()` in a framework or `initTradux()` in Vanilla JS/SSR
 <br/>
 
 ## 📄 Examples
-
-You can explore the live examples and test site here:
-
-- **Live showcase:** https://ex-tradux.100aiprojects.dev/
-- **Pages fallback:** https://ex-tradux.pages.dev/
-
-The showcase includes React + Vite, Vue + Vite, Svelte + Vite, Vanilla + Vite, and Astro examples. To run the examples locally—either all together through the aggregated showcase or individually per framework—see the examples README:
-
-- https://github.com/JojoDeveloper01/Tradux/tree/main/examples#readme
 
 Tradux provides sub-path exports for your favorite frameworks. These hooks automatically fetch translations and provide a reactive state.
 
