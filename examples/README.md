@@ -62,9 +62,27 @@ Repeat the same flow for:
 
 For Astro, `pnpm start` also works after `pnpm build` because it serves `dist/server/entry.mjs`.
 
-## Railway deploy
+## Cloudflare Pages deploy
 
-Railway should use `examples/` as the root directory.
+The public showcase is deployed as a static Cloudflare Pages site:
+
+- https://ex-tradux.100aiprojects.dev/
+- https://ex-tradux.pages.dev/
+
+Pull requests that touch `examples/**` run the same static showcase build used for deploy:
+
+```bash
+pnpm --dir examples install:showcase
+pnpm --dir examples/showcase build:static
+```
+
+Pushes to `main` deploy `examples/showcase/dist` through `.github/workflows/deploy-ex-tradux.yml`.
+
+The showcase intentionally uses the published `tradux` package version declared in `examples/showcase/package.json`. Changes to `library-tool/src/**` do not automatically redeploy the showcase until a new package version is published and the examples dependency is updated.
+
+## Legacy Railway deploy
+
+Railway can still use `examples/` as the root directory if server/proxy hosting is needed.
 
 The deploy config lives in:
 
@@ -72,6 +90,12 @@ The deploy config lives in:
 - `nixpacks.toml`
 
 The build command enters `showcase/`, installs dependencies, builds every framework, and starts the aggregated server.
+
+## Static export notes
+
+`pnpm --dir examples/showcase build:static` builds each framework app, then exports the aggregate showcase to plain files for Cloudflare Pages.
+
+The Astro example is served statically under `/astro/`. Its root compatibility routes use HTML meta-refresh pages to forward to localized routes like `/astro/en/`; that is intentional for static hosting and replaces server-side redirect behavior.
 
 ## If something fails
 

@@ -3,8 +3,15 @@ import BlogPost from "../../../layouts/BlogPost.astro";
 import { createTraduxFromGlob } from "tradux/astro";
 import { availableLanguages as languageDefinitions } from "tradux/languages";
 import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../../consts";
+import enTranslations from "../../../../public/i18n/en.json";
 
-export const prerender = false;
+export function getStaticPaths() {
+  const slugs = Object.keys(enTranslations.blog.posts);
+
+  return availableLanguageCodes.flatMap((lang) =>
+    slugs.map((slug) => ({ params: { lang, slug } })),
+  );
+}
 
 const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
   ? Astro.params.lang
@@ -15,10 +22,6 @@ const basePath = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${basePath}${path.replace(/^\//, "")}`;
 
-if (Astro.params.lang !== lang) {
-  return Astro.redirect(withBase(`/${lang}/blog/${slug ?? ""}`));
-}
-
 const { t, currentLanguage } = await createTraduxFromGlob({
   files: translationFiles,
   lang,
@@ -28,10 +31,6 @@ const { t, currentLanguage } = await createTraduxFromGlob({
 });
 
 const post = t.blog.posts[slug];
-
-if (!post || !post.title) {
-  return Astro.redirect(withBase(`/${currentLanguage}/blog`));
-}
 ---
 
 <BlogPost

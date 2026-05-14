@@ -93,22 +93,12 @@ const routeConfigs = [
     name: 'astro',
     prefix: '/astro/',
     directory: path.join(frameworksDir, 'astro'),
-    distDirectory: path.join(frameworksDir, 'astro', 'dist', 'client'),
+    distDirectory: path.join(frameworksDir, 'astro', 'dist'),
     dev: {
       port: 4321,
       command: 'pnpm',
       args: ['dev', '--host', '0.0.0.0', '--port', '4321'],
       env: {
-        TRADUX_EXAMPLES_BASE: '/astro',
-      },
-    },
-    production: {
-      port: 4321,
-      command: 'node',
-      args: ['dist/server/entry.mjs'],
-      env: {
-        HOST: '0.0.0.0',
-        PORT: '4321',
         TRADUX_EXAMPLES_BASE: '/astro',
       },
     },
@@ -613,12 +603,6 @@ if (isDev) {
   for (const route of routeConfigs) {
     spawnRouteProcess(route, 'dev')
   }
-} else {
-  const astroRoute = routeConfigs.find((route) => route.name === 'astro')
-
-  if (astroRoute) {
-    spawnRouteProcess(astroRoute, 'start')
-  }
 }
 
 const server = http.createServer(async (request, response) => {
@@ -647,7 +631,7 @@ const server = http.createServer(async (request, response) => {
           }
         }
 
-        if (isDev || refererRoute.name === 'astro') {
+        if (isDev) {
           proxyHttp(request, response, refererRoute, getPrefixedRequestUrl(request, refererRoute))
           return
         }
@@ -682,17 +666,6 @@ const server = http.createServer(async (request, response) => {
     }
 
     if (isDev) {
-      proxyHttp(request, response, route)
-      return
-    }
-
-    if (route.name === 'astro') {
-      for (const staticCandidate of getStaticCandidates(route, requestPath)) {
-        if (sendFile(response, staticCandidate)) {
-          return
-        }
-      }
-
       proxyHttp(request, response, route)
       return
     }

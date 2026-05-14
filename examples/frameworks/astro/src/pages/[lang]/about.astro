@@ -6,18 +6,13 @@ import { createTraduxFromGlob } from "tradux/astro";
 import { availableLanguages as languageDefinitions } from "tradux/languages";
 import { availableLanguageCodes, getAstroAvailableLanguages, translationFiles } from "../../consts";
 
-export const prerender = false;
+export function getStaticPaths() {
+  return availableLanguageCodes.map((lang) => ({ params: { lang } }));
+}
 
 const lang = typeof Astro.params.lang === "string" && availableLanguageCodes.includes(Astro.params.lang)
   ? Astro.params.lang
   : "en";
-const basePath = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
-
-if (Astro.params.lang !== lang) {
-  return Astro.redirect(`${basePath}${lang}/about`);
-}
 
 const { t, currentLanguage } = await createTraduxFromGlob({
   files: translationFiles,
