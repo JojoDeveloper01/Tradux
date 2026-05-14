@@ -29,8 +29,5 @@
     "tradux": "1.5.10",
     "typescript": "6.0.3",
     "vue": "3.5.22"
-  },
-  "devDependencies": {
-    "@astrojs/node": "10.1.0"
   }
 }

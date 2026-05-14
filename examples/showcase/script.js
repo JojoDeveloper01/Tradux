@@ -34,6 +34,11 @@ async function goToLanguage(language) {
   await setLanguage(language);
   updateLanguageUi(language);
 
+  if (document.body?.dataset.staticRoot === 'true') {
+    window.location.assign(`/${encodeURIComponent(language)}/`);
+    return;
+  }
+
   const nextUrl = new URL(window.location.href);
   nextUrl.searchParams.set('lang', language);
   window.location.assign(nextUrl);

@@ -12,6 +12,8 @@
   "scripts": {
     "dev": "node ./scripts/root-server.mjs dev",
     "build": "node ./scripts/build-examples.mjs",
+    "export:static": "node ./scripts/export-static.mjs",
+    "build:static": "pnpm build && pnpm export:static",
     "start": "node ./scripts/root-server.mjs start"
   },
   "keywords": [],

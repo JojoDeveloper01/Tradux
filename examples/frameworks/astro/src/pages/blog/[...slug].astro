@@ -1,10 +1,26 @@
 ---
-export const prerender = false;
+import enTranslations from "../../../public/i18n/en.json";
+
+export function getStaticPaths() {
+  return Object.keys(enTranslations.blog.posts).map((slug) => ({ params: { slug } }));
+}
 
 const slug = Astro.params.slug;
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-
-return Astro.redirect(`${basePath}en/blog/${slug ?? ""}`);
 ---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${basePath}en/blog/${slug ?? ""}`} />
+    <link rel="canonical" href={`${basePath}en/blog/${slug ?? ""}`} />
+    <script is:inline define:vars={{ target: `${basePath}en/blog/${slug ?? ""}` }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <a href={`${basePath}en/blog/${slug ?? ""}`}>Continue to Blog post</a>
+  </body>
+</html>
