@@ -2,9 +2,15 @@ name: Release and Publish
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "library-tool/src/**"
+      - "library-tool/package.json"
+      - "library-tool/pnpm-lock.yaml"
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -14,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -28,6 +34,11 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
           cache-dependency-path: "library-tool/pnpm-lock.yaml"
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
 
       - name: Verify lockfile exists
         working-directory: ./library-tool
@@ -54,11 +65,23 @@ jobs:
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
           if npm view tradux@$CURRENT_VERSION version >/dev/null 2>&1; then
-            echo "❌ Version $CURRENT_VERSION already exists on NPM"
-            exit 1
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already exists on NPM"
           else
+            echo "exists=false" >> $GITHUB_OUTPUT
             echo "✅ Version $CURRENT_VERSION does not exist on NPM"
           fi
+
+      - name: Bump patch version if current version already exists
+        if: steps.check.outputs.exists == 'true'
+        working-directory: ./library-tool
+        run: |
+          NEW_VERSION=$(pnpm version patch --no-git-tag-version)
+          echo "Bumped package version to ${NEW_VERSION}"
+
+          git add package.json pnpm-lock.yaml
+          git commit -m "chore: bump tradux to ${NEW_VERSION}"
+          git push origin HEAD:main
 
       - name: Verify package contents
         working-directory: ./library-tool
