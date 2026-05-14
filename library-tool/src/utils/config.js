@@ -1,4 +1,5 @@
-import fs from "fs-extra";
+import fs from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "path";
 import { logger } from "./logger.js";
 import { fileManager } from "../core/file-manager.js";
@@ -31,7 +32,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
 
   if (fs.existsSync(configPath)) {
     try {
-      config = JSON.parse(await fs.readFile(configPath, "utf8"));
+      config = JSON.parse(await readFile(configPath, "utf8"));
     } catch (e) {
       if (!silent)
         logger.warn("tradux.config.json is corrupted. Recreating...");
@@ -45,8 +46,8 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
     let foundPath = findI18nPathSync(projectRoot);
     if (!foundPath) {
       const publicI18n = path.join(projectRoot, "public", "i18n");
-      await fs.ensureDir(publicI18n);
-      await fs.writeFile(
+      await mkdir(publicI18n, { recursive: true });
+      await writeFile(
         path.join(publicI18n, "en.json"),
         JSON.stringify(SAMPLE_CONTENT, null, 2),
       );
@@ -77,8 +78,8 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
       if (!silent)
         logger.warn(`i18n directory missing! Recreating at ./public/i18n...`);
       actualI18nPath = path.resolve(projectRoot, "public/i18n");
-      await fs.ensureDir(actualI18nPath);
-      await fs.writeFile(
+      await mkdir(actualI18nPath, { recursive: true });
+      await writeFile(
         path.join(actualI18nPath, "en.json"),
         JSON.stringify(SAMPLE_CONTENT, null, 2),
       );
@@ -190,7 +191,7 @@ export async function validateAndFixConfig(projectRoot, silent = false) {
       ...config,
     };
 
-    await fs.writeFile(configPath, JSON.stringify(reorderedConfig, null, 4));
+    await writeFile(configPath, JSON.stringify(reorderedConfig, null, 4));
     if (!silent)
       logger.success(
         `\n Tradux configuration generated/updated at ${CONFIG_FILENAME}`,

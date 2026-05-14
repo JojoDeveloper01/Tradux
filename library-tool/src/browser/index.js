@@ -1,4 +1,4 @@
-import { createTraduxRuntime, readLanguageFromCookie } from "./runtime-core.js";
+import { createTraduxRuntime, readLanguageFromCookie } from "../runtime-core.js";
 
 const isBrowser = typeof document !== "undefined" && typeof window !== "undefined";
 const translationCache = {};
@@ -53,7 +53,7 @@ const runtime = createTraduxRuntime({
   loadConfig: () => fetchFirstJson(getBrowserAssetCandidates("tradux.config.json")),
   loadLanguageDefinitions: async () => {
     try {
-      const { availableLanguages } = await import("./utils/languages.js");
+      const { availableLanguages } = await import("../utils/languages.js");
       return availableLanguages;
     } catch {
       return [];

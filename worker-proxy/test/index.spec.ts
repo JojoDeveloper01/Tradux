@@ -172,6 +172,30 @@ describe('worker-proxy API contract', () => {
 		expect(providerFetch).not.toHaveBeenCalled();
 	});
 
+	it('rejects Codex provider on the remote worker because it is local-only', async () => {
+		const providerFetch = vi.fn();
+		vi.stubGlobal('fetch', providerFetch);
+
+		const response = await fetchWorker(
+			new Request('http://example.com/api/translate-json', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					provider: 'codex',
+					data: { greeting: 'Hello' },
+					targetLanguage: 'es',
+					sourceLanguage: 'en',
+				}),
+			}),
+		);
+		const body = await response.json();
+
+		expect(response.status).toBe(400);
+		expect(body.success).toBe(false);
+		expect(body.error).toContain('local-only');
+		expect(providerFetch).not.toHaveBeenCalled();
+	});
+
 	it('returns API metadata for no-Origin server-to-server status-style API routes', async () => {
 		const response = await fetchWorker(new Request('http://example.com/api/status'));
 		const body = await response.json();
@@ -180,7 +204,7 @@ describe('worker-proxy API contract', () => {
 		expect(body).toEqual({
 			name: 'Tradux Translation Proxy API',
 			endpoints: ['/api/translate-json'],
-			providers: ['openrouter', 'openai', 'anthropic', 'google', 'cloudflare', 'custom'],
+			providers: ['openrouter', 'openai', 'anthropic', 'google', 'cloudflare', 'copilot', 'custom'],
 		});
 		expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
 	});

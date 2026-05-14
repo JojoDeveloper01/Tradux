@@ -1,4 +1,4 @@
-import type { TranslationProxy } from "./client.js";
+import type { TranslationProxy } from "../client.js";
 
 export interface EdgeTraduxOptions {
   translations: Record<string, Record<string, unknown>>;

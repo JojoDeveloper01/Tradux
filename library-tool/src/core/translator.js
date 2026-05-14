@@ -1,12 +1,14 @@
-import fs from "fs-extra";
+import fs from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "path";
-import prompts from "prompts";
+import * as p from "@clack/prompts";
 import { logger } from "../utils/logger.js";
 import { printSummary } from "../utils/ui.js";
 import { availableLanguages as allLanguagesList } from "../utils/languages.js";
 import { validateAndFixConfig } from "../utils/config.js";
 import { fileManager } from "./file-manager.js";
 import { PROVIDER_ENV_MAP } from "../utils/providers.js";
+import { translateViaCodex } from "./codex-provider.js";
 
 /**
  * translator.js — AI Translation Engine
@@ -48,7 +50,7 @@ async function loadState(i18nAbsolutePath) {
   const statePath = path.join(i18nAbsolutePath, ".tradux-state.json");
   if (fs.existsSync(statePath)) {
     try {
-      return JSON.parse(await fs.readFile(statePath, "utf8"));
+      return JSON.parse(await readFile(statePath, "utf8"));
     } catch (e) {}
   }
   return { sourceCache: {} };
@@ -56,7 +58,7 @@ async function loadState(i18nAbsolutePath) {
 
 async function saveState(i18nAbsolutePath, sourceData) {
   const statePath = path.join(i18nAbsolutePath, ".tradux-state.json");
-  await fs.writeFile(
+  await writeFile(
     statePath,
     JSON.stringify({ sourceCache: sourceData }, null, 2),
   );
@@ -178,8 +180,8 @@ function warnMissingCredentials(provider, credentials) {
 }
 
 /**
- * Calls the review step — sends original + translated data to the worker
- * with a quality-review prompt to improve the translation.
+ * Calls the review step. Codex stays local because its ChatGPT session token
+ * must never be sent to the remote worker-proxy.
  */
 async function callReviewWorker(
   originalData,
@@ -196,6 +198,17 @@ async function callReviewWorker(
     review?.provider && review.provider !== txConfig.provider
       ? getCredentials(review.provider)
       : txConfig.credentials;
+
+  if (provider === "codex") {
+    const reviewedData = await translateViaCodex(
+      { original: originalData, translation: translatedData },
+      sourceLang,
+      targetLang,
+      model,
+      true,
+    );
+    return { success: true, translatedData: reviewedData };
+  }
 
   const url = workerUrl || DEFAULT_WORKER_URL;
   const response = await fetch(url, {
@@ -229,6 +242,16 @@ async function callReviewWorker(
 async function callWorker(data, sourceLang, targetLang, txConfig) {
   const { provider, model, baseURL, credentials, fallback, workerUrl } =
     txConfig;
+
+  if (provider === "codex") {
+    const translatedData = await translateViaCodex(
+      data,
+      sourceLang,
+      targetLang,
+      model,
+    );
+    return { success: true, translatedData };
+  }
 
   // Try primary provider
   try {
@@ -600,7 +623,7 @@ async function translateLanguage(lang, sourceData, config, txConfig) {
       ? deepMerge(translatedContent, noTranslate)
       : translatedContent;
 
-    await fs.writeFile(targetFile, JSON.stringify(finalData, null, 2));
+    await writeFile(targetFile, JSON.stringify(finalData, null, 2));
     logger.success(`\nTranslated ${lang}`);
     return { ok: true, reviewFixes };
   } catch (error) {
@@ -671,13 +694,11 @@ export async function updateLanguageFiles(languages, config) {
 
         logger.warn(`\nYou don't have "${lang}" translated yet.`);
         logger.info(`The -u command is for updating existing languages.`);
-        const response = await prompts({
-          type: "confirm",
-          name: "translate",
+        const response = await p.confirm({
           message: `Do you want to translate your content to ${lang} now?`,
         });
 
-        if (response.translate) {
+        if (response === true) {
           const langStart = Date.now();
           const created = await translateLanguage(
             lang,
@@ -831,7 +852,7 @@ async function updateLanguage(lang, sourceData, config, txConfig, state) {
       updatedData = deepMerge(updatedData, directCopyUpdates);
     }
 
-    await fs.writeFile(targetFile, JSON.stringify(updatedData, null, 2));
+    await writeFile(targetFile, JSON.stringify(updatedData, null, 2));
     logger.success(`\nUpdated ${lang}`);
     return true;
   } catch (error) {

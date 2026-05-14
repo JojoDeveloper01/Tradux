@@ -20,6 +20,32 @@ export async function fetchModelChoices(provider) {
   if (info.modelsFetch) {
     if (_modelCache.has(provider)) return _modelCache.get(provider);
 
+    if (info.modelsFetch.authStyle === "codex") {
+      const s = p.spinner();
+      s.start(`Fetching models from ${info.name}…`);
+      try {
+        const { fetchCodexModels } = await import("../core/codex-provider.js");
+        const models = (await fetchCodexModels())
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .map((m) => ({
+            value: m.id,
+            label: m.id,
+            hint: m.name && m.name !== m.id ? m.name : undefined,
+          }));
+
+        if (models.length > 0) {
+          s.stop(`${models.length} models loaded`);
+          _modelCache.set(provider, models);
+          return models;
+        }
+        s.stop("No Codex models returned, using free-text input");
+      } catch (err) {
+        s.stop(`Codex model fetch failed: ${err.message}`);
+      }
+
+      return null;
+    }
+
     const {
       url,
       authStyle,
