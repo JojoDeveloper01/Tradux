@@ -80,7 +80,7 @@ jobs:
           echo "Bumped package version to ${NEW_VERSION}"
 
           git add package.json pnpm-lock.yaml
-          git commit -m "chore: bump tradux to ${NEW_VERSION}"
+          git commit -m "chore: bump tradux to ${NEW_VERSION} [skip ci]"
           git push origin HEAD:main
 
       - name: Verify package contents
