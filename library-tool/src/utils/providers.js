@@ -29,6 +29,7 @@ export const PROVIDER_ENV_MAP = {
     accountId: "CLOUDFLARE_ACCOUNT_ID",
   },
   copilot: { apiKey: "GITHUB_TOKEN" },
+  codex: {},
   custom: { apiKey: "CUSTOM_API_KEY" },
 };
 
@@ -154,6 +155,14 @@ export const PROVIDERS = {
     },
     models: [],
   },
+  codex: {
+    name: "OpenAI Codex",
+    defaultModel: "gpt-5.5",
+    description:
+      "Use your local Codex ChatGPT session without copying tokens into Tradux",
+    modelsFetch: { authStyle: "codex" },
+    models: [],
+  },
   custom: {
     name: "Custom (OpenAI-compatible)",
     defaultModel: "",
@@ -182,7 +191,7 @@ export function getDefaultModel(provider) {
   return PROVIDERS[provider]?.defaultModel ?? "";
 }
 
-/** Returns true if the provider name is one of the six recognized providers. */
+/** Returns true if the provider name is one of the recognized providers. */
 export function isValidProvider(provider) {
   return provider in PROVIDERS;
 }

@@ -213,6 +213,9 @@ async function translateObject(data, sourceLanguage, targetLanguage, params) {
 				reviewMode,
 			);
 
+		case 'codex':
+			throw new Error('The Codex provider is local-only. Run it from Tradux CLI so ChatGPT session tokens never leave your machine.');
+
 		case 'anthropic':
 			return translateViaAnthropic(data, sourceLanguage, targetLanguage, apiKey, model, systemPrompt, reviewMode);
 
@@ -303,6 +306,12 @@ export default {
 				if (!provider || provider === 'provider_code') {
 					return jsonResponse({ success: false, error: 'A valid translation provider is required.' }, { status: 400 });
 				}
+				if (provider === 'codex') {
+					return jsonResponse(
+						{ success: false, error: 'The Codex provider is local-only. Run it from Tradux CLI so ChatGPT session tokens never leave your machine.' },
+						{ status: 400 },
+					);
+				}
 				if (provider === 'cloudflare' && (!apiToken || !accountId)) {
 					return jsonResponse({ success: false, error: 'Cloudflare provider requires apiToken and accountId.' }, { status: 400 });
 				}
@@ -343,7 +352,7 @@ export default {
 				{
 					name: 'Tradux Translation Proxy API',
 					endpoints: ['/api/translate-json'],
-					providers: ['openrouter', 'openai', 'anthropic', 'google', 'cloudflare', 'custom'],
+					providers: ['openrouter', 'openai', 'anthropic', 'google', 'cloudflare', 'copilot', 'custom'],
 				},
 			);
 		}

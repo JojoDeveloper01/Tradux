@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { createCookieHeader, createTraduxRuntime } from "./runtime-core.js";
+import { createCookieHeader, createTraduxRuntime } from "../runtime-core.js";
 
 const runtime = createTraduxRuntime({
   singleton: false,
@@ -10,7 +10,7 @@ const runtime = createTraduxRuntime({
   },
   loadLanguageDefinitions: async () => {
     try {
-      const { availableLanguages } = await import("./utils/languages.js");
+      const { availableLanguages } = await import("../utils/languages.js");
       return availableLanguages;
     } catch {
       return [];

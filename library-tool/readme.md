@@ -22,16 +22,22 @@ Whether you are building a simple single-page app or an SEO-focused server-rende
 For npm and yarn:
 ```bash
 npm install tradux
+npx tradux init
 # or
 yarn add tradux
+yarn tradux init
 ```
 
 For pnpm and bun:
 ```bash
-pnpm install tradux && pnpm tradux init
+pnpm add tradux
+pnpm tradux init
 # or
-bun install tradux && bunx tradux init
+bun add tradux
+bunx tradux init
 ```
+
+Tradux does not run setup scripts automatically during install. Run the init command explicitly so you control when `tradux.config.json` and your starter i18n files are created or updated.
 
 ### 📋 Setup Requirements
 
@@ -44,7 +50,7 @@ OPENROUTER_API_KEY=sk-or-...
 
 ### ⚙️ Configuration
 
-After installation, run `npx tradux init` to interactively create or update your `tradux.config.json` file. The structure looks like this:
+After installation, run the init command for your package manager (`npx tradux init`, `pnpm tradux init`, `yarn tradux init`, or `bunx tradux init`) to interactively create or update your `tradux.config.json` file. The structure looks like this:
 
 ```json
 {

@@ -1,4 +1,4 @@
-import { createTradux } from "./edge.js";
+import { createTradux } from "../edge/index.js";
 
 function languageFromPath(filePath) {
   const fileName = String(filePath).split("/").pop() || "";

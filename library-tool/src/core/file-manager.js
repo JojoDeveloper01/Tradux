@@ -1,5 +1,6 @@
 import path from "path";
-import fs from "fs-extra";
+import fs from "node:fs";
+import { readFile } from "node:fs/promises";
 
 /**
  * file-manager.js — Centralized File I/O
@@ -85,7 +86,7 @@ class FileManager {
     }
 
     try {
-      const fileContent = await fs.readFile(languageFile, "utf8");
+      const fileContent = await readFile(languageFile, "utf8");
       return JSON.parse(fileContent);
     } catch (error) {
       console.error(`\nFailed to load language file: ${languageFile}`);
@@ -109,7 +110,7 @@ class FileManager {
     }
 
     try {
-      const fileContent = await fs.readFile(configPath, "utf8");
+      const fileContent = await readFile(configPath, "utf8");
       const config = JSON.parse(fileContent);
 
       if (!config.i18nPath || !config.defaultLanguage) {

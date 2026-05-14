@@ -91,3 +91,15 @@ describe("Logger module — Contract", () => {
     }
   });
 });
+
+describe("Provider registry — Contract", () => {
+  it("should include Codex as a local-only provider without env credentials", async () => {
+    const { PROVIDERS, getRequiredEnvVars, isValidProvider } = await import(
+      "../../src/utils/providers.js"
+    );
+
+    assert.ok(isValidProvider("codex"), "codex should be a valid provider");
+    assert.strictEqual(PROVIDERS.codex.name, "OpenAI Codex");
+    assert.deepStrictEqual(getRequiredEnvVars("codex"), []);
+  });
+});

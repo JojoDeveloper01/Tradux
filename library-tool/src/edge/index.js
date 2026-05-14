@@ -1,4 +1,4 @@
-import { createCookieHeader, createTraduxRuntime } from "./runtime-core.js";
+import { createCookieHeader, createTraduxRuntime } from "../runtime-core.js";
 
 export function createTradux(options = {}) {
   const translations = options.translations || {};

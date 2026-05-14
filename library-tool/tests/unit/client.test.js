@@ -132,7 +132,7 @@ describe("Tradux Client — Public API Contract", () => {
     });
 
     it("should support Object.entries() and the in operator", async () => {
-      const { createTradux } = await import("../../src/edge.js");
+      const { createTradux } = await import("../../src/edge/index.js");
       const instance = await createTradux({
         lang: "en",
         translations: {
@@ -157,9 +157,9 @@ describe("Tradux Client — Public API Contract", () => {
     it("browser, edge, astro, and default entrypoints should not import Node fs/path", async () => {
       const safeEntrypoints = [
         "src/client.js",
-        "src/browser.js",
-        "src/edge.js",
-        "src/astro.js",
+        "src/browser/index.js",
+        "src/edge/index.js",
+        "src/astro/index.js",
       ];
 
       for (const file of safeEntrypoints) {
@@ -172,7 +172,7 @@ describe("Tradux Client — Public API Contract", () => {
     });
 
     it("Astro glob adapter should map JSON file names to languages", async () => {
-      const { createTraduxFromGlob } = await import("../../src/astro.js");
+      const { createTraduxFromGlob } = await import("../../src/astro/index.js");
       const instance = await createTraduxFromGlob({
         files: {
           "/public/i18n/en.json": { nav: { home: "Home" } },
@@ -205,7 +205,7 @@ describe("Tradux Client — Public API Contract", () => {
             : { hello: "Olá" },
       });
 
-      const browser = await import(`../../src/browser.js?cookie=${Date.now()}`);
+      const browser = await import(`../../src/browser/index.js?cookie=${Date.now()}`);
       assert.strictEqual(await browser.setLanguage("pt-BR"), true);
 
       assert.strictEqual(
@@ -219,7 +219,7 @@ describe("Tradux Client — Public API Contract", () => {
     });
 
     it("node runtime should emit consistent server Set-Cookie attributes", async () => {
-      const { createTradux } = await import("../../src/edge.js");
+      const { createTradux } = await import("../../src/edge/index.js");
       const instance = await createTradux({
         lang: "en",
         translations: {
